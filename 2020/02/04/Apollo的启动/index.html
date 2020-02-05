@@ -6,18 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Apollo的启动方法 | GWH Blog</title>
+  <title>Apollo的启动过程1——启动命令解析 | GWH Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="1、构建Apollo在运行系统之前，必须先构建系统。请注意，bootstrap.sh实际上会成功，但是如果跳过构建步骤，则不会显示用户界面。以下步骤需要在apollo&#x2F;目录下运行：">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Apollo的启动方法">
+<meta property="og:title" content="Apollo的启动过程1——启动命令解析">
 <meta property="og:url" content="http://yoursite.com/2020/02/04/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8/index.html">
 <meta property="og:site_name" content="GWH Blog">
 <meta property="og:description" content="1、构建Apollo在运行系统之前，必须先构建系统。请注意，bootstrap.sh实际上会成功，但是如果跳过构建步骤，则不会显示用户界面。以下步骤需要在apollo&#x2F;目录下运行：">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/2020/02/04/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8/dreamview.png">
 <meta property="article:published_time" content="2020-02-04T09:27:53.000Z">
-<meta property="article:modified_time" content="2020-02-05T05:28:33.606Z">
+<meta property="article:modified_time" content="2020-02-05T11:47:48.084Z">
 <meta property="article:author" content="GWH">
 <meta property="article:tag" content="无人驾驶">
 <meta property="article:tag" content="Apollo">
@@ -151,7 +151,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Apollo的启动方法
+      Apollo的启动过程1——启动命令解析
     </h1>
   
 
@@ -180,7 +180,7 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-keyboard-o"></i>
         <span class="post-meta-item-text">  字数统计: </span>
-        <span class="post-count">1.7k字</span>
+        <span class="post-count">1.6k字</span>
       </span>
     </span>
 
@@ -208,13 +208,13 @@
 
 <h4 id="1-2、编译整个系统"><a href="#1-2、编译整个系统" class="headerlink" title="1.2、编译整个系统"></a>1.2、编译整个系统</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># To get a list of build commands</span></span><br><span class="line">./apollo.sh</span><br><span class="line"><span class="comment"># To make sure you start clean</span></span><br><span class="line">./apollo.sh clean</span><br><span class="line"><span class="comment"># This will build the full system and requires that you have an nVidia GPU with nVidia drivers loaded</span></span><br><span class="line">bash apollo.sh build</span><br></pre></td></tr></table></figure>
 
-<h3 id="2、启动命令分析"><a href="#2、启动命令分析" class="headerlink" title="2、启动命令分析"></a>2、启动命令分析</h3><p>Apollo以Dreamview为启动一切模块的中心，功能模块的启动开关都由Dreamview的web界面控制。而Dreamview的界面内容根选项是由<code>modules/dreamview/conf</code>决定。Dreamview中提供了不同的HMI(human machine interface)模式，不同模式的可选功能模块不一。</p>
+<h3 id="2、启动命令分析"><a href="#2、启动命令分析" class="headerlink" title="2、启动命令分析"></a>2、启动命令分析</h3><p>面控制。而Dreamview的界面内容根选项是由<code>modules/dreamview/conf</code>决定。Dreamview中提供了不同的HMI(human machine interface)模式，不同模式的可选功能模块不一。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash scripts/bootstrip.sh start    <span class="comment">#启动Dreamview</span></span><br></pre></td></tr></table></figure>
 
 <p>在浏览器里登录网址<a href="http://localhost:8888/，就可以看到dreamview的界面：" target="_blank" rel="noopener">http://localhost:8888/，就可以看到dreamview的界面：</a></p>
 <div style="width:100%;margin:auto" align=center><img src="/2020/02/04/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8/dreamview.png" class="" title="启动界面"></div>
+上述命令实际执行了scripts/bootstrap.sh中的start()函数：(Linux下的shell脚本)
 
-<p>上述命令实际执行了scripts/bootstrap.sh中的start()函数：(Linux下的shell脚本)</p>
 <p>上述命令实际执行了<code>scripts/bootstrap.sh</code>中的start()函数：<a href="https://www.jianshu.com/p/8c2af151ddc2" target="_blank" rel="noopener">(Linux下的shell脚本)</a></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">dfunction <span class="function"><span class="title">start</span></span>() &#123;</span><br><span class="line">     ./scripts/monitor.sh start</span><br><span class="line">     ./scripts/dreamview.sh start</span><br><span class="line">     <span class="keyword">if</span> [ $? -eq 0 ]; <span class="keyword">then</span></span><br><span class="line">         http_status=<span class="string">"<span class="variable">$(curl -o -I -L -s -w '%&#123;http_code&#125;' $&#123;DREAMVIEW_URL&#125;)</span>"</span></span><br><span class="line">         <span class="keyword">if</span> [ <span class="variable">$http_status</span> -eq 200 ]; <span class="keyword">then</span></span><br><span class="line">             <span class="built_in">echo</span> <span class="string">"Dreamview is running at"</span> <span class="variable">$DREAMVIEW_URL</span></span><br><span class="line">         <span class="keyword">else</span></span><br><span class="line">             <span class="built_in">echo</span> <span class="string">"Failed to start Dreamview. Please check /apollo/data/log or /apollo/data/core for more information"</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">#case $1 in ...</span></span><br></pre></td></tr></table></figure>
 
@@ -362,6 +362,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Apollo的启动过程2——功能模块加载
+        
+      </div>
+    </a>
   
   
     <a href="/2020/02/01/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
@@ -525,14 +534,6 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Apollo开发工具</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">转载</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">C++</a>
               </li>
              
@@ -558,6 +559,10 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">Apollo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Cyber RT</a>
               </li>
             
             <div class="clearfix"></div>

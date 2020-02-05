@@ -6,14 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: Apollo开发工具 | GWH Blog</title>
+  <title>Apollo的启动过程2——功能模块加载 | GWH Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="GWH Blog">
-<meta property="og:url" content="http://yoursite.com/tags/Apollo%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/index.html">
+  <meta name="description" content="功能模块的启动过程（以Planning为例）Apollo 3.5版本引入了中间件Cyber RT作为底层通讯与调度平台，Cyber RT以组件(component)的概念构建、加载各功能模块。Perception、Localization、Planning、Control等功能模块均作为Cyber RT框架的一个组件而存在，基于Cyber RT提供的调度程序mainboard加载运行。下面以Pla">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apollo的启动过程2——功能模块加载">
+<meta property="og:url" content="http://yoursite.com/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/index.html">
 <meta property="og:site_name" content="GWH Blog">
+<meta property="og:description" content="功能模块的启动过程（以Planning为例）Apollo 3.5版本引入了中间件Cyber RT作为底层通讯与调度平台，Cyber RT以组件(component)的概念构建、加载各功能模块。Perception、Localization、Planning、Control等功能模块均作为Cyber RT框架的一个组件而存在，基于Cyber RT提供的调度程序mainboard加载运行。下面以Pla">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-02-05T09:07:59.000Z">
+<meta property="article:modified_time" content="2020-02-05T15:28:18.823Z">
 <meta property="article:author" content="GWH">
+<meta property="article:tag" content="无人驾驶">
+<meta property="article:tag" content="Apollo">
+<meta property="article:tag" content="Cyber RT">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="GWH Blog" type="application/atom+xml">
@@ -136,79 +143,280 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Apollo的启动过程2——功能模块加载" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/01/31/Bazel%E5%85%A5%E9%97%A81/" class="archive-article-date">
-  	<time datetime="2020-01-31T13:55:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-31</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/01/31/Bazel%E5%85%A5%E9%97%A81/">Bazel入门1:编译C++项目</a>
+    <h1 class="article-title" itemprop="name">
+      Apollo的启动过程2——功能模块加载
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+
+        <!--显示阅读次数--------------------------->                                                                       
+                                                                     
+          <br/>                                                                                         
+          <a class="cloud-tie-join-count" href="javascript:void(0);" style="color:gray;font-size:14px;">
+          <span class="icon-sort"></span>                                                               
+          <span id="busuanzi_container_page_pv" style="color:#ef7522;font-size:14px;">                  
+                    阅读数: <span id="busuanzi_value_page_pv"></span>次 &nbsp;&nbsp;                
+          </span>                                                                                       
+          </a>                                                                                          
+        
+        <!------------------------------------------->                                                                       
+
+           
+           <a href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/" class="archive-article-date">
+  	<time datetime="2020-02-05T09:07:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-05</time>
+</a>
+            <!-- 需要添加的位置 -->
+            <!-- 开始添加字数统计-->
+            
+               <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">1.7k字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">8分</span>
+      </span>
+    </span>
+</div>
+
+         
+         <!-- ------------------------------------ -->
+           
+        </header>
+      
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="功能模块的启动过程（以Planning为例）"><a href="#功能模块的启动过程（以Planning为例）" class="headerlink" title="功能模块的启动过程（以Planning为例）"></a>功能模块的启动过程（以Planning为例）</h3><p>Apollo 3.5版本引入了中间件Cyber RT作为底层通讯与调度平台，Cyber RT以组件(component)的概念构建、加载各功能模块。Perception、Localization、Planning、Control等功能模块均作为Cyber RT框架的一个组件而存在，基于Cyber RT提供的调度程序<code>mainboard</code>加载运行。下面以<code>Planning</code>模块为例具体阐述。 <code>Planning</code>模块<code>BUILD</code>文件中生成<code>binary</code>文件的配置项如下：</p>
+<a id="more"></a>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cc_binary(</span><br><span class="line">    name = <span class="string">"libplanning_component.so"</span>,</span><br><span class="line">    linkshared = True,</span><br><span class="line">    linkstatic = False,</span><br><span class="line">    deps = [<span class="string">":planning_component_lib"</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>该配置项中没有<code>srcs</code>文件，仅包含一个依赖项<code>:planning_component_lib</code>。又注意到后者的定义如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">cc_library(</span><br><span class="line">    name = <span class="string">"planning_component_lib"</span>,</span><br><span class="line">    srcs = [<span class="string">"planning_component.cc"</span>],</span><br><span class="line">    hdrs = [<span class="string">"planning_component.h"</span>],</span><br><span class="line">    copts = [</span><br><span class="line">        <span class="string">"-DMODULE_NAME=\\\"planning\\\""</span>,</span><br><span class="line">    ],</span><br><span class="line">    deps = [</span><br><span class="line">        <span class="string">":navi_planning"</span>,</span><br><span class="line">        <span class="string">":on_lane_planning"</span>,</span><br><span class="line">        <span class="string">"//cyber"</span>,</span><br><span class="line">        <span class="string">"//modules/common/adapters:adapter_gflags"</span>,</span><br><span class="line">        <span class="string">"//modules/common/util:message_util"</span>,</span><br><span class="line">        <span class="string">"//...</span></span><br><span class="line"><span class="string">    ],</span></span><br><span class="line"><span class="string">)</span></span><br></pre></td></tr></table></figure>
+
+<p>在<code>srcs</code>文件以及<code>deps</code>文件中均没有<code>main()</code>函数。Planning模块binary文件libplanning_component.so是作为Cyber RT的一个组件启动，不需要<code>main()</code>函数。</p>
+<p>Apollo以Dreamview为启动一切模块的中心，在Dreamview界面中启动Planning模块的<a href="https://blog.csdn.net/davidhopper/article/details/85097502" target="_blank" rel="noopener">前端操作</a>，后端的响应函数<code>HMI::RegisterMessageHandlers()</code>位于<code>/apollo/modules/dreamview/backend/hmi/hmi.cc</code>文件中：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> HMI::RegisterMessageHandlers() &#123;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  websocket_-&gt;RegisterMessageHandler(</span><br><span class="line">      <span class="string">"HMIAction"</span>,</span><br><span class="line">      [<span class="keyword">this</span>](<span class="keyword">const</span> Json&amp; json, WebSocketHandler::Connection* conn) &#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">string</span> action;</span><br><span class="line">        <span class="keyword">if</span> (!JsonUtil::GetStringFromJson(json, <span class="string">"action"</span>, &amp;action)) &#123;</span><br><span class="line">          AERROR &lt;&lt; <span class="string">"Truncated HMIAction request."</span>;</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        HMIAction hmi_action;</span><br><span class="line">        <span class="comment">// 解析动作参数</span></span><br><span class="line">        <span class="keyword">if</span> (!HMIAction_Parse(action, &amp;hmi_action)) &#123;</span><br><span class="line">          AERROR &lt;&lt; <span class="string">"Invalid HMIAction string: "</span> &lt;&lt; action;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">string</span> value;</span><br><span class="line">        <span class="keyword">if</span> (JsonUtil::GetStringFromJson(json, <span class="string">"value"</span>, &amp;value)) &#123;</span><br><span class="line">          <span class="comment">// 执行相关动作</span></span><br><span class="line">          hmi_worker_-&gt;Trigger(hmi_action, value);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          hmi_worker_-&gt;Trigger(hmi_action);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Extra works for current Dreamview...</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ... </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>HMIAction_Parse(action,&amp;hmi_action)</code>用于解析动作参数，<code>hmi_worker_-&gt;Trigger(hmi_action, value)</code>;用于执行相关的动作：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> HMIWorker::Trigger(<span class="keyword">const</span> HMIAction action, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; value) &#123;</span><br><span class="line">  AINFO &lt;&lt; <span class="string">"HMIAction "</span> &lt;&lt; HMIAction_Name(action) &lt;&lt; <span class="string">"("</span> &lt;&lt; value</span><br><span class="line">        &lt;&lt; <span class="string">") was triggered!"</span>;</span><br><span class="line">  <span class="comment">// 可见HMIAction的结构如下，未找到对应的定义文件!</span></span><br><span class="line">  <span class="keyword">switch</span> (action) &#123;</span><br><span class="line">    <span class="keyword">case</span> HMIAction::CHANGE_MODE:</span><br><span class="line">      ChangeMode(value);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> HMIAction::CHANGE_MAP:</span><br><span class="line">      ChangeMap(value);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> HMIAction::CHANGE_VEHICLE:</span><br><span class="line">      ChangeVehicle(value);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="comment">// 运行modul模块</span></span><br><span class="line">    <span class="keyword">case</span> HMIAction::START_MODULE:</span><br><span class="line">      StartModule(value);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> HMIAction::STOP_MODULE:</span><br><span class="line">      StopModule(value);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      AERROR &lt;&lt; <span class="string">"HMIAction not implemented, yet!"</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于Planning模块的启动来说，<code>hmi_action = HMIAction::START_MODULE</code>，<code>value</code>的值为<code>Planning</code>。实际上，Dreamview将操作模式分为多种hmi mode，位于目录<code>/apollo/modules/dreamview/conf/hmi_modes</code>下，每一个配置文件对应一种hmi mode。每一种模式的dag文件不一样，启动的modul不同。继续探究<code>HMIWorker::StartModule(const std::string&amp; module)</code>函数:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> HMIWorker::StartModule(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; <span class="keyword">module</span>) <span class="keyword">const</span> &#123;</span><br><span class="line">  <span class="comment">// current_model_通过LoadMode()加载进去,current_mode_为读入的HMIMode</span></span><br><span class="line">  <span class="keyword">const</span> Module* module_conf = FindOrNull(current_mode_.modules(), <span class="keyword">module</span>);</span><br><span class="line">  <span class="keyword">if</span> (module_conf != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">    <span class="comment">// 启动进程</span></span><br><span class="line">    System(module_conf-&gt;start_command());</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    AERROR &lt;&lt; <span class="string">"Cannot find module "</span> &lt;&lt; <span class="keyword">module</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述函数中成员变量<code>current_mode_</code>保存着当前hmi mode对应配置文件包含的所有配置项。例如<code>modules/dreamview/conf/hmi_modes/mkz_standard_debug.pb.txt</code>里面就包含了MKZ标准调试模式下所有的功能模块，该配置文件通过<code>HMIWorker::LoadMode(const std::string&amp; mode_config_path)</code>函数读入到成员变量<code>current_mode_</code>中。如果基于字符串module查找到了对应的模块名，则调用System函数（内部实际调用std::system函数)基于命令<code>module_conf-&gt;start_command()</code>启动一个进程。<code>LoadMode()</code>函数为:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">HMIMode HMIWorker::LoadMode(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; mode_config_path) &#123;</span><br><span class="line">  <span class="comment">// 对应在/apollo/modules/dreamview/proto/hmi_mode.proto</span></span><br><span class="line">  HMIMode mode;  </span><br><span class="line">  <span class="comment">// 加载hmi mode的配置文件到HMIModel mode</span></span><br><span class="line">  CHECK(cyber::common::GetProtoFromFile(mode_config_path, &amp;mode))</span><br><span class="line">      &lt;&lt; <span class="string">"Unable to parse HMIMode from file "</span> &lt;&lt; mode_config_path;</span><br><span class="line">  <span class="comment">// Translate cyber_modules to regular modules,将cyber_modules--&gt;modules</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; iter : mode.cyber_modules()) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; module_name = iter.first;   <span class="comment">// such as Planning</span></span><br><span class="line">    <span class="keyword">const</span> CyberModule&amp; cyber_module = iter.second;</span><br><span class="line">    <span class="comment">// Each cyber module such as Planning、Control should have at least one dag file.</span></span><br><span class="line">    CHECK(!cyber_module.dag_files().empty())</span><br><span class="line">        &lt;&lt; <span class="string">"None dag file is provided for "</span> &lt;&lt; module_name &lt;&lt; <span class="string">" module in "</span></span><br><span class="line">        &lt;&lt; mode_config_path;</span><br><span class="line"></span><br><span class="line">    Module&amp; <span class="keyword">module</span> = LookupOrInsert(mode.mutable_modules(), module_name, &#123;&#125;);</span><br><span class="line">    <span class="keyword">module</span>.set_required_for_safety(cyber_module.required_for_safety());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Construct start_command:</span></span><br><span class="line">    <span class="comment">// nohup mainboard -p &lt;process_group&gt; -d &lt;dag&gt; ... &amp;</span></span><br><span class="line">    <span class="keyword">module</span>.set_start_command(<span class="string">"nohup mainboard"</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; process_group = cyber_module.process_group();</span><br><span class="line">    <span class="keyword">if</span> (!process_group.empty()) &#123;</span><br><span class="line">      absl::StrAppend(<span class="keyword">module</span>.mutable_start_command(), <span class="string">" -p "</span>, process_group);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; dag : cyber_module.dag_files()) &#123;</span><br><span class="line">      absl::StrAppend(<span class="keyword">module</span>.mutable_start_command(), <span class="string">" -d "</span>, dag);</span><br><span class="line">    &#125;</span><br><span class="line">    absl::StrAppend(<span class="keyword">module</span>.mutable_start_command(), <span class="string">" &amp;"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Construct stop_command: </span></span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; first_dag = cyber_module.dag_files(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">module</span>.set_stop_command(absl::StrCat(<span class="string">"pkill -f \""</span>, first_dag, <span class="string">"\""</span>));</span><br><span class="line">    <span class="comment">// Construct process_monitor_config.</span></span><br><span class="line">    <span class="keyword">module</span>.mutable_process_monitor_config()-&gt;add_command_keywords(<span class="string">"mainboard"</span>);</span><br><span class="line">    <span class="keyword">module</span>.mutable_process_monitor_config()-&gt;add_command_keywords(first_dag);</span><br><span class="line">  &#125;</span><br><span class="line">  mode.clear_cyber_modules();</span><br><span class="line">  AINFO &lt;&lt; <span class="string">"Loaded HMI mode: "</span> &lt;&lt; mode.DebugString();</span><br><span class="line">  <span class="keyword">return</span> mode;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该函数中的结构<code>HMIMode</code>、<code>Module</code>等均来自<code>/apollo/modules/dreamview/proto/hmi_mode.proto</code>：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">Module</span> </span>&#123;</span><br><span class="line">  <span class="keyword">optional</span> <span class="built_in">string</span> start_command = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">optional</span> <span class="built_in">string</span> stop_command = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// We use the config in ProcessMonitor to check if the module is running.</span></span><br><span class="line">  <span class="keyword">optional</span> ProcessMonitorConfig process_monitor_config = <span class="number">3</span>;</span><br><span class="line">  <span class="comment">// Whether to trigger safe-mode if the module is down.</span></span><br><span class="line">  <span class="keyword">optional</span> <span class="built_in">bool</span> required_for_safety = <span class="number">4</span> [default = <span class="literal">true</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A CyberModule will be translated to a regular Module upon loading.</span></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">CyberModule</span> </span>&#123;</span><br><span class="line">  <span class="keyword">repeated</span> <span class="built_in">string</span> dag_files = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">optional</span> <span class="built_in">bool</span> required_for_safety = <span class="number">2</span> [default = <span class="literal">true</span>];</span><br><span class="line">  <span class="keyword">optional</span> <span class="built_in">string</span> process_group = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 存储hmi_modes目录下的模式文件</span></span><br><span class="line"><span class="class"><span class="keyword">message</span> <span class="title">HMIMode</span> </span>&#123;</span><br><span class="line">  map&lt;<span class="built_in">string</span>, CyberModule&gt; cyber_modules = <span class="number">1</span>;</span><br><span class="line">  map&lt;<span class="built_in">string</span>, Module&gt; modules = <span class="number">2</span>;</span><br><span class="line">  map&lt;<span class="built_in">string</span>, MonitoredComponent&gt; monitored_components = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出<code>HMIWorker::LoadMode()</code>函数的主要作用是构建<code>cyber_modules</code>的启动、停止命令，在这个过程中将<code>cyber_modules</code>转化为了<code>modules</code>。构建出来的<code>start_command</code>的格式为<code>nohup mainboard -p &lt;process_group&gt; -d &lt;dag&gt; ... &amp;</code>，（缺少-s <sched_name>）供给<code>System(module_conf-&gt;start_command())</code>调用。其中<code>&lt;process_group&gt;</code>和<code>&lt;dag&gt;</code>文件都来自于hmi mode对应的配置文件。以<code>modules/dreamview/conf/hmi_modes/mkz_close_loop.pb.txt</code>为例：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">cyber_modules &#123;</span><br><span class="line">  key: <span class="string">"Computer"</span></span><br><span class="line">  value: &#123;</span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/tick/dag/tick.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/drivers/camera/dag/camera_no_compress.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/drivers/gnss/dag/gnss.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/drivers/radar/conti_radar/dag/conti_radar.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/drivers/velodyne/dag/velodyne.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/localization/dag/dag_streaming_msf_localization.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/perception/production/dag/dag_streaming_perception.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/perception/production/dag/dag_streaming_perception_trafficlights.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/planning/dag/planning.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/prediction/dag/prediction.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/routing/dag/routing.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/transform/dag/static_transform.dag"</span></span><br><span class="line">    process_group: <span class="string">"compute_sched"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">cyber_modules &#123;</span><br><span class="line">  key: <span class="string">"Controller"</span></span><br><span class="line">  value: &#123;</span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/canbus/dag/canbus.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/control/dag/control.dag"</span></span><br><span class="line">    dag_files: <span class="string">"/apollo/modules/guardian/dag/guardian.dag"</span></span><br><span class="line">    process_group: <span class="string">"control_sched"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>它包含两个<code>cyber_modules</code>,对于<code>Computer</code>模块而言，它包含了11个<code>dag_files</code>文件（对应11个子功能模块<code>component</code>），这些子功能模块全部属于名为<code>compute_sched</code>的<code>process_group</code>。根据<a href="https://blog.csdn.net/weixin_44450715/article/details/86593962" target="_blank" rel="noopener">Apollo 3.5 Cyber - 如何為Dreamview新增hmi mode</a><code>，process_group</code>就是Cyber RT中调度配置文件<code>scheduler conf</code>的名字，<code>process_group: &quot;compute_sched&quot;</code>表明使用配置文件<code>cyber/conf/compute_sched.conf</code>进行任务调度，<code>process_group: &quot;control_sched&quot;</code>表明使用配置文件<code>control_sched.conf</code>进行任务调度。</p>
+<p>至此，Planning模块的启动命令是:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup mainboard -p compute_sched -d /apollo/modules/planning/dag/planning.d</span><br></pre></td></tr></table></figure>
+
+<p>实际上对于配置文件<code>modules/dreamview/conf/hmi_modes/mkz_close_loop.pb.txt</code>而言，它包含两个大的启动命令，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">nohup mainboard -p compute_sched </span><br><span class="line">-d /apollo/modules/drivers/camera/dag/camera_no_compress.dag </span><br><span class="line">-d /apollo/modules/drivers/gnss/dag/gnss.dag</span><br><span class="line">-d /apollo/modules/drivers/radar/conti_radar/dag/conti_radar.dag</span><br><span class="line">-d /apollo/modules/drivers/velodyne/dag/velodyne.dag</span><br><span class="line">-d /apollo/modules/localization/dag/dag_streaming_msf_localization.dag</span><br><span class="line">-d /apollo/modules/perception/production/dag/dag_streaming_perception.dag</span><br><span class="line">-d /apollo/modules/perception/production/dag/dag_streaming_perception_trafficlights.dag</span><br><span class="line">-d /apollo/modules/planning/dag/planning.dag </span><br><span class="line">-d /apollo/modules/prediction/dag/prediction.dag</span><br><span class="line">-d /apollo/modules/routing/dag/routing.dag</span><br><span class="line">-d /apollo/modules/transform/dag/static_transform.dag &amp;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nohup mainboard -p control_sched </span><br><span class="line">-d /apollo/modules/canbus/dag/canbus.dag </span><br><span class="line">-d /apollo/modules/control/dag/control.dag</span><br><span class="line">-d /apollo/modules/guardian/dag/guardian.dag &amp;</span><br></pre></td></tr></table></figure>
+
+<p>根据以上的代码分析，相应的停止命令如下:(未经过验证)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pkill -f /apollo/modules/drivers/camera/dag/camera_no_compress.dag </span><br><span class="line">pkill -f /apollo/modules/canbus/dag/canbus.dag</span><br></pre></td></tr></table></figure>
+
+<p><code>nohup</code>表示非挂断方式启动，<code>mainboard</code>无疑是启动的主程序，入口<code>main</code>函数必定包含于其中。<code>process_group</code>是对功能模块分组而已；<code>dag_files</code>才是启动相关功能模块的真正配置文件。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>听说，打赏我的人最后都找到了真爱<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/images/支付宝.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/images/微信.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Apollo开发工具</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">无人驾驶</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">转载</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Apollo</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">C++</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Cyber RT</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Apollo//" class="article-tag-list-link color2">Apollo</a>
-        		</li>
-      		
-		</ul>
-	</div>
+      
 
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B3%E2%80%94%E2%80%94Cyber-RT%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9D%97/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Apollo的启动过程3——Cyber RT如何加载模块
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2020/02/04/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Apollo的启动过程1——启动命令解析</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+  <div id="SOHUCS" sid="Apollo的启动过程2——功能模块加载" ></div> 
+<script charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/changyan.js" ></script>
+<script type="text/javascript">
+    window.changyan.api.config({
+        appid: "true",
+        conf: "true"
+    });
+</script>
+</script>
+  
+
+  
+
+  
 
 
           </div>
@@ -232,9 +440,9 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
@@ -325,14 +533,6 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Apollo开发工具</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">转载</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">C++</a>
               </li>
              
@@ -358,6 +558,10 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">Apollo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Cyber RT</a>
               </li>
             
             <div class="clearfix"></div>
