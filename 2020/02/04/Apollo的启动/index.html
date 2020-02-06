@@ -17,7 +17,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/2020/02/04/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8/dreamview.png">
 <meta property="article:published_time" content="2020-02-04T09:27:53.000Z">
-<meta property="article:modified_time" content="2020-02-05T11:47:48.084Z">
+<meta property="article:modified_time" content="2020-02-06T14:19:50.634Z">
 <meta property="article:author" content="GWH">
 <meta property="article:tag" content="无人驾驶">
 <meta property="article:tag" content="Apollo">
@@ -201,14 +201,14 @@
       
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="1、构建Apollo"><a href="#1、构建Apollo" class="headerlink" title="1、构建Apollo"></a>1、构建Apollo</h3><p>在运行系统之前，必须先构建系统。请注意，<code>bootstrap.sh</code>实际上会成功，但是如果跳过构建步骤，则不会显示用户界面。以下步骤需要在<code>apollo/</code>目录下运行：</p>
+        <h2 id="1、构建Apollo"><a href="#1、构建Apollo" class="headerlink" title="1、构建Apollo"></a>1、构建Apollo</h2><p>在运行系统之前，必须先构建系统。请注意，<code>bootstrap.sh</code>实际上会成功，但是如果跳过构建步骤，则不会显示用户界面。以下步骤需要在<code>apollo/</code>目录下运行：</p>
 <a id="more"></a>
 
-<h4 id="1-1、进入容器"><a href="#1-1、进入容器" class="headerlink" title="1.1、进入容器"></a>1.1、进入容器</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bash docker/scripts/dev_start.sh     //启动container</span><br><span class="line">bash docker/scripts/dev_into.sh      //进入container</span><br></pre></td></tr></table></figure>
+<h3 id="1-1、进入容器"><a href="#1-1、进入容器" class="headerlink" title="1.1、进入容器"></a>1.1、进入容器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bash docker/scripts/dev_start.sh     //启动container</span><br><span class="line">bash docker/scripts/dev_into.sh      //进入container</span><br></pre></td></tr></table></figure>
 
-<h4 id="1-2、编译整个系统"><a href="#1-2、编译整个系统" class="headerlink" title="1.2、编译整个系统"></a>1.2、编译整个系统</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># To get a list of build commands</span></span><br><span class="line">./apollo.sh</span><br><span class="line"><span class="comment"># To make sure you start clean</span></span><br><span class="line">./apollo.sh clean</span><br><span class="line"><span class="comment"># This will build the full system and requires that you have an nVidia GPU with nVidia drivers loaded</span></span><br><span class="line">bash apollo.sh build</span><br></pre></td></tr></table></figure>
+<h3 id="1-2、编译整个系统"><a href="#1-2、编译整个系统" class="headerlink" title="1.2、编译整个系统"></a>1.2、编译整个系统</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># To get a list of build commands</span></span><br><span class="line">./apollo.sh</span><br><span class="line"><span class="comment"># To make sure you start clean</span></span><br><span class="line">./apollo.sh clean</span><br><span class="line"><span class="comment"># This will build the full system and requires that you have an nVidia GPU with nVidia drivers loaded</span></span><br><span class="line">bash apollo.sh build</span><br></pre></td></tr></table></figure>
 
-<h3 id="2、启动命令分析"><a href="#2、启动命令分析" class="headerlink" title="2、启动命令分析"></a>2、启动命令分析</h3><p>面控制。而Dreamview的界面内容根选项是由<code>modules/dreamview/conf</code>决定。Dreamview中提供了不同的HMI(human machine interface)模式，不同模式的可选功能模块不一。</p>
+<h2 id="2、启动命令分析"><a href="#2、启动命令分析" class="headerlink" title="2、启动命令分析"></a>2、启动命令分析</h2><p>面控制。而Dreamview的界面内容根选项是由<code>modules/dreamview/conf</code>决定。Dreamview中提供了不同的HMI(human machine interface)模式，不同模式的可选功能模块不一。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash scripts/bootstrip.sh start    <span class="comment">#启动Dreamview</span></span><br></pre></td></tr></table></figure>
 
 <p>在浏览器里登录网址<a href="http://localhost:8888/，就可以看到dreamview的界面：" target="_blank" rel="noopener">http://localhost:8888/，就可以看到dreamview的界面：</a></p>

@@ -166,7 +166,7 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-keyboard-o"></i>
         <span class="post-meta-item-text">  字数统计: </span>
-        <span class="post-count">0字</span>
+        <span class="post-count">1.4k字</span>
       </span>
     </span>
 
@@ -175,7 +175,7 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-hourglass-half"></i>
         <span class="post-meta-item-text">  阅读时长: </span>
-        <span class="post-count">1分</span>
+        <span class="post-count">6分</span>
       </span>
     </span>
 </div>
@@ -187,6 +187,9 @@
       
     <div class="article-entry" itemprop="articleBody">
       
+        <h2 id="Cyber-RT组件注册以及动态创建过程"><a href="#Cyber-RT组件注册以及动态创建过程" class="headerlink" title="Cyber RT组件注册以及动态创建过程"></a>Cyber RT组件注册以及动态创建过程</h2><h3 id="1、mainboard函数分析"><a href="#1、mainboard函数分析" class="headerlink" title="1、mainboard函数分析"></a>1、mainboard函数分析</h3><p><code>mainboard</code>是Cyber RT启动组件的主程序，程序的名称是由<code>cyber/BUILD</code>文件指定的，cyber_launch不过是调用了此函数，其入口函数<code>main()</code>位于<code>cyber/mainboard/mainboard.cc</code>中：</p>
+        
+          <a class="article-more-a" href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B3%E2%80%94%E2%80%94Cyber-RT%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9D%97/#more">展开全文 >></a>
         
       
 
@@ -195,6 +198,21 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">无人驾驶</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Apollo</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -274,7 +292,7 @@
       
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="功能模块的启动过程（以Planning为例）"><a href="#功能模块的启动过程（以Planning为例）" class="headerlink" title="功能模块的启动过程（以Planning为例）"></a>功能模块的启动过程（以Planning为例）</h3><p>Apollo 3.5版本引入了中间件Cyber RT作为底层通讯与调度平台，Cyber RT以组件(component)的概念构建、加载各功能模块。Perception、Localization、Planning、Control等功能模块均作为Cyber RT框架的一个组件而存在，基于Cyber RT提供的调度程序<code>mainboard</code>加载运行。下面以<code>Planning</code>模块为例具体阐述。 <code>Planning</code>模块<code>BUILD</code>文件中生成<code>binary</code>文件的配置项如下：</p>
+        <h2 id="功能模块的启动过程（以Planning为例）"><a href="#功能模块的启动过程（以Planning为例）" class="headerlink" title="功能模块的启动过程（以Planning为例）"></a>功能模块的启动过程（以Planning为例）</h2><p>Apollo 3.5版本引入了中间件Cyber RT作为底层通讯与调度平台，Cyber RT以组件(component)的概念构建、加载各功能模块。Perception、Localization、Planning、Control等功能模块均作为Cyber RT框架的一个组件而存在，基于Cyber RT提供的调度程序<code>mainboard</code>加载运行。下面以<code>Planning</code>模块为例具体阐述。 <code>Planning</code>模块<code>BUILD</code>文件中生成<code>binary</code>文件的配置项如下：</p>
         
           <a class="article-more-a" href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/#more">展开全文 >></a>
         
@@ -383,7 +401,7 @@
       
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="1、构建Apollo"><a href="#1、构建Apollo" class="headerlink" title="1、构建Apollo"></a>1、构建Apollo</h3><p>在运行系统之前，必须先构建系统。请注意，<code>bootstrap.sh</code>实际上会成功，但是如果跳过构建步骤，则不会显示用户界面。以下步骤需要在<code>apollo/</code>目录下运行：</p>
+        <h2 id="1、构建Apollo"><a href="#1、构建Apollo" class="headerlink" title="1、构建Apollo"></a>1、构建Apollo</h2><p>在运行系统之前，必须先构建系统。请注意，<code>bootstrap.sh</code>实际上会成功，但是如果跳过构建步骤，则不会显示用户界面。以下步骤需要在<code>apollo/</code>目录下运行：</p>
         
           <a class="article-more-a" href="/2020/02/04/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8/#more">展开全文 >></a>
         
@@ -709,7 +727,7 @@
       
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="1-投影与投影映射"><a href="#1-投影与投影映射" class="headerlink" title="1.投影与投影映射"></a>1.投影与投影映射</h3><p>假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V=S \oplus T$，其中$\oplus$代表$S,V$构成直和关系且$S,V$构成全空间$V$($V = S + V$)。对于$\forall \alpha \in V$，可<strong>唯一</strong>的表示为：<br>$$<br>\alpha = x + y, x\in S, y \in T<br>$$</p>
+        <h2 id="1-投影与投影映射"><a href="#1-投影与投影映射" class="headerlink" title="1.投影与投影映射"></a>1.投影与投影映射</h2><p>假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V=S \oplus T$，其中$\oplus$代表$S,V$构成直和关系且$S,V$构成全空间$V$($V = S + V$)。对于$\forall \alpha \in V$，可<strong>唯一</strong>的表示为：<br>$$<br>\alpha = x + y, x\in S, y \in T<br>$$</p>
         
           <a class="article-more-a" href="/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/#more">展开全文 >></a>
         
