@@ -17,7 +17,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/add_component.webp">
 <meta property="article:published_time" content="2020-02-07T12:39:16.000Z">
-<meta property="article:modified_time" content="2020-02-07T15:04:26.700Z">
+<meta property="article:modified_time" content="2020-02-07T15:27:16.517Z">
 <meta property="article:author" content="GWH">
 <meta property="article:tag" content="无人驾驶">
 <meta property="article:tag" content="Apollo">
@@ -205,11 +205,14 @@
         <p><code>Apollo Cyber RT</code>处于底层的<strong>实时操作系统（RTOS）</strong> 和<strong>算法模块</strong>之间，能够在保证高吞吐的情况下，又能低延迟的实时响应上层任务，并保证整个系统确定性的运转。</p>
 <p><strong>Apollo Cyber RT 框架</strong>核心理念是基于组件，组件有预先设定的输入输出。实际上，每个组件就代表一个专用的算法模块。框架可以根据所有预定义的组件生成<strong>有向无环图 (DAG)</strong>。</p>
 <p>在运行时刻，框架把<strong>融合好的传感器数据</strong>和<strong>预定义的组件</strong>打包在一起形成用户级轻量任务，之后，<strong>框架的调度器</strong>可以根据资源可用性和任务优先级来派发这些任务。</p>
+<a id="more"></a>
+
 <h2 id="1、功能模块的迁移"><a href="#1、功能模块的迁移" class="headerlink" title="1、功能模块的迁移"></a>1、功能模块的迁移</h2><p>将基于ROS的功能模块迁移到基于Cyber RT的功能组件，不需要修改任何算法逻辑，仅需要修改消息接收、发布代码、以及组件调度的配置文件。</p>
 <p>功能模块迁移的基本步骤：</p>
 <div style="width:100%;margin:auto" align=center><img src="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/add_component.webp" class="" title="Add New Component"></div>
+`Apollo Cyber RT`框架基于组件的概念构建、加载各功能模块。`Localization`、 `Perception`等功能模块均作为`Apollo Cyber RT`框架的一个组件而存在，基于`Cyber RT`提供的调度程序`mainboard`加载运行。
+基于`Apollo Cyber RT`框架创建和发布新的功能模块组件，需执行以下五个基本步骤：
 
-<p><code>Apollo Cyber RT</code>框架基于组件的概念构建、加载各功能模块。<code>Localization</code>、 <code>Perception</code>等功能模块均作为<code>Apollo Cyber RT</code>框架的一个组件而存在，基于<code>Cyber RT</code>提供的调度程序<code>mainboard</code>加载运行。<br>基于<code>Apollo Cyber RT</code>框架创建和发布新的功能模块组件，需执行以下五个基本步骤：</p>
 <ul>
 <li>设置组件文件结构</li>
 <li>实现组件类</li>
