@@ -138,6 +138,154 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Cyber-RT构建新组件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/">Cyber RT构建新组件</a>
+    </h1>
+  
+
+
+        <!--显示阅读次数--------------------------->                                                                       
+        
+        <!------------------------------------------->                                                                       
+
+           
+           <a href="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/" class="archive-article-date">
+  	<time datetime="2020-02-07T12:39:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-07</time>
+</a>
+            <!-- 需要添加的位置 -->
+            <!-- 开始添加字数统计-->
+            
+               <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">1.3k字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">6分</span>
+      </span>
+    </span>
+</div>
+
+         
+         <!-- ------------------------------------ -->
+           
+        </header>
+      
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><code>Apollo Cyber RT</code>处于底层的<strong>实时操作系统（RTOS）</strong> 和<strong>算法模块</strong>之间，能够在保证高吞吐的情况下，又能低延迟的实时响应上层任务，并保证整个系统确定性的运转。</p>
+<p><strong>Apollo Cyber RT 框架</strong>核心理念是基于组件，组件有预先设定的输入输出。实际上，每个组件就代表一个专用的算法模块。框架可以根据所有预定义的组件生成<strong>有向无环图 (DAG)</strong>。</p>
+<p>在运行时刻，框架把<strong>融合好的传感器数据</strong>和<strong>预定义的组件</strong>打包在一起形成用户级轻量任务，之后，<strong>框架的调度器</strong>可以根据资源可用性和任务优先级来派发这些任务。</p>
+<h2 id="1、功能模块的迁移"><a href="#1、功能模块的迁移" class="headerlink" title="1、功能模块的迁移"></a>1、功能模块的迁移</h2><p>将基于ROS的功能模块迁移到基于Cyber RT的功能组件，不需要修改任何算法逻辑，仅需要修改消息接收、发布代码、以及组件调度的配置文件。</p>
+<p>功能模块迁移的基本步骤：</p>
+<div style="width:100%;margin:auto" align=center><img src="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/add_component.webp" class="" title="Add New Component"></div>
+
+<p><code>Apollo Cyber RT</code>框架基于组件的概念构建、加载各功能模块。<code>Localization</code>、 <code>Perception</code>等功能模块均作为<code>Apollo Cyber RT</code>框架的一个组件而存在，基于<code>Cyber RT</code>提供的调度程序<code>mainboard</code>加载运行。<br>基于<code>Apollo Cyber RT</code>框架创建和发布新的功能模块组件，需执行以下五个基本步骤：</p>
+<ul>
+<li>设置组件文件结构</li>
+<li>实现组件类</li>
+<li>提供构建文件(BUILD)</li>
+<li>提供配置文件(DAG)</li>
+<li>启动组件(LAUNCH)</li>
+</ul>
+<p>以<code>Planning</code>模块为例说明。</p>
+<h3 id="1-1、设置组件文件结构"><a href="#1-1、设置组件文件结构" class="headerlink" title="1.1、设置组件文件结构"></a>1.1、设置组件文件结构</h3><p>基于路径<code>${APOLLO_HOME}/modules/planning</code>（<strong><code>${APOLLO_HOME}</code>表示<code>Apollo</code>项目的根目录</strong>，Docker内部的路径全部是<code>/apollo</code>，设置如下组件的文件结构：</p>
+<ul>
+<li>头文件: <code>planning_component.h</code>；</li>
+<li>实现文件: <code>planning_component.cc</code>；</li>
+<li>构建文件: <code>BUILD</code>；</li>
+<li>DAG配置文件: <code>dag/planning.dag</code>；</li>
+<li>Launch配置文件: <code>launch/planning.launch</code>。</li>
+</ul>
+<h3 id="1-2、实现组件类"><a href="#1-2、实现组件类" class="headerlink" title="1.2、实现组件类"></a>1.2、实现组件类</h3><p>执行以下步骤以实现组件类：</p>
+<ol>
+<li>基于模板类<code>Component</code>派生出规划模块的组件类<code>PlanningComponent</code>；</li>
+<li>在派生类<code>PlanningComponent</code>中覆盖纯虚函数<code>Init()</code> and <code>Proc()</code>函数；</li>
+<li>使用宏<code>CYBER_REGISTER_COMPONENT(PlanningComponent)</code>注册组件类<code>PlanningComponent</code>，以便<code>Cyber RT</code>能正确创建并加载该类对象。</li>
+</ol>
+<h4 id="1-2-1、组件类PlanningComponent的声明"><a href="#1-2-1、组件类PlanningComponent的声明" class="headerlink" title="1.2.1、组件类PlanningComponent的声明"></a>1.2.1、组件类PlanningComponent的声明</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> apollo &#123;</span><br><span class="line"><span class="keyword">namespace</span> planning &#123;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PlanningComponent</span> <span class="title">final</span>    // 此类不能被继承</span></span><br><span class="line"><span class="class">    :</span> <span class="keyword">public</span> cyber::Component&lt;prediction::PredictionObstacles, canbus::Chassis,</span><br><span class="line">                              localization::LocalizationEstimate&gt; &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  PlanningComponent() = <span class="keyword">default</span>;</span><br><span class="line"></span><br><span class="line">  ~PlanningComponent() = <span class="keyword">default</span>;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">Init</span><span class="params">()</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">Proc</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;prediction::PredictionObstacles&gt;&amp;</span></span></span><br><span class="line"><span class="function"><span class="params">                prediction_obstacles,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;canbus::Chassis&gt;&amp; chassis,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;localization::LocalizationEstimate&gt;&amp;</span></span></span><br><span class="line"><span class="function"><span class="params">                localization_estimate)</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">CheckRerouting</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">CheckInput</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;cyber::Reader&lt;perception::TrafficLightDetection&gt;&gt;</span><br><span class="line">      traffic_light_reader_;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;cyber::Reader&lt;routing::RoutingResponse&gt;&gt; routing_reader_;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;cyber::Reader&lt;planning::PadMessage&gt;&gt; pad_msg_reader_;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;cyber::Reader&lt;relative_map::MapMsg&gt;&gt; relative_map_reader_;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;cyber::Writer&lt;ADCTrajectory&gt;&gt; planning_writer_;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;cyber::Writer&lt;routing::RoutingRequest&gt;&gt; rerouting_writer_;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">std</span>::mutex mutex_;</span><br><span class="line">  perception::TrafficLightDetection traffic_light_;</span><br><span class="line">  routing::RoutingResponse routing_;</span><br><span class="line">  planning::PadMessage pad_msg_;</span><br><span class="line">  relative_map::MapMsg relative_map_;</span><br><span class="line"></span><br><span class="line">  LocalView local_view_;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// unique_ptr不能复制</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;PlanningBase&gt; planning_base_;</span><br><span class="line"></span><br><span class="line">  PlanningConfig config_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">CYBER_REGISTER_COMPONENT(PlanningComponent)</span><br><span class="line"></span><br><span class="line">&#125;  <span class="comment">// namespace planning</span></span><br><span class="line">&#125;  <span class="comment">// namespace apollo</span></span><br></pre></td></tr></table></figure>
+
+<p>基类<code>Component</code>的定义是：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> M0 = NullType, <span class="keyword">typename</span> M1 = NullType,</span><br><span class="line">          <span class="keyword">typename</span> M2 = NullType, <span class="keyword">typename</span> M3 = NullType&gt;</span><br><span class="line">class Component : <span class="keyword">public</span> ComponentBase &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Component() &#123;&#125;</span><br><span class="line">  ~Component() <span class="keyword">override</span> &#123;&#125;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// 会调用基类的纯虚函数Init();这里先使用LoadConfigFiles(config)从dag文件读取配置信息</span></span><br><span class="line">  <span class="keyword">bool</span> Initialize(<span class="keyword">const</span> ComponentConfig&amp; <span class="built_in">config</span>) <span class="keyword">override</span>;</span><br><span class="line">  <span class="comment">// 会调用纯虚函数Proc()</span></span><br><span class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">Process</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;M0&gt;&amp; msg0, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;M1&gt;&amp; msg1,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;M2&gt;&amp; msg2,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;M3&gt;&amp; msg3)</span></span>;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">Proc</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;M0&gt;&amp; msg0,  <span class="comment">// 表示4个channel message</span></span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;M1&gt;&amp; msg1,</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;M2&gt;&amp; msg2,</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;M3&gt;&amp; msg3)</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>可见，<code>Component</code>类最多接受4个模板参数，每个模板参数均表示一种输入的消息类型，这些消息在<code>Proc</code>函数中被周期性地接收并处理；而<code>PlanningComponent</code>继承的是该模板类接受3个参数的一个特化版本：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> M0, <span class="keyword">typename</span> M1, <span class="keyword">typename</span> M2&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Component</span>&lt;M0, M1, M2, NullType&gt; :</span> <span class="keyword">public</span> ComponentBase &#123;</span><br><span class="line"> <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>即<code>PlanningComponent</code>继承自<code>cyber::Component&lt;prediction::PredictionObstacles, canbus::Chassis, localization::LocalizationEstimate&gt;</code>，3个消息参数分别为：<code>prediction::PredictionObstacles</code>、<code>canbus::Chassis</code>、<code>localization::LocalizationEstimate</code>，这些消息在<code>Proc</code>函数中被<strong>周期性地接收并处理。</strong></p>
+<h4 id="1-2-2、组件类PlanningComponent的实现"><a href="#1-2-2、组件类PlanningComponent的实现" class="headerlink" title="1.2.2、组件类PlanningComponent的实现"></a>1.2.2、组件类<code>PlanningComponent</code>的实现</h4><p><code>PlanningComponent</code>的实现主要包括两个覆盖的虚函数<code>Init()</code> and <code>Proc()</code>函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> PlanningComponent::Init() &#123;</span><br><span class="line">  <span class="keyword">if</span> (FLAGS_use_navigation_mode) &#123;</span><br><span class="line">    planning_base_ = <span class="built_in">std</span>::make_unique&lt;NaviPlanning&gt;();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    planning_base_ = <span class="built_in">std</span>::make_unique&lt;OnLanePlanning&gt;();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  CHECK(apollo::cyber::common::GetProtoFromFile(FLAGS_planning_config_file,</span><br><span class="line">                                                &amp;config_))</span><br><span class="line">      &lt;&lt; <span class="string">"failed to load planning config file "</span> &lt;&lt; FLAGS_planning_config_file;</span><br><span class="line">  planning_base_-&gt;Init(config_);</span><br><span class="line"></span><br><span class="line">  routing_reader_ = node_-&gt;CreateReader&lt;RoutingResponse&gt;(</span><br><span class="line">      FLAGS_routing_response_topic,</span><br><span class="line">      [<span class="keyword">this</span>](<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;RoutingResponse&gt;&amp; routing) &#123;</span><br><span class="line">        AINFO &lt;&lt; <span class="string">"Received routing data: run routing callback."</span></span><br><span class="line">              &lt;&lt; routing-&gt;header().DebugString();</span><br><span class="line">        <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</span><br><span class="line">        routing_.CopyFrom(*routing);</span><br><span class="line">      &#125;);</span><br><span class="line">  traffic_light_reader_ = node_-&gt;CreateReader&lt;TrafficLightDetection&gt;(</span><br><span class="line">      FLAGS_traffic_light_detection_topic,</span><br><span class="line">      [<span class="keyword">this</span>](<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TrafficLightDetection&gt;&amp; traffic_light) &#123;</span><br><span class="line">        ADEBUG &lt;&lt; <span class="string">"Received traffic light data: run traffic light callback."</span>;</span><br><span class="line">        <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</span><br><span class="line">        traffic_light_.CopyFrom(*traffic_light);</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">  pad_msg_reader_ = node_-&gt;CreateReader&lt;PadMessage&gt;(</span><br><span class="line">      FLAGS_planning_pad_topic,</span><br><span class="line">      [<span class="keyword">this</span>](<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;PadMessage&gt;&amp; pad_msg) &#123;</span><br><span class="line">        ADEBUG &lt;&lt; <span class="string">"Received pad data: run pad callback."</span>;</span><br><span class="line">        <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</span><br><span class="line">        pad_msg_.CopyFrom(*pad_msg);</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (FLAGS_use_navigation_mode) &#123;</span><br><span class="line">    relative_map_reader_ = node_-&gt;CreateReader&lt;MapMsg&gt;(</span><br><span class="line">        FLAGS_relative_map_topic,</span><br><span class="line">        [<span class="keyword">this</span>](<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;MapMsg&gt;&amp; map_message) &#123;</span><br><span class="line">          ADEBUG &lt;&lt; <span class="string">"Received relative map data: run relative map callback."</span>;</span><br><span class="line">          <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</span><br><span class="line">          relative_map_.CopyFrom(*map_message);</span><br><span class="line">        &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  planning_writer_ =</span><br><span class="line">      node_-&gt;CreateWriter&lt;ADCTrajectory&gt;(FLAGS_planning_trajectory_topic);</span><br><span class="line"></span><br><span class="line">  rerouting_writer_ =</span><br><span class="line">      node_-&gt;CreateWriter&lt;RoutingRequest&gt;(FLAGS_routing_request_topic);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">无人驾驶</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Apollo</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Cyber RT</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Apollo的启动过程3——Cyber-RT如何加载模块" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
