@@ -6,14 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: Cyber RT | GWH Blog</title>
+  <title>Cyber RT与ROS对照 | GWH Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="GWH Blog">
-<meta property="og:url" content="http://yoursite.com/tags/Cyber-RT/index.html">
+  <meta name="description" content="1、Cyber RT的基本概念与 ROS 对照ROS 应用于自动驾驶领域的不足：  调度的不确定性：各节点以独立进程运行，节点运行顺序无法确定，因而业务逻辑的调度顺序无法保证； 运行效率：ROS 为分布式系统，存在通信开销。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cyber RT与ROS对照">
+<meta property="og:url" content="http://yoursite.com/2020/02/08/Cyber-RT%E4%B8%8EROS%E5%AF%B9%E7%85%A7/index.html">
 <meta property="og:site_name" content="GWH Blog">
+<meta property="og:description" content="1、Cyber RT的基本概念与 ROS 对照ROS 应用于自动驾驶领域的不足：  调度的不确定性：各节点以独立进程运行，节点运行顺序无法确定，因而业务逻辑的调度顺序无法保证； 运行效率：ROS 为分布式系统，存在通信开销。">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-02-08T12:21:25.000Z">
+<meta property="article:modified_time" content="2020-02-08T13:15:34.016Z">
 <meta property="article:author" content="GWH">
+<meta property="article:tag" content="无人驾驶">
+<meta property="article:tag" content="Apollo">
+<meta property="article:tag" content="Cyber RT">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="GWH Blog" type="application/atom+xml">
@@ -136,36 +143,283 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-Cyber-RT与ROS对照" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Cyber RT与ROS对照
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/08/Cyber-RT%E4%B8%8EROS%E5%AF%B9%E7%85%A7/" class="archive-article-date">
+
+
+        <!--显示阅读次数--------------------------->                                                                       
+                                                                     
+          <br/>                                                                                         
+          <a class="cloud-tie-join-count" href="javascript:void(0);" style="color:gray;font-size:14px;">
+          <span class="icon-sort"></span>                                                               
+          <span id="busuanzi_container_page_pv" style="color:#ef7522;font-size:14px;">                  
+                    阅读数: <span id="busuanzi_value_page_pv"></span>次 &nbsp;&nbsp;                
+          </span>                                                                                       
+          </a>                                                                                          
+        
+        <!------------------------------------------->                                                                       
+
+           
+           <a href="/2020/02/08/Cyber-RT%E4%B8%8EROS%E5%AF%B9%E7%85%A7/" class="archive-article-date">
   	<time datetime="2020-02-08T12:21:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-08</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/08/Cyber-RT%E4%B8%8EROS%E5%AF%B9%E7%85%A7/">Cyber RT与ROS对照</a>
-    </h1>
-  
+            <!-- 需要添加的位置 -->
+            <!-- 开始添加字数统计-->
+            
+               <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">760字</span>
+      </span>
+    </span>
 
-        <div class="article-info info-on-right">
-          
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">3分</span>
+      </span>
+    </span>
+</div>
+
+         
+         <!-- ------------------------------------ -->
+           
+        </header>
+      
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1、Cyber-RT的基本概念与-ROS-对照"><a href="#1、Cyber-RT的基本概念与-ROS-对照" class="headerlink" title="1、Cyber RT的基本概念与 ROS 对照"></a>1、Cyber RT的基本概念与 ROS 对照</h2><p>ROS 应用于自动驾驶领域的不足：</p>
+<ul>
+<li>调度的不确定性：各节点以独立进程运行，节点运行顺序无法确定，因而业务逻辑的调度顺序无法保证；</li>
+<li>运行效率：ROS 为分布式系统，存在通信开销。</li>
+</ul>
+<a id="more"></a>
+
+<p>Cyber RT的特色：</p>
+<ul>
+<li>高性能：无锁对象，协程（coroutine），自适应通信机制；</li>
+<li>确定性：可配置的任务以及任务调度，通过协程将调度从内核空间转移到用户空间；</li>
+<li>模块化：在框架内实现组件以及节点，即可完成系统任务；</li>
+<li>便利性：创建和使用任务。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>Cyber RT</strong></th>
+<th align="center"><strong>ROS</strong></th>
+<th align="center"><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Component</td>
+<td align="center">无</td>
+<td align="center">组件之间通过Cyber channel通信</td>
+</tr>
+<tr>
+<td align="center">Channel</td>
+<td align="center">Topic</td>
+<td align="center">channel用于管理数据通信，用户可以通过publish/subscribe相同的channel来通信。</td>
+</tr>
+<tr>
+<td align="center">Node</td>
+<td align="center">Node</td>
+<td align="center">每一个模块包含Node并通过Node来通信。一个模块通过定义read/write和/或service/client使用不同的通信模式</td>
+</tr>
+<tr>
+<td align="center">Reader/Writer</td>
+<td align="center">Publish/Subscribe</td>
+<td align="center">订阅者模式。往channel读写消息的类。通常作为Node的主要消息传输接口。</td>
+</tr>
+<tr>
+<td align="center">Service/Client</td>
+<td align="center">Service/Client</td>
+<td align="center">请求/相应模式，支持节点之间双向通信。</td>
+</tr>
+<tr>
+<td align="center">Message</td>
+<td align="center">Message</td>
+<td align="center">Cyber RT中用于模块间通信的数据单元，其实现基于protobuf。</td>
+</tr>
+<tr>
+<td align="center">Parameter</td>
+<td align="center">Parameter</td>
+<td align="center">Parameter服务提供全局参数访问的接口，该服务基于service/client模式。</td>
+</tr>
+<tr>
+<td align="center">Record file</td>
+<td align="center">Bag file</td>
+<td align="center">用于记录从channel发送或者接收的消息，回放record file可以重现之前的操作行为。</td>
+</tr>
+<tr>
+<td align="center">Launch file</td>
+<td align="center">Launch file</td>
+<td align="center">提供一种启动模块的便利途径。通过在launch file中定义一个或者多个dag文件，可以同时启动多个modules。</td>
+</tr>
+<tr>
+<td align="center">Task</td>
+<td align="center">无</td>
+<td align="center">异步计算任务。</td>
+</tr>
+<tr>
+<td align="center">CRoutine</td>
+<td align="center">无</td>
+<td align="center">协程，优化线程使用与系统资源分配。</td>
+</tr>
+<tr>
+<td align="center">Scheduler</td>
+<td align="center">无</td>
+<td align="center">任务调度器，用户空间。</td>
+</tr>
+<tr>
+<td align="center">Dag file</td>
+<td align="center">无</td>
+<td align="center">定义模块拓扑结构的配置文件。</td>
+</tr>
+</tbody></table>
+<h2 id="2、常用工具对比"><a href="#2、常用工具对比" class="headerlink" title="2、常用工具对比"></a>2、常用工具对比</h2><table>
+<thead>
+<tr>
+<th align="center"><strong>Cyber RT</strong></th>
+<th align="center"><strong>ROS</strong></th>
+<th align="center"><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">cyber_launch</td>
+<td align="center">roslaunch</td>
+<td align="center">启动节点</td>
+</tr>
+<tr>
+<td align="center">cyber_channel</td>
+<td align="center">rostopic</td>
+<td align="center">察看某个topic的信息</td>
+</tr>
+<tr>
+<td align="center">cyber_moniter</td>
+<td align="center">rqt？</td>
+<td align="center">查看诊断消息</td>
+</tr>
+<tr>
+<td align="center">cyber_visualizer</td>
+<td align="center">rviz？</td>
+<td align="center">激光点云及摄像头可视化工具，需要安装NVIDIA显卡驱动及CUDA</td>
+</tr>
+</tbody></table>
+<h2 id="3、常用命令迁移"><a href="#3、常用命令迁移" class="headerlink" title="3、常用命令迁移"></a>3、常用命令迁移</h2><table>
+<thead>
+<tr>
+<th align="center"><strong>Cyber RT</strong></th>
+<th><strong>ROS</strong></th>
+<th><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">cyber_recorder play -f example.record</td>
+<td>rosbag play example.bag</td>
+<td>播放一个包</td>
+</tr>
+<tr>
+<td align="center">cyber_recorder info example.record</td>
+<td>rosbag info example.bag</td>
+<td>查看一个包的信息</td>
+</tr>
+<tr>
+<td align="center">cyber_recorder record -c /apollo/canbus/chassis \ /apollo/canbus/chassis_detail</td>
+<td>rosbag record /apollo/canbus/chassis \ /apollo/canbus/chassis_detail</td>
+<td>录制多个topic</td>
+</tr>
+<tr>
+<td align="center">cyber_recorder split -f input_file.record -o ouput_file.record -k “/apollo/planning”</td>
+<td>rosbag filter input.bag output.bag ‘topic != “/apollo/planning”’</td>
+<td>滤除一个topic</td>
+</tr>
+<tr>
+<td align="center">cyber_recorder split -f input_file.record -o ouput_file.record -k “/apollo/planning” -k “/apollo/relative_map”’</td>
+<td>rosbag filter csc.bag csc_no_plannig_and_relativemap.bag ‘topic != “/apollo/planning” and “/apollo/relative_map”’</td>
+<td>滤除多个topic</td>
+</tr>
+<tr>
+<td align="center">cyber_channel list</td>
+<td>rostopic list</td>
+<td>列出所有活动的topic</td>
+</tr>
+<tr>
+<td align="center">cyber_channel info /apollo/planning</td>
+<td>rostopic info /apollo/planning</td>
+<td>查看 /apollo/planning topic的概要信息</td>
+</tr>
+<tr>
+<td align="center">cyber_channel echo /apollo/planning</td>
+<td>rostopic echo /apollo/planning</td>
+<td>查看 /apollo/planning topic的内容</td>
+</tr>
+<tr>
+<td align="center">cyber_channel hz /apollo/planning</td>
+<td>rostopic hz /apollo/planning</td>
+<td>查看 /apollo/planning topic的发送频率</td>
+</tr>
+<tr>
+<td align="center">cyber_channel bw /apollo/planning</td>
+<td>rostopic bw /apollo/planning</td>
+<td>查看 /apollo/planning topic的带宽</td>
+</tr>
+<tr>
+<td align="center">cyber_channel type /apollo/planning</td>
+<td>rostopic type /apollo/planning</td>
+<td>查看 /apollo/planning topic的数据类型</td>
+</tr>
+</tbody></table>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>听说，打赏我的人最后都找到了真爱<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/images/支付宝.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/images/微信.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -185,157 +439,116 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/02/08/Cyber-RT%E4%B8%8EROS%E5%AF%B9%E7%85%A7/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/" class="archive-article-date">
-  	<time datetime="2020-02-07T12:39:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-07</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Cyber RT构建新组件</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/">Cyber RT构建新组件</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">无人驾驶</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Apollo</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Cyber RT</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B3%E2%80%94%E2%80%94Cyber-RT%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9D%97/" class="archive-article-date">
-  	<time datetime="2020-02-05T15:29:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B3%E2%80%94%E2%80%94Cyber-RT%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9D%97/">Apollo的启动过程3——Cyber RT如何加载组件</a>
-    </h1>
+  <div id="SOHUCS" sid="Cyber-RT与ROS对照" ></div> 
+<script charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/changyan.js" ></script>
+<script type="text/javascript">
+    window.changyan.api.config({
+        appid: "true",
+        conf: "true"
+    });
+</script>
+</script>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">无人驾驶</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Apollo</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Cyber RT</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/" class="archive-article-date">
-  	<time datetime="2020-02-05T09:07:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/">Apollo的启动过程2——功能模块加载</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">无人驾驶</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Apollo</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Cyber RT</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -359,9 +572,9 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
