@@ -19,7 +19,7 @@
 <meta property="og:image" content="http://yoursite.com/2020/01/31/Bazel%E5%85%A5%E9%97%A81/stage2.png">
 <meta property="og:image" content="http://yoursite.com/2020/01/31/Bazel%E5%85%A5%E9%97%A81/stage3.png">
 <meta property="article:published_time" content="2020-01-31T13:55:51.000Z">
-<meta property="article:modified_time" content="2020-02-05T15:26:54.988Z">
+<meta property="article:modified_time" content="2020-02-09T11:20:49.187Z">
 <meta property="article:author" content="GWH">
 <meta property="article:tag" content="Apollo">
 <meta property="article:tag" content="C++">
@@ -182,7 +182,7 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-keyboard-o"></i>
         <span class="post-meta-item-text">  字数统计: </span>
-        <span class="post-count">2k字</span>
+        <span class="post-count">2.1k字</span>
       </span>
     </span>
 
@@ -191,7 +191,7 @@
       <span class="post-meta-item-icon">
         <i class="fa fa-hourglass-half"></i>
         <span class="post-meta-item-text">  阅读时长: </span>
-        <span class="post-count">7分</span>
+        <span class="post-count">8分</span>
       </span>
     </span>
 </div>
@@ -216,24 +216,24 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">examples</span><br><span class="line">└── cpp-tutorial</span><br><span class="line">    ├──stage1</span><br><span class="line">    │  └── main</span><br><span class="line">    │      ├── BUILD</span><br><span class="line">    │      ├── hello-world.cc</span><br><span class="line">    │  └── WORKSPACE</span><br><span class="line">    ├──stage2</span><br><span class="line">    │  ├── main</span><br><span class="line">    │  │   ├── BUILD</span><br><span class="line">    │  │   ├── hello-world.cc</span><br><span class="line">    │  │   ├── hello-greet.cc</span><br><span class="line">    │  │   ├── hello-greet.h</span><br><span class="line">    │  └── WORKSPACE</span><br><span class="line">    └──stage3</span><br><span class="line">       ├── main</span><br><span class="line">       │   ├── BUILD</span><br><span class="line">       │   ├── hello-world.cc</span><br><span class="line">       │   ├── hello-greet.cc</span><br><span class="line">       │   └── hello-greet.h</span><br><span class="line">       ├── lib</span><br><span class="line">       │   ├── BUILD</span><br><span class="line">       │   ├── hello-time.cc</span><br><span class="line">       │   └── hello-time.h</span><br><span class="line">       └── WORKSPACE</span><br></pre></td></tr></table></figure>
 <p>可以看到分成了3组文件，分别对应本文中的3个例子。在第一个例子中，我们首先学习如何构建单个package中的单个target。在第二个例子中，我们将把整个项目拆分成单个package的多个target。第三个例子则将项目拆分成多个package，用多个target编译。  </p>
 <h2 id="1-编译你的第一个Bazel项目"><a href="#1-编译你的第一个Bazel项目" class="headerlink" title="1.编译你的第一个Bazel项目"></a>1.编译你的第一个Bazel项目</h2><p>首先进入到cpp-tutorial/stage1目录下，然后运行以下指令：  </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bazel build //main:hello-world</span><br></pre></td></tr></table></figure>
-<p>注意target中的//main:是BUILD文件相对于WORKSPACE文件的位置，hello-world则是我们在BUILD文件中命名好的target的名字。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bazel build //main:hello-world       ( Labels start with //)</span><br></pre></td></tr></table></figure>
+<p>注意target中的//main:是BUILD文件相对于WORKSPACE文件的位置，hello-world则是我们在BUILD文件中命名好的target的名字。<strong>如果省略冒号，则假定目标名称与程序包名称的最后一个组成部分相同。<a href="https://docs.bazel.build/versions/master/build-ref.html#rules" target="_blank" rel="noopener">参考</a></strong></p>
 <p>然后Bazel就会有一些类似这样的输出：  </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">INFO: Found 1 target...</span><br><span class="line">Target //main:hello-world up-to-date:</span><br><span class="line">  bazel-bin/main/hello-world</span><br><span class="line">INFO: Elapsed time: 2.267s, Critical Path: 0.25s</span><br></pre></td></tr></table></figure>
 <p>恭喜，这样你的第一个Bazel target就编译好了！Bazel将编译的输出放在项目根目录下的bazel-bin目录下，可以看一下这个目录，理解一下Bazel的输出结构。</p>
 <p>现在你可以测试你刚刚生成的二进制文件了：  </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bazel-bin/main/hello-world</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bazel-bin/main/hello-world</span><br></pre></td></tr></table></figure>
 <h2 id="2-查看依赖图"><a href="#2-查看依赖图" class="headerlink" title="2.查看依赖图"></a>2.查看依赖图</h2><p>一个成功的build将所有的依赖都显式定义在了BUILD文件中。Bazel使用这些定义来创建项目的依赖图，这能够加速编译的过程。</p>
 <p>让我们来可视化一下我们项目的依赖吧。首先，生成依赖图的一段文字描述（即在工作区根目录下运行下述指令）：  </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bazel query --nohost_deps --noimplicit_deps <span class="string">'deps(//main:hello-world)'</span> \</span><br><span class="line">  --output graph</span><br></pre></td></tr></table></figure>
 
 <p>这个指令告诉Bazel查找target <code>//main:hello-world</code>的所有依赖项（不包括host和隐式依赖），然后输出图的文字描述。再把文字描述贴到<a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank" rel="noopener">GraphViz</a>里，你就可以看到如下的依赖图了。可以看出这个项目是用单个源文件编译出的单个target，并没有别的依赖。  </p>
 <div style="width:100%;margin:auto" align=center><img src="/2020/01/31/Bazel%E5%85%A5%E9%97%A81/stage1.png" class="" title="stage1依赖图"></div>
+好的，到目前为止，我们已经建立了工作区，编译了一个项目，并且查看了它的依赖。接下来让我们加点难度。
 
-<p>好的，到目前为止，我们已经建立了工作区，编译了一个项目，并且查看了它的依赖。接下来让我们加点难度。</p>
 <h2 id="3-多个target的编译"><a href="#3-多个target的编译" class="headerlink" title="3.多个target的编译"></a>3.多个target的编译</h2><p>单个target的方式对于小项目来说是高效的，但是对于大项目来说，你可能会想把它拆分成多个target和多个package来实现快速增量的编译（这样就只需要重新编译改变过的部分）。</p>
 <p>首先我们来尝试着把项目拆分成两个target。看一下cpp-tutorial/stage2/main目录下的BUILD文件，它是这样的：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">cc_library(</span><br><span class="line">    name = <span class="string">"hello-greet"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-greet.cc"</span>],</span><br><span class="line">    hdrs = [<span class="string">"hello-greet.h"</span>],</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">cc_binary(</span><br><span class="line">    name = <span class="string">"hello-world"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-world.cc"</span>],</span><br><span class="line">    deps = [</span><br><span class="line">        <span class="string">":hello-greet"</span>,</span><br><span class="line">    ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">cc_library(</span><br><span class="line">    name = <span class="string">"hello-greet"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-greet.cc"</span>],</span><br><span class="line">    hdrs = [<span class="string">"hello-greet.h"</span>],</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">cc_binary(</span><br><span class="line">    name = <span class="string">"hello-world"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-world.cc"</span>],</span><br><span class="line">    deps = [  # Within a BUILD file, the <span class="keyword">package</span>-name part of label may be omitted</span><br><span class="line">        <span class="string">":hello-greet"</span>,   </span><br><span class="line">    ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 
 <p>我们看到在这个BUILD文件中，Bazel首先编译了hello-greet这个库（利用Bazel内置的cc_library编译指令），然后编译hello-world这个二进制文件。hello-world这个target的deps属性告诉Bazel，要构建hello-world这个二进制文件需要hello-greet这个库。<br>好，让我们编译一下新的版本。进入到<code>cpp-tutorial/stage2</code>目录下然后运行以下指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bazel build //main:hello-world</span><br></pre></td></tr></table></figure>
@@ -247,8 +247,8 @@
 <p>注意，如果你现在修改一下hello-greet.cc然后重新编译整个项目的话，Bazel其实只会编译修改过的那个文件。</p>
 <p>然后我们再来看一下依赖图，发现hello-world在编译时候的结构和之前有所不同，现在是有两个targets。hello-world这个target从一个源文件编译而来，同时依赖于另一个target//main:hello-greet，这个target又是从两个源文件编译而来。</p>
 <div style="width:100%;margin:auto" align=center><img src="/2020/01/31/Bazel%E5%85%A5%E9%97%A81/stage2.png" class="" title="stage2依赖图"></div>
-
-<h2 id="4-多个package的编译"><a href="#4-多个package的编译" class="headerlink" title="4.多个package的编译"></a>4.多个package的编译</h2><p>我们现在再将项目拆分成多个package。看一下cpp-tutorial/stage3目录下的内容：</p>
+## 4.多个package的编译
+我们现在再将项目拆分成多个package。看一下cpp-tutorial/stage3目录下的内容：
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">└──stage3</span><br><span class="line">   ├── main</span><br><span class="line">   │   ├── BUILD</span><br><span class="line">   │   ├── hello-world.cc</span><br><span class="line">   │   ├── hello-greet.cc</span><br><span class="line">   │   └── hello-greet.h</span><br><span class="line">   ├── lib</span><br><span class="line">   │   ├── BUILD</span><br><span class="line">   │   ├── hello-time.cc</span><br><span class="line">   │   └── hello-time.h</span><br><span class="line">   └── WORKSPACE</span><br></pre></td></tr></table></figure>
 
 <p>注意到我们现在有两个子目录了，每个子目录中都包含了BUILD文件。因此，对于Bazel来说，整个工作区现在就包含了两个package：<code>lib</code>和<code>main</code>。</p>
@@ -256,7 +256,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cc_library(</span><br><span class="line">    name = <span class="string">"hello-time"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-time.cc"</span>],</span><br><span class="line">    hdrs = [<span class="string">"hello-time.h"</span>],</span><br><span class="line">    visibility = [<span class="string">"//main:__pkg__"</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 
 <p><code>main/BUILD</code>文件长这样：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">cc_library(</span><br><span class="line">    name = <span class="string">"hello-greet"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-greet.cc"</span>],</span><br><span class="line">    hdrs = [<span class="string">"hello-greet.h"</span>],</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">cc_binary(</span><br><span class="line">    name = <span class="string">"hello-world"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-world.cc"</span>],</span><br><span class="line">    deps = [</span><br><span class="line">        <span class="string">":hello-greet"</span>,</span><br><span class="line">        <span class="string">"//lib:hello-time"</span>,</span><br><span class="line">    ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">cc_library(</span><br><span class="line">    name = <span class="string">"hello-greet"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-greet.cc"</span>],</span><br><span class="line">    hdrs = [<span class="string">"hello-greet.h"</span>],</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">cc_binary(</span><br><span class="line">    name = <span class="string">"hello-world"</span>,</span><br><span class="line">    srcs = [<span class="string">"hello-world.cc"</span>],</span><br><span class="line">    deps = [</span><br><span class="line">        <span class="string">":hello-greet"</span>,</span><br><span class="line">        <span class="string">"//lib:hello-time"</span>,  # Labels start with <span class="comment">//</span></span><br><span class="line">    ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 
 <p>可以看出hello-world这个main package中的target依赖于lib package中的hello-time target（即target label为：//lib:hello-time）- Bazel是通过deps这个属性知道自己的依赖项的。那么现在依赖图就变成了下图的样子：</p>
 <div style="width:100%;margin:auto" align=center><img src="/2020/01/31/Bazel%E5%85%A5%E9%97%A81/stage3.png" class="" title="stage3依赖图"></div>
@@ -601,6 +601,10 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">矩阵分析</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">C++11</a>
               </li>
             
             <div class="clearfix"></div>
