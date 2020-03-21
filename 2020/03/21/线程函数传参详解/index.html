@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="四、线程传参详解1、传递临时对象作为线程参数thread类中的detach()方法是一个大坑，它将简单的东西复杂化，需要谨慎处理！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线程函数传参详解">
+<meta property="og:url" content="http://yoursite.com/2020/03/21/%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="GWH Blog">
+<meta property="og:description" content="四、线程传参详解1、传递临时对象作为线程参数thread类中的detach()方法是一个大坑，它将简单的东西复杂化，需要谨慎处理！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-21T13:40:03.000Z">
+<meta property="article:modified_time" content="2020-03-21T13:43:27.357Z">
+<meta property="article:author" content="陌上&amp;烟雨">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="C++11">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/03/21/%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82%E8%AF%A6%E8%A7%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>线程函数传参详解 | GWH Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">GWH Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/21/%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
+      <meta itemprop="name" content="陌上&烟雨">
+      <meta itemprop="description" content="这知识，它不进脑子啊！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GWH Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线程函数传参详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-21 21:40:03 / 修改时间：21:43:27" itemprop="dateCreated datePublished" datetime="2020-03-21T21:40:03+08:00">2020-03-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/C-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">C++多线程</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="四、线程传参详解"><a href="#四、线程传参详解" class="headerlink" title="四、线程传参详解"></a>四、线程传参详解</h2><h3 id="1、传递临时对象作为线程参数"><a href="#1、传递临时对象作为线程参数" class="headerlink" title="1、传递临时对象作为线程参数"></a>1、传递临时对象作为线程参数</h3><p>thread类中的detach()方法是一个大坑，它将简单的东西复杂化，需要谨慎处理！</p>
+<a id="more"></a>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">myprint</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span>&amp; i, <span class="keyword">char</span>* pmybuf)</span> </span>&#123; <span class="comment">// 这里尽管是按照引用传递，但是观察内存地址可以发现这里内部一定做了复制</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;                     <span class="comment">// 按照指针传递，pmybuf的地址和传入进来的参数地址一样</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; pmybuf &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> mvar = <span class="number">1</span>;       <span class="comment">// 创建临时对象</span></span><br><span class="line">	<span class="keyword">int</span> &amp;mvary = mvar;</span><br><span class="line">	<span class="keyword">char</span> mybuf[] = <span class="string">"This is a test"</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function">thread <span class="title">mytobj</span><span class="params">(myprint, mvar, mybuf)</span></span>;  <span class="comment">// i并不是mvar的引用，实际上是按照值传递；但是mybuf是按照地址传递！</span></span><br><span class="line">	mytobj.join();</span><br><span class="line">	<span class="comment">// mytobj.detach();                   // 尽管主线程detach了子线程，那么子线程中用i值也是安全的，但是使用mybuf一定会出问题！</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"I Love China"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以传给<code>thread</code>的可调用对象中，不推荐使用引用传递（引用的真实含义被覆盖了），同时<strong>绝对不可以用指针！</strong>如何安全的将字符串传递进来：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">myprint</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span>&amp; i, <span class="keyword">const</span> <span class="built_in">string</span>&amp; pmybuf)</span> </span>&#123; </span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;                   </span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; pmybuf &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> mvar = <span class="number">1</span>;      </span><br><span class="line">	<span class="keyword">int</span> &amp;mvary = mvar;</span><br><span class="line">	<span class="keyword">char</span> mybuf[] = <span class="string">"This is a test"</span>;</span><br><span class="line">	<span class="function">thread <span class="title">mytobj</span><span class="params">(myprint, mvar, mybuf)</span></span>;     <span class="comment">// 这里存在一个隐式的类型转换char--&gt;string </span></span><br><span class="line">    <span class="comment">// thread mytobj(myprint, mvar, string(mybuf)); // 一个可行的方法！！！！！</span></span><br><span class="line">	mytobj.<span class="built_in">detach</span>();                         <span class="comment">// 一个潜在的风险是转换的时机可能发生在mybuf[]被回收后</span></span><br><span class="line">	<span class="comment">// mytobj.join();                  </span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"I Love China"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在创建线程的同时构造临时对象的方法传递参数是可行的，他可以保证在主线程结束前将<code>myprint()</code>的第二个参数构造出来，直接使用隐式类型转换再<code>detach()</code>则不能保证。上述的程序会先调用<code>string</code>中的构造函数创建一个临时对象，接着<strong>并不是引用这个临时对象</strong>，而是调用copy构造函数又复制出来一个对象给子线程使用！</p>
+<p>对于使用<code>detach()</code>的情况：</p>
+<ul>
+<li>若果传递内置类型的变量，建议都是按照值传递，不推荐使用引用，坚决不能用指针。</li>
+<li>如果传递类对象，避免使用隐式类型转换。全部都在创建线程这一行创建出临时对象来，并且在函数参数中使用<strong>引用</strong>来接收参数。</li>
+<li>除非万不得已！是使用<code>join()</code>就不会出现局部变量失效导致线程对内存非法访问的情形。</li>
+</ul>
+<h3 id="2、线程ID"><a href="#2、线程ID" class="headerlink" title="2、线程ID"></a>2、线程ID</h3><p>每个线程，不管是主线程还是子线程实际上都对应了一个数字，可以使用C++标准库中的<code>std::this_thread::get_id()</code>来获取。利用这个ID信息我们就可以追踪临时对象是在哪一个线程中被构造出来的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"pch.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestThread</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	TestThread(<span class="keyword">int</span> i) :data_(i) &#123; </span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"构造函数被执行"</span> &lt;&lt; <span class="keyword">this</span> &lt;&lt;<span class="string">"创建此对象的ID是："</span>&lt;&lt;<span class="built_in">std</span>::this_thread::get_id()&lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	TestThread(<span class="keyword">const</span> TestThread&amp; testthread) :data_(testthread.data_) &#123; </span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"Copy构造函数被执行"</span> &lt;&lt; <span class="keyword">this</span> &lt;&lt;<span class="string">"执行copy操作的线程ID是："</span>&lt;&lt;<span class="built_in">std</span>::this_thread::get_id()&lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	~TestThread() &#123; </span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"析构函数被执行"</span> &lt;&lt; <span class="keyword">this</span> &lt;&lt;<span class="string">"执行析构的线程ID是："</span>&lt;&lt;<span class="built_in">std</span>::this_thread::get_id()&lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">thread_work</span><span class="params">(<span class="keyword">int</span> num)</span></span>&#123;</span><br><span class="line">        <span class="built_in">cout</span>&lt;&lt;<span class="string">"类TestThread中的线程函数"</span>&lt;&lt;<span class="keyword">this</span>&lt;&lt;<span class="string">"所在线程ID"</span>&lt;&lt;<span class="built_in">std</span>::this_thread::get_id()&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="keyword">int</span> data_;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MyTestThread</span><span class="params">(<span class="keyword">const</span> TestThread&amp; testthread)</span> </span>&#123; <span class="comment">// 参数不使用值传递，不然会构建出3个对象（执行2次copy构造函数）</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"子线程的ID是："</span> &lt;&lt;<span class="built_in">std</span>::this_thread::get_id()&lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"主线程的ID是："</span> &lt;&lt; <span class="built_in">std</span>::this_thread::get_id() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">int</span> mvar = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// thread mytobj1(MyTestThread,mvar);             // 这种情况是在子线程中构造的临时对象</span></span><br><span class="line">	<span class="function">thread <span class="title">mytobj1</span><span class="params">(MyTestThread,TestThread(mvar))</span></span>; <span class="comment">// 这种情况是在主线程中构造的临时对象</span></span><br><span class="line">	mytobj1.join();	</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当使用隐式类型转换时，临时对象是在<strong>子线程中被构建的</strong>，这就会导致detach()出现问题。（主线程执行完，子线程无法构造了）</li>
+<li>当创建线程使用临时对象时，临时对象是在主线程中被构建出来的，这样确保使用子线程不会出问题。</li>
+</ul>
+<h3 id="3、std-ref-函数"><a href="#3、std-ref-函数" class="headerlink" title="3、std::ref()函数"></a>3、std::ref()函数</h3><p>前边说过，尽管函数<code>void myprint(const int&amp; i, const string&amp; pmybuf)</code>是按照引用的方式传递的，但是编译器调用copy构造函数又创建了一个对象，这就导致在子线程中对<code>pmybuf</code>的更改不会反馈到主线程中（<code>const</code> 限定符也不允许我们这么做，如果去掉<code>const</code>限定符号，编译又会出错）。</p>
+<p>这时候使用<code>std::ref()</code>函数就可以实现引用的真正用处了：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MyTestThread</span><span class="params">(TestThread&amp; testthread)</span> </span>&#123;          <span class="comment">// 这时候const可以去掉</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"子线程的ID是："</span> &lt;&lt;<span class="built_in">std</span>::this_thread::get_id()&lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"主线程的ID是："</span> &lt;&lt; <span class="built_in">std</span>::this_thread::get_id() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="function">TestThread <span class="title">aaa</span><span class="params">(<span class="number">20</span>)</span></span>;</span><br><span class="line">	<span class="function">thread <span class="title">mytobj1</span><span class="params">(MyTestThread, <span class="built_in">std</span>::ref(aaa))</span></span>;    <span class="comment">// 不会再copy出来一份了 </span></span><br><span class="line">	mytobj1.join();	</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、任意一个成员函数作为线程函数"><a href="#4、任意一个成员函数作为线程函数" class="headerlink" title="4、任意一个成员函数作为线程函数"></a>4、任意一个成员函数作为线程函数</h3><p>调用类中的任意一个成员函数，可以用以下的写法来实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">TestThread <span class="title">aaa</span><span class="params">(<span class="number">20</span>)</span></span>;</span><br><span class="line"><span class="function">thread <span class="title">mytobj1</span><span class="params">(&amp;ThreadTest::thread_work, aaa, <span class="number">15</span>)</span></span>;</span><br><span class="line"><span class="comment">// thread mytobj1(&amp;ThreadTest::thread_work, std::ref(aaa), 15); //这时候使用detach就会出现问题</span></span><br><span class="line"><span class="comment">// thread mytobj1(&amp;ThreadTest::thread_work, &amp;aaa, 15); // 等同于上一种写法</span></span><br><span class="line">myobj1.join();</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>听说打赏我的人，最后都找到了真爱。</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E5%BE%AE%E4%BF%A1.jpg" alt="陌上&烟雨 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E6%94%AF%E4%BB%98%E5%AE%9D.jpg" alt="陌上&烟雨 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/联系方式.jpg">
+            <span class="icon">
+              <i class="fa fa-wechat"></i>
+            </span>
+
+            <span class="label">WeChat</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+              <a href="/tags/C-11/" rel="tag"># C++11</a>
+              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/21/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA/" rel="prev" title="线程的创建">
+      <i class="fa fa-chevron-left"></i> 线程的创建
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#四、线程传参详解"><span class="nav-number">1.</span> <span class="nav-text">四、线程传参详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、传递临时对象作为线程参数"><span class="nav-number">1.1.</span> <span class="nav-text">1、传递临时对象作为线程参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、线程ID"><span class="nav-number">1.2.</span> <span class="nav-text">2、线程ID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、std-ref-函数"><span class="nav-number">1.3.</span> <span class="nav-text">3、std::ref()函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、任意一个成员函数作为线程函数"><span class="nav-number">1.4.</span> <span class="nav-text">4、任意一个成员函数作为线程函数</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="陌上&烟雨"
+      src="/images/%E5%A4%B4%E5%83%8F.jpeg">
+  <p class="site-author-name" itemprop="name">陌上&烟雨</p>
+  <div class="site-description" itemprop="description">这知识，它不进脑子啊！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Gutsgwh1997" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Gutsgwh1997" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:guanwenhaohit@gmail.com" title="E-Mail → mailto:guanwenhaohit@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/YiChenCityU/Recent_SLAM_Research" title="https:&#x2F;&#x2F;github.com&#x2F;YiChenCityU&#x2F;Recent_SLAM_Research" rel="noopener" target="_blank">SLAM前沿</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://leetcode-cn.com/" title="https:&#x2F;&#x2F;leetcode-cn.com&#x2F;" rel="noopener" target="_blank">LeetCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/daohu527/Dig-into-Apollo" title="https:&#x2F;&#x2F;github.com&#x2F;daohu527&#x2F;Dig-into-Apollo" rel="noopener" target="_blank">百度Apollo笔记</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">陌上&烟雨</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">82k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:15</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

@@ -20,25 +20,22 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="1.投影与投影映射假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V&#x3D;S \oplus T$，其中$\oplus$代表$S,V$构成直和关系且$S,V$构成全空间$V$($V &#x3D; S + V$)。对于$\forall \alpha \in V$，可唯一的表示为：$$\alpha &#x3D; x + y, x\in S, y \in T$$">
+  <meta name="description" content="三、线程启动、结束、创建线程多个方法1、线程创建主线程从main()函数开始执行，我们自己创建的线程，也需要从一个函数（初始函数）开始运行。一旦这个函数运行完毕，代表这个线程运行结束。 整个进程是否执行完毕的标志是：主线程是否执行完毕，如果主线程执行完毕，代表整个进程执行完毕了。一般情况下：如果其他子线程还没有执行完毕，那么这些子线程也会被操作系统强行终止。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="最小二乘的几何解释">
-<meta property="og:url" content="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/index.html">
+<meta property="og:title" content="线程的创建">
+<meta property="og:url" content="http://yoursite.com/2020/03/21/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="1.投影与投影映射假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V&#x3D;S \oplus T$，其中$\oplus$代表$S,V$构成直和关系且$S,V$构成全空间$V$($V &#x3D; S + V$)。对于$\forall \alpha \in V$，可唯一的表示为：$$\alpha &#x3D; x + y, x\in S, y \in T$$">
+<meta property="og:description" content="三、线程启动、结束、创建线程多个方法1、线程创建主线程从main()函数开始执行，我们自己创建的线程，也需要从一个函数（初始函数）开始运行。一旦这个函数运行完毕，代表这个线程运行结束。 整个进程是否执行完毕的标志是：主线程是否执行完毕，如果主线程执行完毕，代表整个进程执行完毕了。一般情况下：如果其他子线程还没有执行完毕，那么这些子线程也会被操作系统强行终止。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98.jpg">
-<meta property="og:image" content="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88.png">
-<meta property="article:published_time" content="2020-01-19T04:04:14.000Z">
-<meta property="article:modified_time" content="2020-03-21T09:27:01.404Z">
+<meta property="article:published_time" content="2020-03-21T13:39:27.000Z">
+<meta property="article:modified_time" content="2020-03-21T13:43:18.089Z">
 <meta property="article:author" content="陌上&amp;烟雨">
-<meta property="article:tag" content="最小二乘">
-<meta property="article:tag" content="优化">
-<meta property="article:tag" content="矩阵分析">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="C++11">
+<meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98.jpg">
 
-<link rel="canonical" href="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/">
+<link rel="canonical" href="http://yoursite.com/2020/03/21/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA/">
 
 
 <script id="page-configurations">
@@ -51,7 +48,7 @@
   };
 </script>
 
-  <title>最小二乘的几何解释 | GWH Blog</title>
+  <title>线程的创建 | GWH Blog</title>
   
 
 
@@ -168,7 +165,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/21/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
@@ -181,7 +178,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          最小二乘的几何解释
+          线程的创建
         </h1>
 
         <div class="post-meta">
@@ -190,23 +187,21 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-01-19 12:04:14" itemprop="dateCreated datePublished" datetime="2020-01-19T12:04:14+08:00">2020-01-19</time>
+              <time title="创建时间：2020-03-21 21:39:27 / 修改时间：21:43:18" itemprop="dateCreated datePublished" datetime="2020-03-21T21:39:27+08:00">2020-03-21</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-21 17:27:01" itemprop="dateModified" datetime="2020-03-21T17:27:01+08:00">2020-03-21</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/C-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">C++多线程</span></a>
                 </span>
             </span>
 
@@ -223,14 +218,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.5k</span>
+              <span>1.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -242,31 +237,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1-投影与投影映射"><a href="#1-投影与投影映射" class="headerlink" title="1.投影与投影映射"></a>1.投影与投影映射</h2><p>假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V=S \oplus T$，其中$\oplus$代表$S,V$构成直和关系且$S,V$构成全空间$V$($V = S + V$)。对于$\forall \alpha \in V$，可<strong>唯一</strong>的表示为：<br>$$<br>\alpha = x + y, x\in S, y \in T<br>$$</p>
+        <h2 id="三、线程启动、结束、创建线程多个方法"><a href="#三、线程启动、结束、创建线程多个方法" class="headerlink" title="三、线程启动、结束、创建线程多个方法"></a>三、线程启动、结束、创建线程多个方法</h2><h3 id="1、线程创建"><a href="#1、线程创建" class="headerlink" title="1、线程创建"></a>1、线程创建</h3><p>主线程从main()函数开始执行，我们自己创建的线程，也需要从一个函数（初始函数）开始运行。一旦这个函数运行完毕，代表这个线程运行结束。</p>
+<p>整个进程是否执行完毕的标志是：主线程是否执行完毕，如果主线程执行完毕，代表整个进程执行完毕了。<strong>一般情况下</strong>：如果其他子线程还没有执行完毕，那么这些子线程也会被操作系统强行终止。</p>
 <a id="more"></a>
-<p>则称$x$是$\alpha$沿$T$在$S$上的投影，$y$是$\alpha$沿$S$在$T$上的投影，也称$\mathcal{T}_{S,T}:V \rightarrow S$是$V$沿着$T$至$S$的投影映射。  </p>
-<p>值得注意的是：</p>
-<ol>
-<li><strong>上式的分解是唯一的，这种唯一性是由直和决定的</strong>。所谓直和关系，即空间$S \cap T = {0}$，可以理解为构成$S,T$这两个空间的基底是线性无关的。</li>
-<li><strong>投影映射是线性映射</strong>，对与一个投影映射$\mathcal{T}_{S,T}$存在一个矩阵表示$A$，并且$A^2 = A$，<strong>即投影映射的矩阵表示一定是一个幂等矩阵</strong>。  </li>
-</ol>
-<p>唯一性的简单证明：<br>对于$\forall \alpha \in V$,<br>$$<br>\alpha =\mathcal{T}(\alpha) + \alpha-\mathcal{T}(\alpha)\\<br>\mathcal{T}(\alpha) \in S, \alpha-\mathcal{T}(\alpha) \in T\\<br>$$<br>假设$\beta \in {S \cap T}$,则由于$\beta \in S$,故$\exists \gamma \in V$,使得$\beta = \mathcal{T}(\gamma)$。同理$\beta \in T$,故$\exists l\in V$,使得$\beta = l-\mathcal{T}(l)$，则:$\mathcal{T}(\gamma) = l-\mathcal{T}(l)$。对上式两端再做一次投影映射：<br>$$<br>\mathcal{T}^2(\gamma) = \mathcal{T}(l) - \mathcal{T}^2(l)=0=\beta(幂等矩阵性质)<br>$$<br>由此可见，幂等性质保证了分解是直和关系，而直和关系保证了分解是唯一的。<br>当上式中的$S \perp T$时，称这个投影映射为<strong>正交映射</strong>。正交映射有很多优良的性质，当为正交映射时，$T$空间中的任意向量与$S$空间中的任意向量是正交的，即$T$空间中的任意向量与$S$空间的基底是正交的。然鹅，正交投影和最小二乘又有什么关系呢？这便要说明一下高维空间的勾股定理。</p>
-<h2 id="2-高维空间的勾股定理"><a href="#2-高维空间的勾股定理" class="headerlink" title="2.高维空间的勾股定理"></a>2.高维空间的勾股定理</h2><p>对于二维空间，我们知道三角形的斜边的平方等于两个直角边的平方和。但是这种关系在高维空间中是否还如此优美呢？这里我们要先明确一下长度的概念，向量的长度是通过内积定义的即$||\alpha||= \sqrt{&lt;\alpha,\alpha&gt;}=\sqrt{\alpha^H \alpha}$。现在假设在欧氏空间$V_n(R)$中，有$a,b$两个向量，那么$||a-b||^2=?||a||^2+||b||^2$成立吗？我们计算一下长度不就可以解决了:<br>$$<br>\begin{equation}<br>\begin{aligned}<br>||a-b||^2=&lt;a-b,a-b&gt; &amp;= &lt;a,a&gt; - &lt;a,b&gt; - &lt;b,a&gt; + &lt;b,b&gt;\\<br>&amp;=||a||^2 - &lt;a,b&gt; - &lt;b,a&gt; + ||b||^2<br>\end{aligned}<br>\end{equation}<br>$$<br>这似乎是差了一点东西啊，那为什么在二维空间中成立呢?这要归功于直角三角形前提，即$a,b$是垂直的，也就是正交的$&lt;a,b&gt; = &lt;b,a&gt; = 0$。若是在高维空间中也有这种关系，那勾股定理也就成立了，任意在$S$空间中取$a$向量，在$T$空间中取一个$b$向量，这不天然满足正交要求吗，高维勾股定理不就天然成立了，这也是正交分解的一个美妙。</p>
-<h2 id="3-最小二乘"><a href="#3-最小二乘" class="headerlink" title="3.最小二乘"></a>3.最小二乘</h2><p>啰嗦了半天，重于到重点了，先放一张镇楼图.</p>
-<div style="width:50%;margin:auto" align=center><img src="/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98.jpg" class="" title="几何解释"></div>
-最小二乘问题，举个例子，就是对全空间$V$中的向量$\alpha$，在$V$的子空间$W$中找到一个$\beta $,使它与$\alpha$最像，即$||\alpha-\beta||_{min}$。子空间是线性子空间的简称，它是$V$的一个非空子集，并且满足线性空间的封闭性。假设$\alpha_1,\alpha_2,...\alpha_s$是$V$中的一组向量，那么非空集合$span\{\alpha_1,\alpha_2,...\alpha_s\}=\{\alpha_1k_1+\alpha_2k_2+...+\alpha_sk_s\}$构成了线性空间$V$的一个子空间，而且这里的$k_i$不做要求，可以全是零。至于为什么是在子空间中寻找，我们通过后面的例子来说明。
 
-<p>上述的重点是$||\alpha-\beta||$什么时候取到最小，如上图所示，我们可以直观的感受到:当向量$\alpha-\beta$与$W$平面垂直时，它的长度是最小的。那么对应的与$\alpha$最像的$\beta$不就是向量$\alpha$在$W$空间上的<strong>正交投影吗</strong>。用向量的语言来描述一哈，<strong>$\forall \beta \in W,当且仅当\alpha-\beta \perp W$时，$||\alpha -\beta||$是最小的</strong>。不妨来证明一下在$n$维度空间这是成立的：</p>
-<p>设$\beta^*$是$\alpha$在$W$空间中的正交投影，$\beta$是$W$空间中的任意向量<br>$$<br>\begin{equation}<br>\begin{aligned}<br>\alpha - \beta &amp;= \alpha - \beta^* + \beta^* - \beta\\<br>||\alpha-\beta||^2&amp;=||\alpha - \beta^* + \beta^* - \beta||^2\\<br>\end{aligned}<br>\end{equation}<br>$$<br>注意到$\alpha - \beta^* \perp \beta^* - \beta$,由勾股定理可知:<br>$$<br>||\alpha-\beta||^2=||\alpha - \beta^*||^2+||\beta^* - \beta||<br>$$<br>因为<br>$$<br>\begin{equation}<br>||\beta^* - \beta||&gt;=0\\<br>||\alpha-\beta||^2&gt;=||\alpha - \beta^*||^2<br>\end{equation}<br>$$</p>
-<p>这说明$\alpha$的正交投影就是他的最小二乘解。</p>
-<h2 id="4-如何求解"><a href="#4-如何求解" class="headerlink" title="4.如何求解"></a>4.如何求解</h2><p>我们知道$||\alpha-\beta||$取得最小的条件了，那求解$\beta$也就变得容易了。<br>选$W$空间的一组基$\phi=[\alpha_1,\alpha_2,…\alpha_m]$，在$W$空间中的任意一个向量可以表示为$\beta = [\alpha_1,\alpha_2,…\alpha_m]x$。根据最小二乘的条件，$\forall \alpha \in V,当且仅当\alpha-\beta \perp W$时，$\beta$是$\alpha$的最小二乘解。<br>我们前边提过，$\alpha-\beta \perp W$等价于$\alpha-\beta \perp \alpha_i,i=1,2,..m$。<br>于是有：<br>$$<br>\begin{equation}<br>\begin{aligned}<br>&lt;\alpha_i,\alpha-\beta&gt; = 0\\<br>&lt;\alpha_i,\beta&gt; = &lt;\alpha_i,\alpha&gt;\\<br>&lt;\alpha_i,[\alpha_1,\alpha_2,…\alpha_m]x&gt; = &lt;\alpha_i,\alpha&gt;\\<br>\left[&lt;\alpha_i,\alpha_1&gt;,&lt;\alpha_i,\alpha_2&gt;…&lt;\alpha_i,\alpha_m&gt;\right]x=&lt;\alpha_i,\alpha&gt;\\<br>\end{aligned}<br>\end{equation}<br>$$<br>在W中有m个$\alpha_i$,可以列出如下的方程组:<br>$$<br>\begin{equation}<br>\begin{aligned}<br>\left[<br>\begin{matrix}<br>&lt;\alpha_1,\alpha_1&gt;&amp;&lt;\alpha_1,\alpha_2&gt;&amp;…&amp;&lt;\alpha_1,\alpha_m&gt;\\<br>&lt;\alpha_2,\alpha_1&gt;&amp;&lt;\alpha_2,\alpha_2&gt;&amp;…&amp;&lt;\alpha_2,\alpha_m&gt;\\<br>\vdots&amp;\vdots&amp;\vdots&amp;\vdots\\<br>&lt;\alpha_m,\alpha_1&gt;&amp;&lt;\alpha_m,\alpha_2&gt;&amp;…&amp;&lt;\alpha_m,\alpha_m&gt;\\<br>\end{matrix}<br>\right]x=<br>\left[<br>\begin{matrix}<br>&lt;\alpha_1,\alpha&gt;\\<br>&lt;\alpha_2,\alpha&gt;\\<br>\vdots\\<br>&lt;\alpha_m,\alpha&gt;\\<br>\end{matrix}<br>\right]<br>\end{aligned}<br>\end{equation}<br>$$<br>上面的大矩阵在矩阵论中叫Gramian矩阵,在标准內积定义下$G(\phi)=\phi^H\phi$(H代表共轭转置),上式子记为:<br>$$<br>G(\alpha_1,\alpha_2,…\alpha_m)x = \phi^H\alpha\\<br>$$<br>于是我们得到了$\beta$在基$\phi=[\alpha_1,\alpha_2,…\alpha_m]$下的坐标$x$<br>从而<br>$$<br>\begin{equation}<br>\begin{aligned}<br>\beta=\phi x=\phi G^{-1}(\phi)\phi^H\alpha=\phi (\phi^H \phi)^{-1}\phi^H\alpha\\<br>\end{aligned}<br>\end{equation}<br>$$</p>
-<h2 id="5-数据拟合"><a href="#5-数据拟合" class="headerlink" title="5.数据拟合"></a>5.数据拟合</h2><p>有例子有真相，上边的理论怎么应用呢，我们来看一下曲线拟合的例子：</p>
-<div style="width:70%;margin:auto" align=center><img src="/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88.png" class="" title="曲线拟合"></div>
-已知测量的$n$个点，$(x_1,y_1),(x_2,y_2),...(x_n,y_n)$，求做函数$y=f(x)$,达到最佳拟合效果。其中$f(x)$在一定的函数类中选取，$f(x)=k_1\varphi_1(x)+k_2\varphi_2(x)+...+k_m\varphi_m(x)$.（$\varphi(x)一般是线性无关的$，例如$\varphi_k(x)=x^{k-1}$）。
+<p>一般情况下：如果想保持子线程的运行状态，那么要让主线程一直保持运行。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;                       // 1、包含头文件</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">myprint</span><span class="params">()</span></span>&#123;                         <span class="comment">// 2、初始函数要写</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt;<span class="string">"我的线程开始执行"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"我的线程执行完毕"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;                           <span class="comment">// 3、mian中开始写代码，myprint是一个可调用对象</span></span><br><span class="line">    <span class="function">thread <span class="title">mytobj</span><span class="params">(myprint)</span></span>;  <span class="comment">/* 这条语句创建了线程，线程开始执行。 */</span> </span><br><span class="line">    mytobj.join();           <span class="comment">/* 阻塞主线程，让主线程等待子线程执行完毕，然后子线程和主线程汇合。*/</span></span><br><span class="line">                             <span class="comment">/* 主线程继续往下走 */</span></span><br><span class="line">    <span class="comment">// mytobj.detach()</span></span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"Hello World"</span>&lt;&lt;<span class="built_in">endl</span>;          <span class="comment">// 4、这个代码有两个线程在跑</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p><code>thread</code>是个标准库里的类。</p>
+<h4 id="2、detach"><a href="#2、detach" class="headerlink" title="2、detach()"></a>2、detach()</h4><p>一般情况下主线程有义务等待子线程执行完毕，最终主线程安全正常退出。但是C++11中的<code>detach()</code>可以实现分离：也就是主线程不和子线程汇合了，主线程不必等子线程运行结束。一旦<code>detach()</code>之后，与主线程关联的thread对象就会失去与主线程的关联，此时子线程就会驻留在后台运行，这个子线程就相当于被C++运行时库接管了，当这个子线程执行完毕后，会由运行时库负责清理该线程的相关资源（驻留后台，Linux中的守护进程）。</p>
+<p>一旦调用了<code>detach()</code>（犹如脱缰的野马，不受控制了），就不能再用<code>join()</code>，否则系统会报异常。</p>
+<h4 id="3、joinable"><a href="#3、joinable" class="headerlink" title="3、joinable()"></a>3、joinable()</h4><p>判断是否可以成功使用<code>join()</code>或者<code>detach()</code>函数，可以返回true。</p>
+<h4 id="4、其他创建线程的手法"><a href="#4、其他创建线程的手法" class="headerlink" title="4、其他创建线程的手法"></a>4、其他创建线程的手法</h4><p>创建不同的可调用对象：</p>
+<p>使用类，类对象作为可调用对象(函数对象)：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TA</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    TA(<span class="keyword">int</span> &amp; num):num_(num)&#123;&#125;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span> </span>&#123; <span class="comment">// 不能有参数</span></span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"我的线程仿函数开始执行了"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"我的线程仿函数结束执行"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">         <span class="built_in">cout</span> &lt;&lt; <span class="string">"num的数为："</span>&lt;&lt;num_&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> &amp; num_;  <span class="comment">// 使用引用会导致出达问题</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> b = <span class="number">6</span>;</span><br><span class="line">    <span class="function">TA <span class="title">ta</span><span class="params">(b)</span></span>;</span><br><span class="line">    <span class="function">thread <span class="title">mytobj2</span><span class="params">(ta)</span></span>;  <span class="comment">// ta对象是被复制到线程中去的（copy构造函数），不受主线程中的ta被销毁的影响</span></span><br><span class="line">    mytobj2.join();</span><br><span class="line">    <span class="comment">// mytobj2.detach(); // 不受控制，例如主线程先执行完，变量b被回收掉了，这时候TA类型按照引用传递，</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;            <span class="comment">// operator()会出现访问被释放的资源，所以类中使用引用要注意！ </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>解：</p>
-<p>$$<br>\begin{equation}<br>\begin{aligned}<br>y_1=&amp;k_1\varphi_1(x_1)+k_2\varphi_2(x_1)+…+k_m\varphi_m(x_1)\\<br>y_2=&amp;k_1\varphi_1(x_2)+k_2\varphi_2(x_2)+…+k_m\varphi_m(x_2)\\<br>\vdots\\<br>y_n=&amp;k_1\varphi_1(x_n)+k_2\varphi_2(x_n)+…+k_m\varphi_m(x_n)\\<br>\\<br>\\<br>\left[<br>\begin{matrix}<br>y_1\\<br>y_2\\<br>\vdots\\<br>y_n<br>\end{matrix}<br>\right]=&amp;<br>\left[<br>\begin{matrix}<br>\varphi_1(x_1)&amp;\varphi_2(x_1) &amp;\cdots &amp;\varphi_m(x_1)\\<br>\varphi_1(x_2)&amp;\varphi_2(x_2) &amp;\cdots &amp;\varphi_m(x_2)\\<br>\vdots&amp;\vdots&amp;\vdots&amp;\vdots&amp;\\<br>\varphi_1(x_n)&amp;\varphi_2(x_n) &amp;\cdots &amp;\varphi_m(x_n)\\<br>\end{matrix}<br>\right]<br>\left[<br>\begin{matrix}<br>k_1\\<br>k_2\\<br>\vdots\\<br>k_m\\<br>\end{matrix}<br>\right]<br>\\<br>\\<br>\alpha =&amp;<br>\left[<br>\begin{matrix}<br>\alpha_1&amp; \alpha_2&amp; \cdots&amp; \alpha_m<br>\end{matrix}<br>\right]k=\phi k<br>\end{aligned}<br>\end{equation}<br>$$<br>曲线拟合写成了如上的向量形式，就可以和我们前边的理论对应了。这等价于在S空间$S=span{\alpha_1 \alpha_2 \cdots \alpha_m}$中找到一个<br>$$<br>\beta =<br>\left[<br>\begin{matrix}<br>\alpha_1&amp; \alpha_2&amp; \cdots&amp; \alpha_m<br>\end{matrix}<br>\right]<br>$$<br>使得$||\alpha-\beta||$最小，按照上面讲的公式:<br>$$<br>k=G^{-1}(\phi)\phi^H\alpha<br>$$<br>上面的公式是n个方程求解m个未知数，当n&gt;=m时，方程才有解。就是说S空间的dim要小于n的，故而要在V的子空间中寻找解。</p>
+<p><code>lambda</code>表达式（匿名函数）也是一种可调用对象：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> mylambdathread = []()&#123;</span><br><span class="line"><span class="built_in">cout</span> &lt;&lt;<span class="string">"lambda表达式创建的线程"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -315,9 +302,9 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98/" rel="tag"># 最小二乘</a>
-              <a href="/tags/%E4%BC%98%E5%8C%96/" rel="tag"># 优化</a>
-              <a href="/tags/%E7%9F%A9%E9%98%B5%E5%88%86%E6%9E%90/" rel="tag"># 矩阵分析</a>
+              <a href="/tags/C/" rel="tag"># C++</a>
+              <a href="/tags/C-11/" rel="tag"># C++11</a>
+              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
           </div>
 
         
@@ -325,10 +312,13 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2020/01/31/Bazel%E5%85%A5%E9%97%A81/" rel="next" title="Bazel入门1:编译C++项目">
-      Bazel入门1:编译C++项目 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/03/21/%E5%B9%B6%E5%8F%91%E4%B8%8E%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" rel="prev" title="并发与多线程的基本概念">
+      <i class="fa fa-chevron-left"></i> 并发与多线程的基本概念
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/21/%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E4%BC%A0%E5%8F%82%E8%AF%A6%E8%A7%A3/" rel="next" title="线程函数传参详解">
+      线程函数传参详解 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -389,7 +379,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-投影与投影映射"><span class="nav-number">1.</span> <span class="nav-text">1.投影与投影映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-高维空间的勾股定理"><span class="nav-number">2.</span> <span class="nav-text">2.高维空间的勾股定理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-最小二乘"><span class="nav-number">3.</span> <span class="nav-text">3.最小二乘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-如何求解"><span class="nav-number">4.</span> <span class="nav-text">4.如何求解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-数据拟合"><span class="nav-number">5.</span> <span class="nav-text">5.数据拟合</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#三、线程启动、结束、创建线程多个方法"><span class="nav-number">1.</span> <span class="nav-text">三、线程启动、结束、创建线程多个方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、线程创建"><span class="nav-number">1.1.</span> <span class="nav-text">1、线程创建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2、detach"><span class="nav-number">1.1.1.</span> <span class="nav-text">2、detach()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、joinable"><span class="nav-number">1.1.2.</span> <span class="nav-text">3、joinable()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、其他创建线程的手法"><span class="nav-number">1.1.3.</span> <span class="nav-text">4、其他创建线程的手法</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
