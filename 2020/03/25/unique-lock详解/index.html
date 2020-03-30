@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="六、unique_lock详解std::unique_lock是一个类模板，工作中一般使用lock_guard。lock_guard取代了mutex的lock()与unlock(),unique_lock也是实现自动加锁的，相比于lock_guard它更加灵活，但是也更消耗资源。默认构造的情况下，unique_lock可以完全取代lock_guard。">
+  <meta name="description" content="六、unique_lock详解本节详细记录std::unique_lock类模板。 std::unique_lock是一个类模板，工作中一般使用lock_guard。lock_guard取代了mutex的lock()与unlock(),unique_lock也是实现自动加锁的，相比于lock_guard它更加灵活，但是也更消耗资源。默认构造的情况下，unique_lock可以完全取代lock_gu">
 <meta property="og:type" content="article">
 <meta property="og:title" content="unique_lock详解">
 <meta property="og:url" content="http://yoursite.com/2020/03/25/unique-lock%E8%AF%A6%E8%A7%A3/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="六、unique_lock详解std::unique_lock是一个类模板，工作中一般使用lock_guard。lock_guard取代了mutex的lock()与unlock(),unique_lock也是实现自动加锁的，相比于lock_guard它更加灵活，但是也更消耗资源。默认构造的情况下，unique_lock可以完全取代lock_guard。">
+<meta property="og:description" content="六、unique_lock详解本节详细记录std::unique_lock类模板。 std::unique_lock是一个类模板，工作中一般使用lock_guard。lock_guard取代了mutex的lock()与unlock(),unique_lock也是实现自动加锁的，相比于lock_guard它更加灵活，但是也更消耗资源。默认构造的情况下，unique_lock可以完全取代lock_gu">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-03-25T06:13:19.000Z">
-<meta property="article:modified_time" content="2020-03-25T06:15:31.995Z">
+<meta property="article:modified_time" content="2020-03-30T09:32:20.164Z">
 <meta property="article:author" content="陌上&amp;烟雨">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="C++11">
@@ -189,10 +189,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-03-25 14:13:19 / 修改时间：14:15:31" itemprop="dateCreated datePublished" datetime="2020-03-25T14:13:19+08:00">2020-03-25</time>
+              <time title="创建时间：2020-03-25 14:13:19" itemprop="dateCreated datePublished" datetime="2020-03-25T14:13:19+08:00">2020-03-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-30 17:32:20" itemprop="dateModified" datetime="2020-03-30T17:32:20+08:00">2020-03-30</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -239,14 +245,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="六、unique-lock详解"><a href="#六、unique-lock详解" class="headerlink" title="六、unique_lock详解"></a>六、unique_lock详解</h2><p><code>std::unique_lock</code>是一个类模板，工作中一般使用<code>lock_guard</code>。<code>lock_guard</code>取代了<code>mutex</code>的<code>lock()</code>与<code>unlock()</code>,<code>unique_lock</code>也是实现自动加锁的，相比于<code>lock_guard</code>它更加灵活，但是也更消耗资源。默认构造的情况下，<code>unique_lock</code>可以完全取代<code>lock_guard</code>。<br><a id="more"></a></p>
+        <h2 id="六、unique-lock详解"><a href="#六、unique-lock详解" class="headerlink" title="六、unique_lock详解"></a>六、unique_lock详解</h2><p>本节详细记录<code>std::unique_lock</code>类模板。</p>
+<p><code>std::unique_lock</code>是一个类模板，工作中一般使用<code>lock_guard</code>。<code>lock_guard</code>取代了<code>mutex</code>的<code>lock()</code>与<code>unlock()</code>,<code>unique_lock</code>也是实现自动加锁的，相比于<code>lock_guard</code>它更加灵活，但是也更消耗资源。默认构造的情况下，<code>unique_lock</code>可以完全取代<code>lock_guard</code>。</p>
+<a id="more"></a>
+
 <h3 id="1、unique-lock的第二参数"><a href="#1、unique-lock的第二参数" class="headerlink" title="1、unique_lock的第二参数"></a>1、unique_lock的第二参数</h3><h4 id="1-1、adopt-lock"><a href="#1-1、adopt-lock" class="headerlink" title="1.1、adopt_lock"></a>1.1、adopt_lock</h4><p><code>std::adopt_lock</code>：表示这个互斥量已经被lock，（<u>必须保证互斥量提前被lock了</u>，才能使用此参数，否则会报异常）</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">my_mutex2_.lock(); <span class="comment">// 一定要先lock()才能使用std::adopt_lock参数</span></span><br><span class="line"><span class="comment">//std::lock_guard&lt;std::mutex&gt; auto_mutex_2(my_mutex2_, std::adopt_lock);  //std::adopt_lock标记</span></span><br><span class="line"><span class="function"><span class="built_in">std</span>::unique_guard&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_2</span><span class="params">(my_mutex2_, <span class="built_in">std</span>::adopt_lock)</span></span>;</span><br></pre></td></tr></table></figure>
+
 <h4 id="1-2、try-to-lock"><a href="#1-2、try-to-lock" class="headerlink" title="1.2、try_to_lock"></a>1.2、try_to_lock</h4><p><code>std::try_to_lock</code>：使用<code>try_to_lock</code>的<u>前提是不能自己先去lock</u>。此标志表示<code>unique_lock</code>会尝试用<code>mutex</code>的lock()去锁这个<code>mutex</code>，但如果没有锁定成功，会立即返回，<strong>并不会阻塞在哪里</strong>。下面程序展示一个例子：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">inMsgRecvQueue</span><span class="params">()</span>  <span class="comment">// 线程B入口函数</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100000</span>; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"inMsgRecvQueue()执行，插入一个元素"</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_1</span><span class="params">(my_mutex1_,<span class="built_in">std</span>::try_to_lock)</span></span>;</span><br><span class="line">		<span class="keyword">if</span> (auto_mutex_1.owns_lock())</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">// 拿到了锁头</span></span><br><span class="line">			msgRecvQueue_.push_back(i);  <span class="comment">// 操作共享数据</span></span><br><span class="line">			<span class="comment">//其他处理...</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">// 没有拿到锁头</span></span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; <span class="string">"outMsgRecvQueue执行，但是没有拿到锁，只能做点别的事情"</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">outMsgLULProc</span><span class="params">(<span class="keyword">int</span> &amp;command)</span> <span class="comment">// 线程A入口函数</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_1</span><span class="params">(my_mutex1_)</span></span>;</span><br><span class="line">	<span class="built_in">std</span>::<span class="function">chrono::milliseconds <span class="title">dura</span><span class="params">(<span class="number">20000</span>)</span></span>; <span class="comment">// 20s</span></span><br><span class="line">	<span class="built_in">std</span>::this_thread::sleep_for(dura);     <span class="comment">// 线程休息20s</span></span><br><span class="line">	<span class="keyword">if</span> (!msgRecvQueue_.empty())</span><br><span class="line">	&#123;</span><br><span class="line">		command = msgRecvQueue_.front();</span><br><span class="line">	msgRecvQueue_.pop_front();</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>上述两个函数是两个线程的入口函数，在其中一个线程A中，A拿到锁后线程sleep了20s，若使用传统的<code>mutex</code>，线程B因为拿不到锁也会阻塞至少20s。使用了<code>std::try_to_lock</code>参数后，线程B会尝试拿锁，在未拿到锁头的情况下线程B不会阻塞，我们可以去处理一些非共享的数据。</p>
 <h4 id="1-3、defer-lock"><a href="#1-3、defer-lock" class="headerlink" title="1.3、defer_lock"></a>1.3、defer_lock</h4><p><code>std::defer_lock</code>：使用的<u>前提是不能自己先lock</u>，否则会报异常。它的意思是并没有给<code>mutex</code>加锁，初始化了一个没有加锁的<code>mutex</code>。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">inMsgRecvQueue</span><span class="params">()</span>  <span class="comment">// 线程入口函数</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100000</span>; ++i)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; <span class="string">"inMsgRecvQueue()执行，插入一个元素"</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">			<span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_1</span><span class="params">(my_mutex1_,<span class="built_in">std</span>::defer_lock)</span></span>; <span class="comment">//创建一个没有加锁的mutex，相当于my_mutex1_与auto_mutex_1绑定在一起了</span></span><br><span class="line">			auto_mutex_1.lock();        <span class="comment">// 没有必要自己解锁，auto_mutex_1会自动析构解锁</span></span><br><span class="line">	         <span class="comment">// ...处理共享代码</span></span><br><span class="line">             auto_mutex_1.unlock(); </span><br><span class="line">             <span class="comment">// 处理非共享代码</span></span><br><span class="line">             auto_mutex_1.lock();</span><br><span class="line">             msgRecvQueue_.push_back(i);  <span class="comment">//操作共享数据</span></span><br><span class="line">             <span class="comment">// auto_mutex_1.unlock();    //可以自己unlock但是没必要</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="2、unique-lock的成员函数"><a href="#2、unique-lock的成员函数" class="headerlink" title="2、unique_lock的成员函数"></a>2、unique_lock的成员函数</h3><h4 id="2-1、lock"><a href="#2-1、lock" class="headerlink" title="2.1、lock()"></a>2.1、lock()</h4><p>在如上程序中的演示。</p>
 <h4 id="2-2、unlock"><a href="#2-2、unlock" class="headerlink" title="2.2、unlock()"></a>2.2、unlock()</h4><p>在如上程序中的演示。lock锁住的代码越少，执行越快，程序的效率越高，有人也把锁头锁住的代码多少叫做<strong>粒度</strong>。</p>
 <ul>
@@ -255,12 +267,16 @@
 </ul>
 <h4 id="2-3、try-lock"><a href="#2-3、try-lock" class="headerlink" title="2.3、try_lock()"></a>2.3、try_lock()</h4><p>尝试给互斥量加锁，如果拿不到锁，则返回false，否则返回true，这个函数不阻塞。(和第二个参数中的<code>std::try_to_lock</code>相似)。用法如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_1</span><span class="params">(my_mutex1_,<span class="built_in">std</span>::defer_lock)</span></span>; </span><br><span class="line"><span class="keyword">if</span> (auto_mutex_1.try_lock())</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 拿到了锁头</span></span><br><span class="line">	msgRecvQueue_.push_back(i);  <span class="comment">// 操作共享数据</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 没有拿到锁头</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"outMsgRecvQueue执行，但是没有拿到锁，只能做点别的事情"</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h4 id="2-4、release"><a href="#2-4、release" class="headerlink" title="2.4、release()"></a>2.4、release()</h4><p>返回它所管理的<code>mutex</code>对象<strong>指针</strong>，并释放所有权，等同于<code>unique_lock</code>和<code>mutex</code>不在有联系。如果原来<code>mutex</code>对象处于加锁状态，有责任接管过来后负责解锁。用法：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_1</span><span class="params">(my_mutex1_)</span></span>; <span class="comment">// 默认情况下构造时加锁</span></span><br><span class="line"><span class="built_in">std</span>::mutex* mutex_ptr = auto_mutex_1.<span class="built_in">release</span>();  <span class="comment">// 释放所有权</span></span><br><span class="line"><span class="comment">// 操作共享数据  </span></span><br><span class="line">mutex_ptr-&gt;unlock();                             <span class="comment">// 释放所有权之后有义务自己解锁</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="3、unique-lock所有权的传递"><a href="#3、unique-lock所有权的传递" class="headerlink" title="3、unique_lock所有权的传递"></a>3、unique_lock所有权的传递</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_1</span><span class="params">(my_mutex1_)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>此时auto<em>mutex_1拥有my_mutex1</em>的所有权，auto_mutex_1可以把自己对<code>mutex</code>（my_mutex_1）的所有权转移给其他的<code>unique_lock</code>对象；<strong>unique_lock对mutex的所有权可以转移，但是不可以复制！</strong></p>
+
+<p>此时auto_mutex_1拥有my_mutex1_的所有权，auto_mutex_1可以把自己对<code>mutex</code>（my_mutex_1）的所有权转移给其他的<code>unique_lock</code>对象；<strong>unique_lock对mutex的所有权可以转移，但是不可以复制！</strong></p>
 <p>通过移动语义转移所有权：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_1</span><span class="params">(my_mutex1_)</span></span>;</span><br><span class="line"><span class="comment">// std::unique_lock&lt;std::mutex&gt; auto_mutex_1(auto_mutex_1); // 直接复制，编译报错</span></span><br><span class="line"><span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">auto_mutex_2</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">move</span>(auto_mutex_1))</span></span>; <span class="comment">// 左值转右值，调用移动构造函数</span></span><br></pre></td></tr></table></figure>
+
 <p>通过成员函数返回临时对象：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">rtn_unique_lock</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="function"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">tmpguard</span><span class="params">(my_mutex1_)</span></span>;</span><br><span class="line">	<span class="keyword">return</span> tmpguard;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 从一个临时对象来构造新的Foo的话，编译器会优先调用搬移构造函数，来把临时对象开膛破肚，取出自己需要的东西。</span></span><br><span class="line"><span class="comment">// 这里本质也是用了移动语义</span></span><br><span class="line"><span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; auto_mutex_2 = rtn_unique_lock()</span><br></pre></td></tr></table></figure>
 
@@ -385,20 +401,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -467,13 +483,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">99k</span>
+    <span title="站点总字数">112k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:30</span>
+    <span title="站点阅读时长">1:42</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 
