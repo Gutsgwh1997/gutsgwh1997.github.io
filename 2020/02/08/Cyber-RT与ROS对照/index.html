@@ -247,6 +247,7 @@
 <li>运行效率：ROS 为分布式系统，存在通信开销。</li>
 </ul>
 <a id="more"></a>
+
 <p>Cyber RT的特色：</p>
 <ul>
 <li>高性能：无锁对象，协程（coroutine），自适应通信机制；</li>
@@ -254,186 +255,174 @@
 <li>模块化：在框架内实现组件以及节点，即可完成系统任务；</li>
 <li>便利性：创建和使用任务。</li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><strong>Cyber RT</strong></th>
-<th style="text-align:center"><strong>ROS</strong></th>
-<th style="text-align:center"><strong>备注</strong></th>
+<th align="center"><strong>Cyber RT</strong></th>
+<th align="center"><strong>ROS</strong></th>
+<th align="center"><strong>备注</strong></th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:center">Component</td>
-<td style="text-align:center">无</td>
-<td style="text-align:center">组件之间通过Cyber channel通信</td>
+<tbody><tr>
+<td align="center">Component</td>
+<td align="center">无</td>
+<td align="center">组件之间通过Cyber channel通信</td>
 </tr>
 <tr>
-<td style="text-align:center">Channel</td>
-<td style="text-align:center">Topic</td>
-<td style="text-align:center">channel用于管理数据通信，用户可以通过publish/subscribe相同的channel来通信。</td>
+<td align="center">Channel</td>
+<td align="center">Topic</td>
+<td align="center">channel用于管理数据通信，用户可以通过publish/subscribe相同的channel来通信。</td>
 </tr>
 <tr>
-<td style="text-align:center">Node</td>
-<td style="text-align:center">Node</td>
-<td style="text-align:center">每一个模块包含Node并通过Node来通信。一个模块通过定义read/write和/或service/client使用不同的通信模式</td>
+<td align="center">Node</td>
+<td align="center">Node</td>
+<td align="center">每一个模块包含Node并通过Node来通信。一个模块通过定义read/write和/或service/client使用不同的通信模式</td>
 </tr>
 <tr>
-<td style="text-align:center">Reader/Writer</td>
-<td style="text-align:center">Publish/Subscribe</td>
-<td style="text-align:center">订阅者模式。往channel读写消息的类。通常作为Node的主要消息传输接口。</td>
+<td align="center">Reader/Writer</td>
+<td align="center">Publish/Subscribe</td>
+<td align="center">订阅者模式。往channel读写消息的类。通常作为Node的主要消息传输接口。</td>
 </tr>
 <tr>
-<td style="text-align:center">Service/Client</td>
-<td style="text-align:center">Service/Client</td>
-<td style="text-align:center">请求/相应模式，支持节点之间双向通信。</td>
+<td align="center">Service/Client</td>
+<td align="center">Service/Client</td>
+<td align="center">请求/相应模式，支持节点之间双向通信。</td>
 </tr>
 <tr>
-<td style="text-align:center">Message</td>
-<td style="text-align:center">Message</td>
-<td style="text-align:center">Cyber RT中用于模块间通信的数据单元，其实现基于protobuf。</td>
+<td align="center">Message</td>
+<td align="center">Message</td>
+<td align="center">Cyber RT中用于模块间通信的数据单元，其实现基于protobuf。</td>
 </tr>
 <tr>
-<td style="text-align:center">Parameter</td>
-<td style="text-align:center">Parameter</td>
-<td style="text-align:center">Parameter服务提供全局参数访问的接口，该服务基于service/client模式。</td>
+<td align="center">Parameter</td>
+<td align="center">Parameter</td>
+<td align="center">Parameter服务提供全局参数访问的接口，该服务基于service/client模式。</td>
 </tr>
 <tr>
-<td style="text-align:center">Record file</td>
-<td style="text-align:center">Bag file</td>
-<td style="text-align:center">用于记录从channel发送或者接收的消息，回放record file可以重现之前的操作行为。</td>
+<td align="center">Record file</td>
+<td align="center">Bag file</td>
+<td align="center">用于记录从channel发送或者接收的消息，回放record file可以重现之前的操作行为。</td>
 </tr>
 <tr>
-<td style="text-align:center">Launch file</td>
-<td style="text-align:center">Launch file</td>
-<td style="text-align:center">提供一种启动模块的便利途径。通过在launch file中定义一个或者多个dag文件，可以同时启动多个modules。</td>
+<td align="center">Launch file</td>
+<td align="center">Launch file</td>
+<td align="center">提供一种启动模块的便利途径。通过在launch file中定义一个或者多个dag文件，可以同时启动多个modules。</td>
 </tr>
 <tr>
-<td style="text-align:center">Task</td>
-<td style="text-align:center">无</td>
-<td style="text-align:center">异步计算任务。</td>
+<td align="center">Task</td>
+<td align="center">无</td>
+<td align="center">异步计算任务。</td>
 </tr>
 <tr>
-<td style="text-align:center">CRoutine</td>
-<td style="text-align:center">无</td>
-<td style="text-align:center">协程，优化线程使用与系统资源分配。</td>
+<td align="center">CRoutine</td>
+<td align="center">无</td>
+<td align="center">协程，优化线程使用与系统资源分配。</td>
 </tr>
 <tr>
-<td style="text-align:center">Scheduler</td>
-<td style="text-align:center">无</td>
-<td style="text-align:center">任务调度器，用户空间。</td>
+<td align="center">Scheduler</td>
+<td align="center">无</td>
+<td align="center">任务调度器，用户空间。</td>
 </tr>
 <tr>
-<td style="text-align:center">Dag file</td>
-<td style="text-align:center">无</td>
-<td style="text-align:center">定义模块拓扑结构的配置文件。</td>
+<td align="center">Dag file</td>
+<td align="center">无</td>
+<td align="center">定义模块拓扑结构的配置文件。</td>
 </tr>
-</tbody>
-</table>
-</div>
-<h2 id="2、常用工具对比"><a href="#2、常用工具对比" class="headerlink" title="2、常用工具对比"></a>2、常用工具对比</h2><div class="table-container">
-<table>
+</tbody></table>
+<h2 id="2、常用工具对比"><a href="#2、常用工具对比" class="headerlink" title="2、常用工具对比"></a>2、常用工具对比</h2><table>
 <thead>
 <tr>
-<th style="text-align:center"><strong>Cyber RT</strong></th>
-<th style="text-align:center"><strong>ROS</strong></th>
-<th style="text-align:center"><strong>备注</strong></th>
+<th align="center"><strong>Cyber RT</strong></th>
+<th align="center"><strong>ROS</strong></th>
+<th align="center"><strong>备注</strong></th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:center">cyber_launch</td>
-<td style="text-align:center">roslaunch</td>
-<td style="text-align:center">启动节点</td>
+<tbody><tr>
+<td align="center">cyber_launch</td>
+<td align="center">roslaunch</td>
+<td align="center">启动节点</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_channel</td>
-<td style="text-align:center">rostopic</td>
-<td style="text-align:center">察看某个topic的信息</td>
+<td align="center">cyber_channel</td>
+<td align="center">rostopic</td>
+<td align="center">察看某个topic的信息</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_moniter</td>
-<td style="text-align:center">rqt？</td>
-<td style="text-align:center">查看诊断消息</td>
+<td align="center">cyber_moniter</td>
+<td align="center">rqt？</td>
+<td align="center">查看诊断消息</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_visualizer</td>
-<td style="text-align:center">rviz？</td>
-<td style="text-align:center">激光点云及摄像头可视化工具，需要安装NVIDIA显卡驱动及CUDA</td>
+<td align="center">cyber_visualizer</td>
+<td align="center">rviz？</td>
+<td align="center">激光点云及摄像头可视化工具，需要安装NVIDIA显卡驱动及CUDA</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <h2 id="3、常用命令迁移"><a href="#3、常用命令迁移" class="headerlink" title="3、常用命令迁移"></a>3、常用命令迁移</h2><p>具体见<a href="https://github.com/ApolloAuto/apollo/blob/master/docs/cyber/CyberRT_Developer_Tools.md" target="_blank" rel="noopener">Apollo Cyber RT Developer Tools</a></p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><strong>Cyber RT</strong></th>
+<th align="center"><strong>Cyber RT</strong></th>
 <th><strong>ROS</strong></th>
 <th><strong>备注</strong></th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:center">cyber_recorder play -f example.record</td>
+<tbody><tr>
+<td align="center">cyber_recorder play -f example.record</td>
 <td>rosbag play example.bag</td>
 <td>播放一个包</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_recorder info example.record</td>
+<td align="center">cyber_recorder info example.record</td>
 <td>rosbag info example.bag</td>
 <td>查看一个包的信息</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_recorder record -c /apollo/canbus/chassis \ /apollo/canbus/chassis_detail</td>
+<td align="center">cyber_recorder record -c /apollo/canbus/chassis \ /apollo/canbus/chassis_detail</td>
 <td>rosbag record /apollo/canbus/chassis \ /apollo/canbus/chassis_detail</td>
 <td>录制多个topic</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_recorder split -f input_file.record -o ouput_file.record -k “/apollo/planning”</td>
+<td align="center">cyber_recorder split -f input_file.record -o ouput_file.record -k “/apollo/planning”</td>
 <td>rosbag filter input.bag output.bag ‘topic != “/apollo/planning”’</td>
 <td>滤除一个topic</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_recorder split -f input_file.record -o ouput_file.record -k “/apollo/planning” -k “/apollo/relative_map”’</td>
+<td align="center">cyber_recorder split -f input_file.record -o ouput_file.record -k “/apollo/planning” -k “/apollo/relative_map”’</td>
 <td>rosbag filter csc.bag csc_no_plannig_and_relativemap.bag ‘topic != “/apollo/planning” and “/apollo/relative_map”’</td>
 <td>滤除多个topic</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_channel list</td>
+<td align="center">cyber_channel list</td>
 <td>rostopic list</td>
 <td>列出所有活动的topic</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_channel info /apollo/planning</td>
+<td align="center">cyber_channel info /apollo/planning</td>
 <td>rostopic info /apollo/planning</td>
 <td>查看 /apollo/planning topic的概要信息</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_channel echo /apollo/planning</td>
+<td align="center">cyber_channel echo /apollo/planning</td>
 <td>rostopic echo /apollo/planning</td>
 <td>查看 /apollo/planning topic的内容</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_channel hz /apollo/planning</td>
+<td align="center">cyber_channel hz /apollo/planning</td>
 <td>rostopic hz /apollo/planning</td>
 <td>查看 /apollo/planning topic的发送频率</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_channel bw /apollo/planning</td>
+<td align="center">cyber_channel bw /apollo/planning</td>
 <td>rostopic bw /apollo/planning</td>
 <td>查看 /apollo/planning topic的带宽</td>
 </tr>
 <tr>
-<td style="text-align:center">cyber_channel type /apollo/planning</td>
+<td align="center">cyber_channel type /apollo/planning</td>
 <td>rostopic type /apollo/planning</td>
 <td>查看 /apollo/planning topic的数据类型</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <h2 id="4、像ROS一样使用Cyber-RT"><a href="#4、像ROS一样使用Cyber-RT" class="headerlink" title="4、像ROS一样使用Cyber RT"></a>4、像ROS一样使用Cyber RT</h2><p>有两种方式可将<code>Cyber​​ RT</code>框架用于应用程序：</p>
 <ul>
 <li>基于二进制：将应用程序单独编译为二进制文件，通过创建自己的<code>reader</code>和<code>writer</code>与其他网络模块进行通信。</li>
@@ -441,8 +430,10 @@
 </ul>
 <p>基于二进制的示例代码如下，与<code>ROS</code>极其相似，更多示例可查看<a href="https://github.com/ApolloAuto/apollo/tree/master/cyber/examples" target="_blank" rel="noopener">Cyber examples</a>与<a href="https://github.com/ApolloAuto/apollo/blob/master/docs/cyber/CyberRT_API_for_Developers.md" target="_blank" rel="noopener">Cyber RT API for Developers</a>。创建一个<code>talker</code>的示例程序如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/cyber.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/examples/proto/examples.pb.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/time/rate.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/time/time.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> apollo::cyber::Rate;</span><br><span class="line"><span class="keyword">using</span> apollo::cyber::Time;</span><br><span class="line"><span class="keyword">using</span> apollo::cyber::examples::proto::Chatter;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;</span><br><span class="line">  <span class="comment">// init cyber framework</span></span><br><span class="line">  apollo::cyber::Init(argv[<span class="number">0</span>]);</span><br><span class="line">  <span class="comment">// create talker node</span></span><br><span class="line">  <span class="keyword">auto</span> talker_node = apollo::cyber::CreateNode(<span class="string">"talker"</span>);</span><br><span class="line">  <span class="comment">// 应该是Unique_ptr吧？</span></span><br><span class="line">  <span class="comment">//std::shared_ptr&lt;apollo::cyber::Node&gt; talker_node(apollo::cyber::CreateNode("talker"));</span></span><br><span class="line">  <span class="comment">// create talker</span></span><br><span class="line">  <span class="keyword">auto</span> talker = talker_node-&gt;CreateWriter&lt;Chatter&gt;(<span class="string">"channel/chatter"</span>);</span><br><span class="line">  <span class="function">Rate <span class="title">rate</span><span class="params">(<span class="number">1.0</span>)</span></span>;</span><br><span class="line">  <span class="keyword">while</span> (apollo::cyber::OK()) &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">uint64_t</span> seq = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">auto</span> msg = <span class="built_in">std</span>::make_shared&lt;Chatter&gt;();</span><br><span class="line">    msg-&gt;set_timestamp(Time::Now().ToNanosecond());</span><br><span class="line">    msg-&gt;set_lidar_timestamp(Time::Now().ToNanosecond());</span><br><span class="line">    msg-&gt;set_seq(seq++);</span><br><span class="line">    msg-&gt;set_content(<span class="string">"Hello, apollo!"</span>);</span><br><span class="line">    talker-&gt;Write(msg);</span><br><span class="line">    AINFO &lt;&lt; <span class="string">"talker sent a message!"</span>;</span><br><span class="line">    rate.Sleep();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>创建一个<code>listener</code>的示例程序如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/cyber.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/examples/proto/examples.pb.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MessageCallback</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;apollo::cyber::examples::proto::Chatter&gt;&amp; msg)</span> </span>&#123;</span><br><span class="line">  AINFO &lt;&lt; <span class="string">"Received message seq-&gt; "</span> &lt;&lt; msg-&gt;seq();</span><br><span class="line">  AINFO &lt;&lt; <span class="string">"msgcontent-&gt;"</span> &lt;&lt; msg-&gt;content();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</span><br><span class="line">  <span class="comment">// init cyber framework</span></span><br><span class="line">  apollo::cyber::Init(argv[<span class="number">0</span>]);</span><br><span class="line">  <span class="comment">// create listener node</span></span><br><span class="line">  <span class="keyword">auto</span> listener_node = apollo::cyber::CreateNode(<span class="string">"listener"</span>);</span><br><span class="line">  <span class="comment">// create listener</span></span><br><span class="line">  <span class="keyword">auto</span> listener =</span><br><span class="line">      listener_node-&gt;CreateReader&lt;apollo::cyber::examples::proto::Chatter&gt;(</span><br><span class="line">          <span class="string">"channel/chatter"</span>, MessageCallback);</span><br><span class="line">  apollo::cyber::WaitForShutdown();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>基于组件的方式在<code>Apollo的启动过程3</code>中以<code>Planning</code>模块为例子说明了，这里列出更简单的实现，相对于基于二进制的方式，基于组件的方式有如下的优点：</p>
 <ul>
 <li>可以通过启动文件将组件加载到不同的进程中，并且部署非常灵活；</li>
@@ -452,17 +443,23 @@
 </ul>
 <p>头文件：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/component/component.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/examples/proto/examples.pb.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> apollo::cyber::Component;</span><br><span class="line"><span class="keyword">using</span> apollo::cyber::ComponentBase;</span><br><span class="line"><span class="keyword">using</span> apollo::cyber::examples::proto::Driver;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommonComponentSample</span> :</span> <span class="keyword">public</span> Component&lt;Driver, Driver&gt; &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">Init</span><span class="params">()</span> <span class="keyword">override</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">bool</span> <span class="title">Proc</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Driver&gt;&amp; msg0,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Driver&gt;&amp; msg1)</span> <span class="keyword">override</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line">CYBER_REGISTER_COMPONENT(CommonComponentSample)</span><br></pre></td></tr></table></figure>
+
 <p>实现文件：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cyber/examples/common_component_example/common_component_example.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">CommonComponentSample::Init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  AINFO &lt;&lt; <span class="string">"Commontest component init"</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">CommonComponentSample::Proc</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Driver&gt;&amp; msg0,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Driver&gt;&amp; msg1)</span> </span>&#123;</span><br><span class="line">  AINFO &lt;&lt; <span class="string">"Start common component Proc ["</span> &lt;&lt; msg0-&gt;msg_id() &lt;&lt; <span class="string">"] ["</span></span><br><span class="line">        &lt;&lt; msg1-&gt;msg_id() &lt;&lt; <span class="string">"]"</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>对应的<code>dag</code>文件：</p>
 <figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># Define all coms in DAG streaming.</span><br><span class="line">    module_config &#123;</span><br><span class="line">    module_library : <span class="string">"/apollo/bazel-bin/cyber/examples/common_component_example/libcommon_component_example.so"</span></span><br><span class="line">    components &#123;</span><br><span class="line">        class_name : <span class="string">"CommonComponentSample"</span></span><br><span class="line">        config &#123;</span><br><span class="line">            name : <span class="string">"common"</span></span><br><span class="line">            readers &#123;</span><br><span class="line">                channel: <span class="string">"/apollo/prediction"</span>  <span class="comment">// proc()中的channel</span></span><br><span class="line">            &#125;</span><br><span class="line">            readers &#123;</span><br><span class="line">                channel: <span class="string">"/apollo/test"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
 <p>对应的启动文件：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">cyber</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>common<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dag_conf</span>&gt;</span>/apollo/cyber/examples/common_component_example/common.dag<span class="tag">&lt;/<span class="name">dag_conf</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">process_name</span>&gt;</span>common<span class="tag">&lt;/<span class="name">process_name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">cyber</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>构建和运行：</p>
 <p>Build：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bazel build cyber/examples/common_component_smaple/…</span><br></pre></td></tr></table></figure>
+
 <p>Run：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mainboard -d cyber/examples/common_component_smaple/timer.dag</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -585,20 +582,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -667,13 +664,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">115k</span>
+    <span title="站点总字数">116k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:45</span>
+    <span title="站点阅读时长">1:46</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 
