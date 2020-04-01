@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://yoursite.com/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F.png">
 <meta property="og:image" content="http://yoursite.com/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F.png">
 <meta property="article:published_time" content="2020-03-31T15:19:54.000Z">
-<meta property="article:modified_time" content="2020-03-31T17:01:25.989Z">
+<meta property="article:modified_time" content="2020-04-01T01:06:24.512Z">
 <meta property="article:author" content="陌上&amp;烟雨">
 <meta property="article:tag" content="SLAM">
 <meta property="article:tag" content="VSLAM">
@@ -199,7 +199,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-01 01:01:25" itemprop="dateModified" datetime="2020-04-01T01:01:25+08:00">2020-04-01</time>
+                <time title="修改时间：2020-04-01 09:06:24" itemprop="dateModified" datetime="2020-04-01T09:06:24+08:00">2020-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -256,14 +256,25 @@
 <div style="width:70%;margin:auto" align=center><img src="/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F.png" class="" title="三角测量"></div>
 
 <p>考虑$I_1$，$I_2$两帧图像，$R,t$是第二帧相对于第一帧的旋转矩阵和平移向量（对应的变换矩阵是$T_{12}$）。在$I_1$中有特征点$p_1$，对应于$I_2$中的匹配点$p_2$。根据相机的内参数矩阵$K$，我们便可以获得$p_1$在$I_1$帧归一化图像平面中的点$x_1=K^{-1}p_1$；$p_2$在$I_2$帧归一化平面中的点$x_2=K^{-1}p_2$。</p>
-<p>根据对极约束，他们满足如下的关系：<br>$$<br>s_1x_1 = s_2Rx_2+t \tag{1.1}<br>$$<br>先对公式（1.1）左右两端左乘$x_1^{\wedge}$，得到：<br>$$<br>s_1x_1^{\wedge}x_1 = 0 = s_2x_1^{\wedge}Rx_2+x_1^{\wedge}t<br>\tag{1.2}<br>$$<br>根据公式（1.2）的右端，可以计算出$s_2$，进而根据公式（1.1）计算出$s_1$，我们便可得到路标点$P$在这两帧中的深度。然而，在实际的位姿估计中，我们估计的值往往存在误差，公式（1.2）不严格为0。这时候我们可以计算最小二乘解，参见<a href="">最小二乘的几何解释</a>。</p>
+<p>根据对极约束，他们满足如下的关系：</p>
+<p>$$<br>s_1x_1 = s_2Rx_2+t \tag{1.1}<br>$$</p>
+<p>先对公式（1.1）左右两端左乘$x_1^{\wedge}$，得到：</p>
+<p>$$<br>s_1x_1^{\wedge}x_1 = 0 = s_2x_1^{\wedge}Rx_2+x_1^{\wedge}t<br>\tag{1.2}<br>$$</p>
+<p>根据公式（1.2）的右端，可以计算出$s_2$，进而根据公式（1.1）计算出$s_1$，我们便可得到路标点$P$在这两帧中的深度。然而，在实际的位姿估计中，我们估计的值往往存在误差，公式（1.2）不严格为0。这时候我们可以计算最小二乘解，参见<a href="/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/" title="最小二乘的几何解释">最小二乘的几何解释</a></p>
 <h3 id="2、多视图三角化"><a href="#2、多视图三角化" class="headerlink" title="2、多视图三角化"></a>2、多视图三角化</h3><p>在滑动窗口中，路标点经常被多个关键帧同时观测，考虑路标点$Y$，在多个关键帧$k=1，…,n$中观测到。</p>
 <div style="width:80%;margin:auto" align=center><img src="/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F.png" class="" title="多视图三角测量"></div>
 
 <p>为了计算方便我们取$Y \in \mathbb{R}^4$，在每一帧中的观测取归一化平面坐标$x_k=[u_k,v_k,1]^T$（与像素坐标只差一个相机内参）。</p>
-<p>记投影矩阵$P_k=[R_k,t_k] \in \mathbb{R}^{3\times4}$，为World坐标系到Camera坐标系的变换。有如下的投影关系：<br>$$<br>\forall k,\lambda_kx_k=P_kY<br>\tag{2.1}<br>$$<br>展开：<br>$$<br>\lambda_k\left[\begin{array}{ccc}<br>u_k \\<br>v_k\\<br>1<br>\end{array}\right]<br>=\left[\begin{array}{ccc}<br>P_{k,1}^T \\<br>P_{k,2}^T \\<br>P_{k,3}^T<br>\end{array}\right]Y<br>\tag{2.2}<br>$$<br>根据公式（2.2）的第三行有：$\lambda_k = P_{k,3}^TY$，其中$P_{k,3}^T$是$P_k$的第3行。</p>
-<p>将第三行的结果带入前两行则有：<br>$$<br>u_kP_{k,3}^TY = P_{k,1}^TY \\<br>v_kP_{k,3}^TY = P_{k,2}^TY<br>\tag{2.3}<br>$$<br>每次的观测都会提供两个这样的方程，$Y$是未知量，将$Y$移动到等式的另一侧：</p>
-<p>$$<br>\left[\begin{array}{c}<br>u_{1} \mathbf{P}<em>{1,3}^{\top}-\mathbf{P}</em>{1,1}^{\top} \\<br>v_{1} \mathbf{P}<em>{1,3}^{\top}-\mathbf{P}</em>{1,2}^{\top} \\<br>\vdots \\<br>u_{n} \mathbf{P}<em>{n, 3}^{\top}-\mathbf{P}</em>{n, 1}^{\top} \\<br>v_{n} \mathbf{P}<em>{n, 3}^{\top}-\mathbf{P}</em>{n, 2}^{\top}<br>\end{array}\right] \mathbf{y}=\mathbf{0} \rightarrow \mathbf{D} \mathbf{y}=\mathbf{0}<br>\tag{2.5}<br>$$<br>于是，$Y$是$D$零空间中的一个非零元素。由于$D \in \mathbb{R}^{2n \times 4}$，在观测次数大于等于2时，很可能矩阵$D$满秩，此时可以寻找最小二乘解，使用SVD分解来计算。</p>
+<p>记投影矩阵$P_k=[R_k,t_k] \in \mathbb{R}^{3\times4}$，为World坐标系到Camera坐标系的变换。有如下的投影关系：</p>
+<p>$$<br>\forall k,\lambda_kx_k=P_kY<br>\tag{2.1}<br>$$</p>
+<p>展开：</p>
+<p>$$<br>\lambda_k\left[\begin{array}{ccc}<br>u_k \\<br>v_k\\<br>1<br>\end{array}\right]<br>=\left[\begin{array}{ccc}<br>P_{k,1}^T \\<br>P_{k,2}^T \\<br>P_{k,3}^T<br>\end{array}\right]Y<br>\tag{2.2}<br>$$</p>
+<p>根据公式（2.2）的第三行有：$\lambda_k = P_{k,3}^TY$，其中$P_{k,3}^T$是$P_k$的第3行。</p>
+<p>将第三行的结果带入前两行则有：</p>
+<p>$$<br>u_kP_{k,3}^TY = P_{k,1}^TY \\<br>v_kP_{k,3}^TY = P_{k,2}^TY<br>\tag{2.3}<br>$$</p>
+<p>每次的观测都会提供两个这样的方程，$Y$是未知量，将$Y$移动到等式的另一侧：</p>
+<p>$$<br>\left[\begin{array}{c}<br>u_{1} \mathbf{P}<em>{1,3}^{\top}-\mathbf{P}</em>{1,1}^{\top} \\<br>v_{1} \mathbf{P}<em>{1,3}^{\top}-\mathbf{P}</em>{1,2}^{\top} \\<br>\vdots \\<br>u_{n} \mathbf{P}<em>{n, 3}^{\top}-\mathbf{P}</em>{n, 1}^{\top} \\<br>v_{n} \mathbf{P}<em>{n, 3}^{\top}-\mathbf{P}</em>{n, 2}^{\top}<br>\end{array}\right] \mathbf{y}=\mathbf{0} \rightarrow \mathbf{D} \mathbf{y}=\mathbf{0}<br>\tag{2.5}<br>$$</p>
+<p>于是，$Y$是$D$零空间中的一个非零元素。由于$D \in \mathbb{R}^{2n \times 4}$，在观测次数大于等于2时，很可能矩阵$D$满秩，此时可以寻找最小二乘解，使用SVD分解来计算。</p>
 
     </div>
 
