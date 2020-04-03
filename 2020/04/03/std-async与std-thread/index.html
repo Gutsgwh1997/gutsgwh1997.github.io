@@ -20,17 +20,22 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="这知识，它不进脑子啊！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="GWH Blog">
-<meta property="og:url" content="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/index.html">
+  <meta name="description" content="九（续）、std::async深入理解本节接第九章《获取线程函数返回值》,主要记录了std::async函数模板与std::thread函数模板的差异。 1 、std::async的第一个参数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="std::async与std::thread">
+<meta property="og:url" content="http://yoursite.com/2020/04/03/std-async%E4%B8%8Estd-thread/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="这知识，它不进脑子啊！">
+<meta property="og:description" content="九（续）、std::async深入理解本节接第九章《获取线程函数返回值》,主要记录了std::async函数模板与std::thread函数模板的差异。 1 、std::async的第一个参数">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-03T09:17:55.000Z">
+<meta property="article:modified_time" content="2020-04-03T09:21:12.123Z">
 <meta property="article:author" content="陌上&amp;烟雨">
+<meta property="article:tag" content="C++11">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/">
+<link rel="canonical" href="http://yoursite.com/2020/04/03/std-async%E4%B8%8Estd-thread/">
 
 
 <script id="page-configurations">
@@ -38,12 +43,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>分类: 工具箱 | GWH Blog</title>
+  <title>std::async与std::thread | GWH Blog</title>
   
 
 
@@ -157,50 +162,157 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">工具箱
-          <small>分类</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/std-async%E4%B8%8Estd-thread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
+      <meta itemprop="name" content="陌上&烟雨">
+      <meta itemprop="description" content="这知识，它不进脑子啊！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GWH Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          std::async与std::thread
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-04-03 17:17:55 / 修改时间：17:21:12" itemprop="dateCreated datePublished" datetime="2020-04-03T17:17:55+08:00">2020-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/C-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">C++多线程</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
+        <h2 id="九（续）、std-async深入理解"><a href="#九（续）、std-async深入理解" class="headerlink" title="九（续）、std::async深入理解"></a>九（续）、std::async深入理解</h2><p>本节接第九章《获取线程函数返回值》,主要记录了<code>std::async</code>函数模板与<code>std::thread</code>函数模板的差异。</p>
+<h3 id="1-、std-async的第一个参数"><a href="#1-、std-async的第一个参数" class="headerlink" title="1 、std::async的第一个参数"></a>1 、std::async的第一个参数</h3><a id="more"></a>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-31T23:43:58+08:00"
-              content="2020-03-31">
-          03-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/03/31/%E6%88%91%E7%9A%84%E7%A5%9E%E5%85%B5%E5%88%A9%E5%99%A8/" itemprop="url">
-            <span itemprop="name">我的开发工具</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+<p>在第九章中介绍过了参数：<code>std::launch::deferred</code>【延迟调用】；<code>std::launch::async</code>【强制创建一个线程】</p>
+<ol>
+<li><code>std::launch::deferred</code>：表示线程入口函数调用被延迟到<code>std::future</code>的<code>wait()</code>或者<code>get()</code>函数调用才执行。如果<code>wait()</code>和<code>get()</code>没有调用，则不会创建线程并执行线程入口函数；如果在主线程中调用<code>wait()</code>和<code>get()</code>，实际上也不会创建新线程，而是在主线程中执行的入口函数。</li>
+<li><code>std::launch::async</code>：表示强制这个异步任务在新线程上执行，在调用<code>std::async</code>函数的时候就开始创建线程。<code>std::async</code>默认的是这个标记。</li>
+<li><code>std::launch::deferred | std::launch::async</code>：这里的“|”意味着<code>async</code>的行为可能是“创建新的线程并立即执行”或者“没有创建线程并且延迟到调用result.get()才开始执行任务入口函数”。</li>
+<li><code>std::async</code>不带这个标记时，默认是第三种情况，系统自行决定是异步（创建新线程）还是同步（不创建新线程）方式运行。</li>
+</ol>
+<h4 id="3-1、std-thread与std-async的区别"><a href="#3-1、std-thread与std-async的区别" class="headerlink" title="3.1、std::thread与std::async的区别"></a>3.1、std::thread与std::async的区别</h4><p>如果系统资源紧张，<code>std::thread()</code>创建线程可能会失败，那么执行<code>std::thread()</code>时，整个程序可能崩溃。对于<code>std::async()</code>我们一般不叫创建线程（尽管<code>async</code>可以创建线程），我们一般叫它创建一个异步<strong>任务</strong>。<code>std::async</code>与<code>std::thread</code>最明显的不同，就是<code>async</code>有时候并不创建新的线程。</p>
+<p><code>std::thread</code>创建线程的方式，如果线程有返回值，不容易拿到这个值。</p>
+<p><code>std::async()</code>创建异步任务，可能创建也可能不创建线程。并且<code>async</code>的调用方法很容易拿到线程入口函数的返回值。</p>
+<p>由于系统资源的限制：</p>
+<ul>
+<li>如果使用<code>std::thread</code>创建的线程太多，则可能创建失败，系统报告异常，程序崩溃。</li>
+<li>如果使用<code>std::async</code>，一般就不会报异常不崩溃。这是因为系统资源紧张时，<code>async</code>这种不加额外参数的调用不会创建新线程，而是后续谁调用了<code>result.get()</code>请求结果，那么这个异步任务就在执行<code>get()</code>语句的线程中运行。</li>
+<li>通常来说，一个程序里的线程数量不宜超过100-200。</li>
+</ul>
+<h4 id="3-3、std-async不确定性问题的解决"><a href="#3-3、std-async不确定性问题的解决" class="headerlink" title="3.3、std::async不确定性问题的解决"></a>3.3、std::async不确定性问题的解决</h4><p>不加额外参数的<code>std::async</code>，系统自行决定是否创建新线程。问题的焦点在于<code>std::future&lt;int&gt; result = std::async(mythread);</code>的写法，这个异步任务到底有没有被推迟执行。我们可以通过<code>result.wait_for()</code>函数来判断，这在上一讲中也提到过：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">future</span>&lt;<span class="keyword">int</span>&gt; result = <span class="built_in">std</span>::async(mythread);          </span><br><span class="line"><span class="built_in">std</span>::future_status status = result.wait_for(<span class="built_in">std</span>::chrono::seconds(<span class="number">0</span>s)); <span class="comment">//0s的语法没问题，operator ""s  </span></span><br><span class="line"><span class="keyword">if</span> (status == <span class="built_in">std</span>::future_status::deferred)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 如果async的第一个参数被设置为std::launch::deferred，则本条成立</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"线程被延迟执行"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; result.<span class="built_in">get</span>() &lt;&lt; <span class="built_in">endl</span>;        <span class="comment">// 这时候线程入口函数才会执行</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"任务没有被推迟"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
     </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>听说打赏我的人，最后都找到了真爱。</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E5%BE%AE%E4%BF%A1.jpg" alt="陌上&烟雨 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E6%94%AF%E4%BB%98%E5%AE%9D.jpg" alt="陌上&烟雨 支付宝">
+        <p>支付宝</p>
+      </div>
+
   </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C-11/" rel="tag"># C++11</a>
+              <a href="/tags/C/" rel="tag"># C++</a>
+              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/03/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C/" rel="prev" title="原子操作">
+      <i class="fa fa-chevron-left"></i> 原子操作
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
   
   
 
-  
-
+  </div>
 
 
           </div>
@@ -251,6 +363,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#九（续）、std-async深入理解"><span class="nav-text">九（续）、std::async深入理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-、std-async的第一个参数"><span class="nav-text">1 、std::async的第一个参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1、std-thread与std-async的区别"><span class="nav-text">3.1、std::thread与std::async的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3、std-async不确定性问题的解决"><span class="nav-text">3.3、std::async不确定性问题的解决</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
