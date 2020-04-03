@@ -28,7 +28,7 @@
 <meta property="og:description" content="九（续）、std::async深入理解本节接第九章《获取线程函数返回值》,主要记录了std::async函数模板与std::thread函数模板的差异。 1 、std::async的第一个参数">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-04-03T09:17:55.000Z">
-<meta property="article:modified_time" content="2020-04-03T09:21:12.123Z">
+<meta property="article:modified_time" content="2020-04-03T13:17:44.334Z">
 <meta property="article:author" content="陌上&amp;烟雨">
 <meta property="article:tag" content="C++11">
 <meta property="article:tag" content="C++">
@@ -191,7 +191,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-04-03 17:17:55 / 修改时间：17:21:12" itemprop="dateCreated datePublished" datetime="2020-04-03T17:17:55+08:00">2020-04-03</time>
+              <time title="创建时间：2020-04-03 17:17:55 / 修改时间：21:17:44" itemprop="dateCreated datePublished" datetime="2020-04-03T17:17:55+08:00">2020-04-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -249,7 +249,7 @@
 <li><code>std::launch::deferred | std::launch::async</code>：这里的“|”意味着<code>async</code>的行为可能是“创建新的线程并立即执行”或者“没有创建线程并且延迟到调用result.get()才开始执行任务入口函数”。</li>
 <li><code>std::async</code>不带这个标记时，默认是第三种情况，系统自行决定是异步（创建新线程）还是同步（不创建新线程）方式运行。</li>
 </ol>
-<h4 id="3-1、std-thread与std-async的区别"><a href="#3-1、std-thread与std-async的区别" class="headerlink" title="3.1、std::thread与std::async的区别"></a>3.1、std::thread与std::async的区别</h4><p>如果系统资源紧张，<code>std::thread()</code>创建线程可能会失败，那么执行<code>std::thread()</code>时，整个程序可能崩溃。对于<code>std::async()</code>我们一般不叫创建线程（尽管<code>async</code>可以创建线程），我们一般叫它创建一个异步<strong>任务</strong>。<code>std::async</code>与<code>std::thread</code>最明显的不同，就是<code>async</code>有时候并不创建新的线程。</p>
+<h3 id="2、std-thread与std-async的区别"><a href="#2、std-thread与std-async的区别" class="headerlink" title="2、std::thread与std::async的区别"></a>2、std::thread与std::async的区别</h3><p>如果系统资源紧张，<code>std::thread()</code>创建线程可能会失败，那么执行<code>std::thread()</code>时，整个程序可能崩溃。对于<code>std::async()</code>我们一般不叫创建线程（尽管<code>async</code>可以创建线程），我们一般叫它创建一个异步<strong>任务</strong>。<code>std::async</code>与<code>std::thread</code>最明显的不同，就是<code>async</code>有时候并不创建新的线程。</p>
 <p><code>std::thread</code>创建线程的方式，如果线程有返回值，不容易拿到这个值。</p>
 <p><code>std::async()</code>创建异步任务，可能创建也可能不创建线程。并且<code>async</code>的调用方法很容易拿到线程入口函数的返回值。</p>
 <p>由于系统资源的限制：</p>
@@ -258,7 +258,7 @@
 <li>如果使用<code>std::async</code>，一般就不会报异常不崩溃。这是因为系统资源紧张时，<code>async</code>这种不加额外参数的调用不会创建新线程，而是后续谁调用了<code>result.get()</code>请求结果，那么这个异步任务就在执行<code>get()</code>语句的线程中运行。</li>
 <li>通常来说，一个程序里的线程数量不宜超过100-200。</li>
 </ul>
-<h4 id="3-3、std-async不确定性问题的解决"><a href="#3-3、std-async不确定性问题的解决" class="headerlink" title="3.3、std::async不确定性问题的解决"></a>3.3、std::async不确定性问题的解决</h4><p>不加额外参数的<code>std::async</code>，系统自行决定是否创建新线程。问题的焦点在于<code>std::future&lt;int&gt; result = std::async(mythread);</code>的写法，这个异步任务到底有没有被推迟执行。我们可以通过<code>result.wait_for()</code>函数来判断，这在上一讲中也提到过：</p>
+<h3 id="3、std-async不确定性问题的解决"><a href="#3、std-async不确定性问题的解决" class="headerlink" title="3、std::async不确定性问题的解决"></a>3、std::async不确定性问题的解决</h3><p>不加额外参数的<code>std::async</code>，系统自行决定是否创建新线程。问题的焦点在于<code>std::future&lt;int&gt; result = std::async(mythread);</code>的写法，这个异步任务到底有没有被推迟执行。我们可以通过<code>result.wait_for()</code>函数来判断，这在上一讲中也提到过：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">future</span>&lt;<span class="keyword">int</span>&gt; result = <span class="built_in">std</span>::async(mythread);          </span><br><span class="line"><span class="built_in">std</span>::future_status status = result.wait_for(<span class="built_in">std</span>::chrono::seconds(<span class="number">0</span>s)); <span class="comment">//0s的语法没问题，operator ""s  </span></span><br><span class="line"><span class="keyword">if</span> (status == <span class="built_in">std</span>::future_status::deferred)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 如果async的第一个参数被设置为std::launch::deferred，则本条成立</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"线程被延迟执行"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; result.<span class="built_in">get</span>() &lt;&lt; <span class="built_in">endl</span>;        <span class="comment">// 这时候线程入口函数才会执行</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"任务没有被推迟"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
     </div>
@@ -363,7 +363,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#九（续）、std-async深入理解"><span class="nav-text">九（续）、std::async深入理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-、std-async的第一个参数"><span class="nav-text">1 、std::async的第一个参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1、std-thread与std-async的区别"><span class="nav-text">3.1、std::thread与std::async的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3、std-async不确定性问题的解决"><span class="nav-text">3.3、std::async不确定性问题的解决</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#九（续）、std-async深入理解"><span class="nav-text">九（续）、std::async深入理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-、std-async的第一个参数"><span class="nav-text">1 、std::async的第一个参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、std-thread与std-async的区别"><span class="nav-text">2、std::thread与std::async的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、std-async不确定性问题的解决"><span class="nav-text">3、std::async不确定性问题的解决</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
