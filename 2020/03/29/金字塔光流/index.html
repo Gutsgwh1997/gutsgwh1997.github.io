@@ -229,7 +229,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.2k</span>
+              <span>8.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -248,8 +248,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="1、Lucas-Kanade光流"><a href="#1、Lucas-Kanade光流" class="headerlink" title="1、Lucas-Kanade光流"></a>1、Lucas-Kanade光流</h3><p>特征跟踪是指对于第一帧图像<strong><em>I</em></strong>中的像素$u = [u_x,u_y]^T$，在第二帧<strong><em>J</em></strong>中找到与其对应的像素$v=u+d=[u_x+d_x,u_y+d_y]$，我们的目标就是计算出$[d_x,d_y]$。</p>
-<a id="more"></a>
+        <h3 id="1、Lucas-Kanade光流"><a href="#1、Lucas-Kanade光流" class="headerlink" title="1、Lucas-Kanade光流"></a>1、Lucas-Kanade光流</h3><p>特征跟踪是指对于第一帧图像<strong><em>I</em></strong>中的像素$u = [u_x,u_y]^T$，在第二帧<strong><em>J</em></strong>中找到与其对应的像素$v=u+d=[u_x+d_x,u_y+d_y]$，我们的目标就是计算出$[d_x,d_y]$。<br><a id="more"></a></p>
 <div style="width:100%;margin:auto" align=center><img src="/2020/03/29/%E9%87%91%E5%AD%97%E5%A1%94%E5%85%89%E6%B5%81/LK%E5%85%89%E6%B5%81%E8%B7%9F%E8%B8%AA%E7%A4%BA%E6%84%8F%E5%9B%BE.png" class="" title="LK光流跟踪示意图"></div>
 
 <p>Lk光流基于灰度不变假设，并且假设同一个小窗口$w_x \times w_y$内的像素具有相同的运动，适用于运动相对平缓的场景。精确性和鲁棒性是评价特征跟踪算法的两个关键指标。</p>
@@ -258,68 +257,106 @@
 <li>鲁棒性与光照变化、图像运动大小相关，为了处理大像素运动，直觉上最好选择一个较大窗口。</li>
 <li>在选择窗口大小时，在局部精度和鲁棒性之间存在自然的折衷。</li>
 </ul>
-<p>LK光流的具体推导在高翔的《视觉SLAM十四讲》中详细给出，思路清晰，步骤简单，这里不再列出。本篇主要记录以迭代的方式推导LK光流，以及LK光流的改进算法–金字塔LK光流。</p>
+<p>LK光流的具体推导在高翔的《视觉SLAM十四讲》中详细给出，思路清晰，步骤简单，这里不再列出。本篇主要记录以迭代的方式推导LK光流，以及LK光流的改进算法—金字塔LK光流。</p>
 <h3 id="2、Image-pyramid-representation"><a href="#2、Image-pyramid-representation" class="headerlink" title="2、Image pyramid representation"></a>2、Image pyramid representation</h3><div style="width:50%;margin:auto" align=center><img src="/2020/03/29/%E9%87%91%E5%AD%97%E5%A1%94%E5%85%89%E6%B5%81/%E5%9B%BE%E5%83%8F%E9%87%91%E5%AD%97%E5%A1%94.png" class="" title="图像金字塔"></div>
 
 <p>图像金字塔使用迭代的方式表示，第0层是原始的图像<strong>$I_0$</strong>大小为$n_x\times n_y$，第1层由第0层计算而来，第2层由第1层计算而来…。这样第L层的图像<strong>$I^L$</strong>，有如下的迭代表示：</p>
-<p>$$\begin{aligned}<br>I^{L}(x, y)=&amp; \frac{1}{4} I^{L-1}(2 x, 2 y)+\\<br>&amp; \frac{1}{8}\left(I^{L-1}(2 x-1,2 y)+I^{L-1}(2 x+1,2 y)+I^{L-1}(2 x, 2 y-1)+I^{L-1}(2 x, 2 y+1)\right)+\\<br>&amp; \frac{1}{16}\left(I^{L-1}(2 x-1,2 y-1)+I^{L-1}(2 x+1,2 y+1)+I^{L-1}(2 x-1,2 y+1)+I^{L-1}(2 x+1,2 y+1)\right)<br>\end{aligned}$$</p>
-<p>上述公式只在$0\leq 2x \leq n_x^{L-1}-1$， $0\leq 2x \leq n_x^{L-1}-1$时有定义，它表明第L-1层的图像经过平滑和亚采样就可以得到第L层的图像。一般情况下，金字塔的层数不超过4层，一个640x480大小的图像，第一、第二、第三、第四层的大小分别是320x240，160x120，80x60，40x30。引入图形金字塔的目的是能够处理大像素（large pixel motions）的运动（大于窗口$w_x$和$w_y$）。</p>
+<script type="math/tex; mode=display">\begin{aligned}
+I^{L}(x, y)=& \frac{1}{4} I^{L-1}(2 x, 2 y)+\\\\
+& \frac{1}{8}\left(I^{L-1}(2 x-1,2 y)+I^{L-1}(2 x+1,2 y)+I^{L-1}(2 x, 2 y-1)+I^{L-1}(2 x, 2 y+1)\right)+\\\\
+& \frac{1}{16}\left(I^{L-1}(2 x-1,2 y-1)+I^{L-1}(2 x+1,2 y+1)+I^{L-1}(2 x-1,2 y+1)+I^{L-1}(2 x+1,2 y+1)\right)
+\end{aligned}</script><p>上述公式只在$0\leq 2x \leq n_x^{L-1}-1$， $0\leq 2x \leq n_x^{L-1}-1$时有定义，它表明第L-1层的图像经过平滑和亚采样就可以得到第L层的图像。一般情况下，金字塔的层数不超过4层，一个640x480大小的图像，第一、第二、第三、第四层的大小分别是320x240，160x120，80x60，40x30。引入图形金字塔的目的是能够处理大像素（large pixel motions）的运动（大于窗口$w_x$和$w_y$）。</p>
 <p>定义$u^L=[u_x^L,u_y^L]$是一个给定的点在第L层图像上的像素坐标，向量$u^L$可以通过下面的公式计算：</p>
-<p>$$<br>u^L = \frac{u}{2^L}; u = u^0<br>$$</p>
-<h3 id="3、Pyramidal-Feature-Tracking"><a href="#3、Pyramidal-Feature-Tracking" class="headerlink" title="3、Pyramidal Feature Tracking"></a>3、Pyramidal Feature Tracking</h3><p>金字塔跟踪算法概述如下：1、在顶层$L_m$计算光流，得到跟踪的结果；2、计算的结果传导到下一层$L_{m-1}$，作为本层计算的初始值，调整光流计算，并将结果传递给下一层；3、重复此计算流程，直到$L_0$层。</p>
+<script type="math/tex; mode=display">
+u^L = \frac{u}{2^L}; u = u^0</script><h3 id="3、Pyramidal-Feature-Tracking"><a href="#3、Pyramidal-Feature-Tracking" class="headerlink" title="3、Pyramidal Feature Tracking"></a>3、Pyramidal Feature Tracking</h3><p>金字塔跟踪算法概述如下：1、在顶层$L<em>m$计算光流，得到跟踪的结果；2、计算的结果传导到下一层$L</em>{m-1}$，作为本层计算的初始值，调整光流计算，并将结果传递给下一层；3、重复此计算流程，直到$L_0$层。</p>
 <p>我们使用数学来描述L+1层与L层之间的递推关系，假设第L层的光流计算初始值是$g^L = [g_x^L,g_y^L]$。为了计算第L层的光流，有必要找到使新的图像匹配误差函数$\epsilon^{L}\left(\mathbf{d}^{L}\right)$最小化的像素位移矢量$d^L=[d_x^L,d_y^L]$：</p>
-<p>$$<br>\epsilon^{L}\left(\mathbf{d}^{L}\right)=\epsilon^{L}\left(d_{x}^{L}, d_{y}^{L}\right)= \sum_{x=u_{x}^{L}-\omega_{x}}^{u_{x}^{L}+\omega_{x}} \sum_{y=u_{y}^{L}-\omega_{y}}^{u_{y}^{L}+\omega_{y}}\left(I^{L}(x, y)-J^{L}\left(x+g_{x}^{L}+d_{x}^{L}, y+g_{y}^{L}+d_{y}^{L}\right)\right)^{2}<br>$$</p>
-<p>这个公式是最小化光度误差，注意，初始值向量$g^L$用于预挪移（pre-translate）第二帧图像<strong><em>J</em></strong>中的图像块。这样，残余像素向量$d^L=[d_x^L,d_y^L]^T$很小，因此很容易通过标准的Lucas-Kanade步骤进行计算，迭代的Lucas-Kanade算法在下一节给出，它将用来计算$d^L=[d_x^L,d_y^L]^T$，现在假设$d^L=[d_x^L,d_y^L]^T$已经被计算出来。然后，本层（第L层）的计算结果传导给下一层（第L-1层），作为L-1层光流计算的初始值$g^{L-1}$：</p>
-<p>$$<br>g^{L-1} = 2(g^L+d^L) \tag{3.1}<br>$$</p>
-<p>下一层的像素残差剩余向量经过同样的步骤，通过最小化$\epsilon^{L-1}\left(\mathbf{d}^{L-1}\right)$获得结果$d^{L-1}$。算法通过将$L_m$层的初始值设置为零来初始化（金字塔最高层没有可用的初始值）:</p>
-<p>$$<br>g^{L_m} = [0,0]^T<br>$$</p>
-<p>迭代计算到最底层便得到最后的结果:</p>
-<p>$$<br>d = g^0+d^0 = \sum_{L=0}^{L_m}2^Ld^L<br>$$</p>
-<p>金字塔实现的明显优点是，在计算大的整体像素位移矢量$d$时，每个剩余光流矢量$d^L$可以保持非常小。</p>
+<script type="math/tex; mode=display">
+\epsilon^{L}\left(\mathbf{d}^{L}\right)=\epsilon^{L}\left(d_{x}^{L}, d_{y}^{L}\right)= \sum_{x=u_{x}^{L}-\omega_{x}}^{u_{x}^{L}+\omega_{x}} \sum_{y=u_{y}^{L}-\omega_{y}}^{u_{y}^{L}+\omega_{y}}\left(I^{L}(x, y)-J^{L}\left(x+g_{x}^{L}+d_{x}^{L}, y+g_{y}^{L}+d_{y}^{L}\right)\right)^{2}</script><p>这个公式是最小化光度误差，注意，初始值向量$g^L$用于预挪移（pre-translate）第二帧图像<strong><em>J</em></strong>中的图像块。这样，残余像素向量$d^L=[d_x^L,d_y^L]^T$很小，因此很容易通过标准的Lucas-Kanade步骤进行计算，迭代的Lucas-Kanade算法在下一节给出，它将用来计算$d^L=[d_x^L,d_y^L]^T$，现在假设$d^L=[d_x^L,d_y^L]^T$已经被计算出来。然后，本层（第L层）的计算结果传导给下一层（第L-1层），作为L-1层光流计算的初始值$g^{L-1}$：</p>
+<script type="math/tex; mode=display">
+g^{L-1} = 2(g^L+d^L) \tag{3.1}</script><p>下一层的像素残差剩余向量经过同样的步骤，通过最小化$\epsilon^{L-1}\left(\mathbf{d}^{L-1}\right)$获得结果$d^{L-1}$。算法通过将$L_m$层的初始值设置为零来初始化（金字塔最高层没有可用的初始值）:</p>
+<script type="math/tex; mode=display">
+g^{L_m} = [0,0]^T</script><p>迭代计算到最底层便得到最后的结果:</p>
+<script type="math/tex; mode=display">
+d = g^0+d^0 = \sum_{L=0}^{L_m}2^Ld^L</script><p>金字塔实现的明显优点是，在计算大的整体像素位移矢量$d$时，每个剩余光流矢量$d^L$可以保持非常小。</p>
 <h3 id="4、Iterative-Lucas-Kanade"><a href="#4、Iterative-Lucas-Kanade" class="headerlink" title="4、Iterative Lucas-Kanade"></a>4、Iterative Lucas-Kanade</h3><h4 id="4-1、standard-version"><a href="#4-1、standard-version" class="headerlink" title="4.1、standard version"></a>4.1、standard version</h4><p>在第3节中，我们得出对于每一金字塔层，目标是找出使匹配代价函数$\epsilon^{L}$最小化的$d^L$。我们用A和B代表两帧图像：</p>
-<p>$$<br>A(x, y) \doteq I^{L}\left(x, y\right) \\<br>B(x, y) \doteq J^{L}\left(x+g_{x}^{L}, y+g_{y}^{L}\right)<br>$$</p>
-<p>为了清晰起见，我们使用$\bar{\nu}=[v_x,v_y]^T$来表示$d^L$，使用$p=[p_x,p_y]^T$来表示$u^T$。使用新的符号表示后，我们的目标是选择向量$\bar{\nu}=[v_x,v_y]^T$使得匹配代价函数最小：</p>
-<p>$$<br>\varepsilon(\bar{\nu})=\varepsilon\left(\nu_{x}, \nu_{y}\right)=\sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(A(x, y)-B\left(x+\nu_{x}, y+\nu_{y}\right)\right)^{2} \tag{4.1.1}<br>$$</p>
-<p>处理的思路是求解公式（4.1.1）导数为0的点，具体的处理步骤如下，首先公式(4.1)对变量$\bar{\nu}=[v_x,v_y]^T$求导，结果如下:</p>
-<p>$$<br>\frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}}=-2 \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(A(x, y)-B\left(x+\nu_{x}, y+\nu_{y}\right)\right) \cdot\left[\begin{array}{cc}<br>\frac{\partial B}{\partial x} &amp; \frac{\partial B}{\partial y}<br>\end{array}\right] \tag{4.1.2}<br>$$</p>
-<p>在$\bar{\nu}=[0,0]^T$处，对$B(x+v_x,y+v_y)$一阶泰勒展开，由于我们引入了金字塔处理(第3节)，$\bar{\nu}$比较小，泰勒展开没得毛病。进行处理后，公式(4.1.2)近似为:</p>
-<p>$$<br>\frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}}=-2 \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(A(x, y)-B\left(x, y\right)-\left[\begin{array}{cc}<br>\frac{\partial B}{\partial x} &amp; \frac{\partial B}{\partial y}<br>\end{array}\right]\bar{\nu}\right) \cdot\left[\begin{array}{cc}<br>\frac{\partial B}{\partial x} &amp; \frac{\partial B}{\partial y}<br>\end{array}\right] \tag{4.1.3}<br>$$</p>
-<p>$A(x,y)-B(x,y)$可以解释为在点$[x,y]^T$处的图像时间导数（temporal image derivative）,$\left[\begin{array}{cc}<br>\frac{\partial B}{\partial x} &amp; \frac{\partial B}{\partial y}<br>\end{array}\right]$是图像的像素梯度，我们标记为：</p>
-<p>$$<br>\delta I(x,y) \doteq A(x,y) - B(x,y)  \\<br>\nabla I=\left[\begin{array}{c}<br>I_{x} \\<br>I_{y}<br>\end{array}\right] \doteq\left[\begin{array}{cc}<br>\frac{\partial B}{\partial x} &amp; \frac{\partial B}{\partial y}<br>\end{array}\right]^{T}<br>$$</p>
-<p>$I_x$和$I_y$可以直接通过图像A(x,y)（不是B(x,y)）直接计算出来，这里选择中心差分算子：</p>
-<p>$$<br>\begin{aligned}<br>&amp;I_{x}(x, y)=\frac{\partial A(x, y)}{\partial x}=\frac{A(x+1, y)-A(x-1, y)}{2}\\<br>&amp;I_{y}(x, y)=\frac{\partial A(x, y)}{\partial y}=\frac{A(x, y+1)-A(x, y-1)}{2}<br>\end{aligned}<br>$$</p>
-<p>整理后，公式(4.1.3)可以写为：</p>
-<p>$$<br>\frac{1}{2} \frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}} \approx \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(\nabla I^{T} \bar{\nu}-\delta I\right) \nabla I^{T} \\<br>$$</p>
-<p>$$<br>\frac{1}{2}\left[\frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}}\right]^{T} \approx \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(\left[\begin{array}{cc}<br>I_{x}^{2} &amp; I_{x} I_{y} \\<br>I_{x} I_{y} &amp; I_{y}^{2}<br>\end{array}\right] \bar{\nu}-\left[\begin{array}{c}<br>\delta I I_{x} \\<br>\delta I I_{y}<br>\end{array}\right]\right)<br>$$</p>
-<p>Denote:</p>
-<p>$$<br>G \doteq  \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left[\begin{array}{cc} I_{x}^{2} &amp; I_{x} I_{y}, \\<br>I_{x} I_{y} &amp; I_{y}^{2}\end{array}\right]<br>\bar{b} = \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left[\begin{array}{c}<br>\delta I I_{x} \\<br>\delta I I_{y}<br>\end{array}\right]<br>$$</p>
-<p>最后的方程可以简化为:</p>
-<p>$$<br>\frac{1}{2}\left[\frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}}\right]^{T} \approx G \bar{\nu}-\bar{b}<br>$$</p>
-<p>最优的光流向量是：</p>
-<p>$$<br>\bar{\nu}_{opt} = G^{-1}\bar{b} \tag{4.1.4}<br>$$</p>
-<p>当矩阵G是可逆的，则这个结果是有意义的。这表明$p$点周围的像素在$x$，$y$方向都需要具有梯度信息。以上是标准的Lucas-Kanade光流算法，只有当像素位移很小时才有效（为了满足一阶泰勒展开）。</p>
+<script type="math/tex; mode=display">
+A(x, y) \doteq I^{L}\left(x, y\right) \\\\
+B(x, y) \doteq J^{L}\left(x+g_{x}^{L}, y+g_{y}^{L}\right)</script><p>为了清晰起见，我们使用$\bar{\nu}=[v_x,v_y]^T$来表示$d^L$，使用$p=[p_x,p_y]^T$来表示$u^T$。使用新的符号表示后，我们的目标是选择向量$\bar{\nu}=[v_x,v_y]^T$使得匹配代价函数最小：</p>
+<script type="math/tex; mode=display">
+\varepsilon(\bar{\nu})=\varepsilon\left(\nu_{x}, \nu_{y}\right)=\sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(A(x, y)-B\left(x+\nu_{x}, y+\nu_{y}\right)\right)^{2} \tag{4.1.1}</script><p>处理的思路是求解公式（4.1.1）导数为0的点，具体的处理步骤如下，首先公式(4.1)对变量$\bar{\nu}=[v_x,v_y]^T$求导，结果如下:</p>
+<script type="math/tex; mode=display">
+\frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}}=-2 \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(A(x, y)-B\left(x+\nu_{x}, y+\nu_{y}\right)\right) \cdot\left[\begin{array}{cc}
+\frac{\partial B}{\partial x} & \frac{\partial B}{\partial y}
+\end{array}\right] \tag{4.1.2}</script><p>在$\bar{\nu}=[0,0]^T$处，对$B(x+v_x,y+v_y)$一阶泰勒展开，由于我们引入了金字塔处理(第3节)，$\bar{\nu}$比较小，泰勒展开没得毛病。进行处理后，公式(4.1.2)近似为:</p>
+<script type="math/tex; mode=display">
+\frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}}=-2 \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(A(x, y)-B\left(x, y\right)-\left[\begin{array}{cc}
+\frac{\partial B}{\partial x} & \frac{\partial B}{\partial y}
+\end{array}\right]\bar{\nu}\right) \cdot\left[\begin{array}{cc}
+\frac{\partial B}{\partial x} & \frac{\partial B}{\partial y}
+\end{array}\right] \tag{4.1.3}</script><p>$A(x,y)-B(x,y)$可以解释为在点$[x,y]^T$处的图像时间导数（temporal image derivative）,$\left[\begin{array}{cc}<br>\frac{\partial B}{\partial x} &amp; \frac{\partial B}{\partial y}<br>\end{array}\right]$是图像的像素梯度，我们标记为：</p>
+<script type="math/tex; mode=display">
+\delta I(x,y) \doteq A(x,y) - B(x,y)  \\\\
+\nabla I=\left[\begin{array}{c}
+I_{x} \\\\
+I_{y}
+\end{array}\right] \doteq\left[\begin{array}{cc}
+\frac{\partial B}{\partial x} & \frac{\partial B}{\partial y}
+\end{array}\right]^{T}</script><p>$I_x$和$I_y$可以直接通过图像A(x,y)（不是B(x,y)）直接计算出来，这里选择中心差分算子：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+&I_{x}(x, y)=\frac{\partial A(x, y)}{\partial x}=\frac{A(x+1, y)-A(x-1, y)}{2}\\\\
+&I_{y}(x, y)=\frac{\partial A(x, y)}{\partial y}=\frac{A(x, y+1)-A(x, y-1)}{2}
+\end{aligned}</script><p>整理后，公式(4.1.3)可以写为：</p>
+<script type="math/tex; mode=display">
+\frac{1}{2} \frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}} \approx \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(\nabla I^{T} \bar{\nu}-\delta I\right) \nabla I^{T} \\\\</script><script type="math/tex; mode=display">
+\frac{1}{2}\left[\frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}}\right]^{T} \approx \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(\left[\begin{array}{cc}
+I_{x}^{2} & I_{x} I_{y} \\\\
+I_{x} I_{y} & I_{y}^{2}
+\end{array}\right] \bar{\nu}-\left[\begin{array}{c}
+\delta I I_{x} \\\\
+\delta I I_{y}
+\end{array}\right]\right)</script><p>Denote:</p>
+<script type="math/tex; mode=display">
+G \doteq  \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left[\begin{array}{cc} I_{x}^{2} & I_{x} I_{y}, \\\\
+I_{x} I_{y} & I_{y}^{2}\end{array}\right]
+\bar{b} = \sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left[\begin{array}{c}
+\delta I I_{x} \\\\
+\delta I I_{y}
+\end{array}\right]</script><p>最后的方程可以简化为:</p>
+<script type="math/tex; mode=display">
+\frac{1}{2}\left[\frac{\partial \varepsilon(\bar{\nu})}{\partial \bar{\nu}}\right]^{T} \approx G \bar{\nu}-\bar{b}</script><p>最优的光流向量是：</p>
+<script type="math/tex; mode=display">
+\bar{\nu}_{opt} = G^{-1}\bar{b} \tag{4.1.4}</script><p>当矩阵G是可逆的，则这个结果是有意义的。这表明$p$点周围的像素在$x$，$y$方向都需要具有梯度信息。以上是标准的Lucas-Kanade光流算法，只有当像素位移很小时才有效（为了满足一阶泰勒展开）。</p>
 <h4 id="4-2、iterative-version"><a href="#4-2、iterative-version" class="headerlink" title="4.2、iterative version"></a>4.2、iterative version</h4><p>我们用$k$表示迭代次数，$k$从1开始。使用迭代的方式来描述算法，假若第1、2、3……$k-1$次的计算结果为第$k$次的计算提供了一个初始值$\bar{v}^{k-1}=[v_x^{k-1},v_y^{k-1}]$。$B_k$是第$k$次迭代的挪移后的图像（translated image），它根据原始图像$B(x,y)$与初始值生成：</p>
-<p>$$<br>B_k(x,y)=B(x+v_x^{k-1},y+v_y^{k-1})<br>$$</p>
-<p>我们的目标是计算出剩余像素位移矢量（residual pixel motion vector）$\bar{\eta}^k=[\eta_x^k,\eta_y^k]$，使得下面的光度误差函数最小：</p>
-<p>$$<br>\varepsilon^{k}\left(\bar{\eta}^{k}\right)=\varepsilon\left(\eta_{x}^{k}, \eta_{y}^{k}\right)=\sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(A(x, y)-B_{k}\left(x+\eta_{x}^{k}, y+\eta_{y}^{k}\right)\right)^{2}<br>$$</p>
-<p>这个误差最小化函数的解可以通过一步Lucas-Kanade算法（第4.1.1节）计算出：</p>
-<p>$$<br>\bar{\eta}^k=G^{-1}\bar{b}_k<br>$$</p>
-<p>$\bar{b}_k$是一个2x1的向量，每次迭代的数值都在变，而矩阵G通常情况下只需要计算一次。</p>
-<p>$$<br>\bar{b}<em>{k}=\sum</em>{x=p_{x}-\omega_{x}}^{p_{x}+\omega_{x}}\sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}<br>\left[\begin{array}{c}<br>\delta I_{k}(x, y) I_{x}(x, y) \\<br>\delta I_{k}(x, y) I_{y}(x, y)<br>\end{array}\right]<br>$$</p>
-<p>其中:</p>
-<p>$$<br>\delta I_k(x,y) = A(x,y)-B_k(x,y)<br>$$</p>
-<p>于是对于第k+1次的迭代计算，它的初始值为:</p>
-<p>$$<br>\bar{v}^k=\bar{v}^{k-1}+\bar{\eta}^k<br>$$</p>
-<p>这样便继续迭代下去，对于第一次迭代(k=1)，我们设其迭代初始值为:$\bar{\nu}^0=[0,0]^T$。假设K次迭代达到收敛，则光流矢量的最终解为：</p>
-<p>$$<br>\bar{v}=d^L=\bar{v}^K=\sum_{k=1}^{K}\bar{\eta}^k<br>$$</p>
-<p>将向量$d^L$馈送到方程（3.1），并且在所有的金字塔层L-1、L-2，…，0重复整个过程。</p>
+<script type="math/tex; mode=display">
+B_k(x,y)=B(x+v_x^{k-1},y+v_y^{k-1})</script><p>我们的目标是计算出剩余像素位移矢量（residual pixel motion vector）$\bar{\eta}^k=[\eta_x^k,\eta_y^k]$，使得下面的光度误差函数最小：</p>
+<script type="math/tex; mode=display">
+\varepsilon^{k}\left(\bar{\eta}^{k}\right)=\varepsilon\left(\eta_{x}^{k}, \eta_{y}^{k}\right)=\sum_{x=p_{x}-\omega_{x}}^{p_x+w_x} \sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}\left(A(x, y)-B_{k}\left(x+\eta_{x}^{k}, y+\eta_{y}^{k}\right)\right)^{2}</script><p>这个误差最小化函数的解可以通过一步Lucas-Kanade算法（第4.1.1节）计算出：</p>
+<script type="math/tex; mode=display">
+\bar{\eta}^k=G^{-1}\bar{b}_k</script><p>$\bar{b}_k$是一个2x1的向量，每次迭代的数值都在变，而矩阵G通常情况下只需要计算一次。</p>
+<script type="math/tex; mode=display">
+\bar{b}_{k}=\sum_{x=p_{x}-\omega_{x}}^{p_{x}+\omega_{x}}\sum_{y=p_{y}-\omega_{y}}^{p_{y}+\omega_{y}}
+\left[\begin{array}{c}
+\delta I_{k}(x, y) I_{x}(x, y) \\\\
+\delta I_{k}(x, y) I_{y}(x, y)
+\end{array}\right]</script><p>其中:</p>
+<script type="math/tex; mode=display">
+\delta I_k(x,y) = A(x,y)-B_k(x,y)</script><p>于是对于第k+1次的迭代计算，它的初始值为:</p>
+<script type="math/tex; mode=display">
+\bar{v}^k=\bar{v}^{k-1}+\bar{\eta}^k</script><p>这样便继续迭代下去，对于第一次迭代(k=1)，我们设其迭代初始值为:$\bar{\nu}^0=[0,0]^T$。假设K次迭代达到收敛，则光流矢量的最终解为：</p>
+<script type="math/tex; mode=display">
+\bar{v}=d^L=\bar{v}^K=\sum_{k=1}^{K}\bar{\eta}^k</script><p>将向量$d^L$馈送到方程（3.1），并且在所有的金字塔层L-1、L-2，…，0重复整个过程。</p>
 <h3 id="5、Summary"><a href="#5、Summary" class="headerlink" title="5、Summary"></a>5、Summary</h3><div style="width:130%;margin:auto" align=center><img src="/2020/03/29/%E9%87%91%E5%AD%97%E5%A1%94%E5%85%89%E6%B5%81/summary.png" class="" title="金字塔LK光流算法流程图"></div>
 
 <h3 id="6、Details"><a href="#6、Details" class="headerlink" title="6、Details"></a>6、Details</h3><h4 id="6-1、detail-1"><a href="#6-1、detail-1" class="headerlink" title="6.1、detail 1"></a>6.1、detail 1</h4><p>在计算的过程中，像素可能不是整数，这时候我们通过双线性差值来计算亮度：</p>
-<p>$$<br>\begin{aligned}<br>I^{L}(x, y)=&amp;\left(1-\alpha_{x}\right)\left(1-\alpha_{y}\right) I^{L}\left(x_{o}, y_{o}\right)+\alpha_{x}\left(1-\alpha_{y}\right) I^{L}\left(x_{o}+1, y_{o}\right)+\\<br>&amp;\left(1-\alpha_{x}\right) \alpha_{y} I^{L}\left(x_{o}, y_{o}+1\right)+\alpha_{x} \alpha_{y} I^{L}\left(x_{o}+1, y_{o}+1\right)<br>\end{aligned}<br>$$</p>
-<p>其中$x_0$，$y_o$是$x$与$y$的整数部分：</p>
-<p>$$<br>x=x_0+\alpha_x\\<br>y=y_0+\alpha_y<br>$$</p>
-<h4 id="6-2、detail-2"><a href="#6-2、detail-2" class="headerlink" title="6.2、detail 2"></a>6.2、detail 2</h4><p>当要跟踪的点在图像的边缘，这时候若强制要求每层的金字塔窗口$w_x \times w_y$内的像素都有效，在最低层就会有很大一片区域无法光流追踪。假设我们取窗口大小$w_x=w_y=5$，金字塔层数$L_m = 3$，则在最底层距离边缘$2^3\times5=40$像素的区域不能用来光流跟踪。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+I^{L}(x, y)=&\left(1-\alpha_{x}\right)\left(1-\alpha_{y}\right) I^{L}\left(x_{o}, y_{o}\right)+\alpha_{x}\left(1-\alpha_{y}\right) I^{L}\left(x_{o}+1, y_{o}\right)+\\\\
+&\left(1-\alpha_{x}\right) \alpha_{y} I^{L}\left(x_{o}, y_{o}+1\right)+\alpha_{x} \alpha_{y} I^{L}\left(x_{o}+1, y_{o}+1\right)
+\end{aligned}</script><p>其中$x_0$，$y_o$是$x$与$y$的整数部分：</p>
+<script type="math/tex; mode=display">
+x=x_0+\alpha_x\\\\
+y=y_0+\alpha_y</script><h4 id="6-2、detail-2"><a href="#6-2、detail-2" class="headerlink" title="6.2、detail 2"></a>6.2、detail 2</h4><p>当要跟踪的点在图像的边缘，这时候若强制要求每层的金字塔窗口$w_x \times w_y$内的像素都有效，在最低层就会有很大一片区域无法光流追踪。假设我们取窗口大小$w_x=w_y=5$，金字塔层数$L_m = 3$，则在最底层距离边缘$2^3\times5=40$像素的区域不能用来光流跟踪。</p>
 <p>为了防止这种情况的发生，我们可以保留部分窗口中的像素点在图像之外（在任何金字塔级别）的情形。这种情况下，在Summary部分对应的流程中，只有带有求和符号的公式需要改动，其余公式不需要该改变。所有窗口内的点都落在图像中时，我们只需要计算一次矩阵G；对于边缘区域，每次迭代都要重新计算矩阵G。</p>
 <h4 id="6-3、detail-3"><a href="#6-3、detail-3" class="headerlink" title="6.3、detail 3"></a>6.3、detail 3</h4><p>当出现以下的情形时，我们可以判定光流跟踪失败：</p>
 <ul>
@@ -331,13 +368,16 @@
 <ol>
 <li>计算图像<strong><em>I</em></strong>中每个像素处的G矩阵及其最小特征值$\lambda_m$。</li>
 <li>记$\lambda_{max}$为整个图像上$\lambda_m$的最大值。</li>
-<li>保留图像像素中$\lambda_m$大于$\lambda_{max}$一定百分比的像素，该百分比可以是10%或5%。</li>
+<li>保留图像像素中$\lambda<em>m$大于$\lambda</em>{max}$一定百分比的像素，该百分比可以是10%或5%。</li>
 <li>从这些像素中，保留局部最大像素（如果像素的$ \lambda_m $值大于其3×3邻域中任何其他像素的，则保留该像素）。</li>
 <li>将这些点稀疏化，使像素对之间的最小距离大于给定的阈值距离（例如10或5像素）。（可选步骤）</li>
 </ol>
 <p>以上步骤中最重要的是要尽可能保证矩阵G可逆，我们注意到Harris角点便能满足这一点，Harris角点选取的依据是判断如下矩阵$M_H$的特征值，其中$w(x,y)$是权值函数：</p>
-<p>$$<br>M_{H}=\sum_{x, y} w(x, y)\left[\begin{array}{cc}<br>I_{x}^{2} &amp; I_{x} I_{y} \\<br>I_{x} I_{y} &amp; I_{y}^{2}<br>\end{array}\right]<br>$$</p>
-<p>Harris角点选取：</p>
+<script type="math/tex; mode=display">
+M_{H}=\sum_{x, y} w(x, y)\left[\begin{array}{cc}
+I_{x}^{2} & I_{x} I_{y} \\\\
+I_{x} I_{y} & I_{y}^{2}
+\end{array}\right]</script><p>Harris角点选取：</p>
 <div style="width:40%;margin:auto" align=center><img src="/2020/03/29/%E9%87%91%E5%AD%97%E5%A1%94%E5%85%89%E6%B5%81/Harris.png" class="" title="Harris角点提取"></div>
 
 <h3 id="8、Reference"><a href="#8、Reference" class="headerlink" title="8、Reference"></a>8、Reference</h3><p>《视觉SLAM十四讲从理论到实践》</p>
@@ -463,14 +503,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -545,13 +585,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">116k</span>
+    <span title="站点总字数">120k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:46</span>
+    <span title="站点阅读时长">1:49</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 

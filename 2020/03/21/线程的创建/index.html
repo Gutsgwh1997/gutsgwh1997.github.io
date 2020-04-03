@@ -30,8 +30,8 @@
 <meta property="article:published_time" content="2020-03-21T13:39:27.000Z">
 <meta property="article:modified_time" content="2020-03-30T09:17:01.721Z">
 <meta property="article:author" content="陌上&amp;烟雨">
-<meta property="article:tag" content="C++">
 <meta property="article:tag" content="C++11">
+<meta property="article:tag" content="C++">
 <meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
 
@@ -247,12 +247,9 @@
       
         <h2 id="三、线程启动、结束、创建线程多个方法"><a href="#三、线程启动、结束、创建线程多个方法" class="headerlink" title="三、线程启动、结束、创建线程多个方法"></a>三、线程启动、结束、创建线程多个方法</h2><p>本节主要记录<code>std::thread</code>类以及<code>join()</code>和<code>detach()</code>方法。</p>
 <h3 id="1、线程创建"><a href="#1、线程创建" class="headerlink" title="1、线程创建"></a>1、线程创建</h3><p>主线程从main()函数开始执行，我们自己创建的线程，也需要从一个函数（初始函数）开始运行。一旦这个函数运行完毕，代表这个线程运行结束。</p>
-<p>整个进程是否执行完毕的标志是：主线程是否执行完毕，如果主线程执行完毕，代表整个进程执行完毕了。<strong>一般情况下</strong>：如果其他子线程还没有执行完毕，那么这些子线程也会被操作系统强行终止。</p>
-<a id="more"></a>
-
+<p>整个进程是否执行完毕的标志是：主线程是否执行完毕，如果主线程执行完毕，代表整个进程执行完毕了。<strong>一般情况下</strong>：如果其他子线程还没有执行完毕，那么这些子线程也会被操作系统强行终止。<br><a id="more"></a></p>
 <p>一般情况下：如果想保持子线程的运行状态，那么要让主线程一直保持运行。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;                       // 1、包含头文件</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">myprint</span><span class="params">()</span></span>&#123;                         <span class="comment">// 2、初始函数要写</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt;<span class="string">"我的线程开始执行"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"我的线程执行完毕"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;                           <span class="comment">// 3、mian中开始写代码，myprint是一个可调用对象</span></span><br><span class="line">    <span class="function">thread <span class="title">mytobj</span><span class="params">(myprint)</span></span>;  <span class="comment">/* 这条语句创建了线程，线程开始执行。 */</span> </span><br><span class="line">    mytobj.join();           <span class="comment">/* 阻塞主线程，让主线程等待子线程执行完毕，然后子线程和主线程汇合。*/</span></span><br><span class="line">                             <span class="comment">/* 主线程继续往下走 */</span></span><br><span class="line">    <span class="comment">// mytobj.detach()</span></span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"Hello World"</span>&lt;&lt;<span class="built_in">endl</span>;          <span class="comment">// 4、这个代码有两个线程在跑</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><code>thread</code>是个标准库里的类。</p>
 <h4 id="2、detach"><a href="#2、detach" class="headerlink" title="2、detach()"></a>2、detach()</h4><p>一般情况下主线程有义务等待子线程执行完毕，最终主线程安全正常退出。但是C++11中的<code>detach()</code>可以实现分离：也就是主线程不和子线程汇合了，主线程不必等子线程运行结束。一旦<code>detach()</code>之后，与主线程关联的thread对象就会失去与主线程的关联，此时子线程就会驻留在后台运行，这个子线程就相当于被C++运行时库接管了，当这个子线程执行完毕后，会由运行时库负责清理该线程的相关资源（驻留后台，Linux中的守护进程）。</p>
 <p>一旦调用了<code>detach()</code>（犹如脱缰的野马，不受控制了），就不能再用<code>join()</code>，否则系统会报异常。</p>
@@ -260,7 +257,6 @@
 <h4 id="4、其他创建线程的手法"><a href="#4、其他创建线程的手法" class="headerlink" title="4、其他创建线程的手法"></a>4、其他创建线程的手法</h4><p>创建不同的可调用对象：</p>
 <p>使用类，类对象作为可调用对象(函数对象)：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TA</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    TA(<span class="keyword">int</span> &amp; num):num_(num)&#123;&#125;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span> </span>&#123; <span class="comment">// 不能有参数</span></span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"我的线程仿函数开始执行了"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"我的线程仿函数结束执行"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">         <span class="built_in">cout</span> &lt;&lt; <span class="string">"num的数为："</span>&lt;&lt;num_&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> &amp; num_;  <span class="comment">// 使用引用会导致出达问题</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> b = <span class="number">6</span>;</span><br><span class="line">    <span class="function">TA <span class="title">ta</span><span class="params">(b)</span></span>;</span><br><span class="line">    <span class="function">thread <span class="title">mytobj2</span><span class="params">(ta)</span></span>;  <span class="comment">// ta对象是被复制到线程中去的（copy构造函数），不受主线程中的ta被销毁的影响</span></span><br><span class="line">    mytobj2.join();</span><br><span class="line">    <span class="comment">// mytobj2.detach(); // 不受控制，例如主线程先执行完，变量b被回收掉了，这时候TA类型按照引用传递，</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;            <span class="comment">// operator()会出现访问被释放的资源，所以类中使用引用要注意！ </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p><code>lambda</code>表达式（匿名函数）也是一种可调用对象：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> mylambdathread = []()&#123;</span><br><span class="line"><span class="built_in">cout</span> &lt;&lt;<span class="string">"lambda表达式创建的线程"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -292,8 +288,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/C/" rel="tag"># C++</a>
               <a href="/tags/C-11/" rel="tag"># C++11</a>
+              <a href="/tags/C/" rel="tag"># C++</a>
               <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
           </div>
 
@@ -385,14 +381,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -467,13 +463,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">116k</span>
+    <span title="站点总字数">120k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:46</span>
+    <span title="站点阅读时长">1:49</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 
