@@ -230,7 +230,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.2k</span>
+              <span>3.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -249,7 +249,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="矩阵分解理论"><a href="#矩阵分解理论" class="headerlink" title="矩阵分解理论"></a>矩阵分解理论</h2><p>本节主要记录常用的矩阵分解，知识主要来源于上学期所学的矩阵分析课程。不同于大多数的博客，我这里主要在复线性空间和酉空间中讨论。没有矩阵分析基础的同学，文章前边的一些内容看起来会比较晦涩，但是学过线代看明白矩阵分解部分的内容是不成问题的。<br><a id="more"></a></p>
+        <h2 id="矩阵分解理论"><a href="#矩阵分解理论" class="headerlink" title="矩阵分解理论"></a>矩阵分解理论</h2><p>本节主要记录常用的矩阵分解，知识主要来源于上学期所学的矩阵分析课程。不同于大多数的博客，我这里主要在复线性空间和酉空间中讨论。没有矩阵分析基础的同学，文章前边的一些内容看起来会比较晦涩，但是学过线代看明白矩阵分解部分的内容是不成问题的。</p>
+<a id="more"></a>
+
 <h3 id="1、线性映射"><a href="#1、线性映射" class="headerlink" title="1、线性映射"></a>1、线性映射</h3><p>线性映射的定义：</p>
 <div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E7%9A%84%E5%AE%9A%E4%B9%89.png" class="" title="线性映射的定义"></div>
 
@@ -266,9 +268,7 @@
 <h3 id="2、特殊矩阵"><a href="#2、特殊矩阵" class="headerlink" title="2、特殊矩阵"></a>2、特殊矩阵</h3><h4 id="2-1、Hermite矩阵"><a href="#2-1、Hermite矩阵" class="headerlink" title="2.1、Hermite矩阵"></a>2.1、Hermite矩阵</h4><p>$A \in \mathbb{C}^{n \times n}$，若$A^H=A$，（$H$代表共轭转置），称$A$为Hermite矩阵，若$A^H=-A$，则称$A$为反Hermite矩阵。$H$矩阵的对角线元素的虚部为零。</p>
 <p>对于Hermite矩阵$A$，有$\forall x \in \mathbb{C}^{n}$，$x^HAx \geq 0$，这说明Hermite矩阵是正半定，若$A$非奇异，则$A$是正定的。</p>
 <p>对于Hermite矩阵$B$，若$B$同时还是一个上（下）三角矩阵，则$B$是对角阵。</p>
-<h4 id="2-2、酉矩阵"><a href="#2-2、酉矩阵" class="headerlink" title="2.2、酉矩阵"></a>2.2、酉矩阵</h4><p>设$A$是一个$n$-阶复矩阵，如果其满足：</p>
-<script type="math/tex; mode=display">
-A^HA = AA^H=I</script><p>则称$A$是酉矩阵，一般记为$A \in U^{n \times n}$。我们常说的旋转矩阵，就是酉矩阵。</p>
+<h4 id="2-2、酉矩阵"><a href="#2-2、酉矩阵" class="headerlink" title="2.2、酉矩阵"></a>2.2、酉矩阵</h4><p>设$A$是一个$n$-阶复矩阵，如果其满足：<br>$$<br>A^HA = AA^H=I<br>$$<br>则称$A$是酉矩阵，一般记为$A \in U^{n \times n}$。我们常说的旋转矩阵，就是酉矩阵。</p>
 <p>设$A，B \in U^{n \times n}$，有如下的性质：</p>
 <ul>
 <li>$A^{-1} = A^H \in U^{n \times n}$；</li>
@@ -276,22 +276,14 @@ A^HA = AA^H=I</script><p>则称$A$是酉矩阵，一般记为$A \in U^{n \times 
 <li>$AB,BA \in U^{n \times n}$。</li>
 </ul>
 <p>$A$是一个酉矩阵的充分必要条件是$A$的$n$个列（或行）向量组是一个（标准内积意义下的）标准正交向量组。</p>
-<p>酉矩阵的列向量组是该空间的一个标准正交基。（因为内积度量矩阵Gramian矩阵等于$I$），从变换的角度考虑，酉变换意味着坐标的旋转（$det(A)=1$）或者镜像($det(A)=-1$)，变换前后不改变内积，既不改变向量的大小，也不改变向量的夹角关系：</p>
-<script type="math/tex; mode=display">
-<Ux,Uy>=x^HU^HUy=x^Hy=<x,y></script><p>若矩阵$A$即是酉矩阵又是上（下）三角矩阵，则$A$是单位矩阵。简单的证明：因为$A$是上三角矩阵，所以$A^{-1}$是上三角矩阵，又因为$A^{-1}=A^H$，所以$A^{-1}$又是下三角矩阵，所以$A$是对角阵，进而是单位矩阵。</p>
-<h4 id="2-3、正规矩阵"><a href="#2-3、正规矩阵" class="headerlink" title="2.3、正规矩阵"></a>2.3、正规矩阵</h4><p>设$A \in \mathbb{C}^{n \times n}$，如果$A$满足：</p>
-<script type="math/tex; mode=display">
-A^HA=AA^H</script><p>则称$A$是正规矩阵，对角矩阵，Hermite矩阵，酉矩阵都是正规矩阵。</p>
+<p>酉矩阵的列向量组是该空间的一个标准正交基。（因为内积度量矩阵Gramian矩阵等于$I$），从变换的角度考虑，酉变换意味着坐标的旋转（$det(A)=1$）或者镜像($det(A)=-1$)，变换前后不改变内积，既不改变向量的大小，也不改变向量的夹角关系：<br>$$<br>&lt;Ux,Uy&gt;=x^HU^HUy=x^Hy=&lt;x,y&gt;<br>$$</p>
+<p>若矩阵$A$即是酉矩阵又是上（下）三角矩阵，则$A$是单位矩阵。简单的证明：因为$A$是上三角矩阵，所以$A^{-1}$是上三角矩阵，又因为$A^{-1}=A^H$，所以$A^{-1}$又是下三角矩阵，所以$A$是对角阵，进而是单位矩阵。</p>
+<h4 id="2-3、正规矩阵"><a href="#2-3、正规矩阵" class="headerlink" title="2.3、正规矩阵"></a>2.3、正规矩阵</h4><p>设$A \in \mathbb{C}^{n \times n}$，如果$A$满足：<br>$$<br>A^HA=AA^H<br>$$<br>则称$A$是正规矩阵，对角矩阵，Hermite矩阵，酉矩阵都是正规矩阵。</p>
 <p>若$A$是正规矩阵，且$A$是上三角矩阵，则$A$是对角矩阵。</p>
 <h3 id="3、常用矩阵分解"><a href="#3、常用矩阵分解" class="headerlink" title="3、常用矩阵分解"></a>3、常用矩阵分解</h3><h4 id="3-1-Jordan分解"><a href="#3-1-Jordan分解" class="headerlink" title="3.1 Jordan分解"></a>3.1 Jordan分解</h4><p>Jordan标准型在线性代数中涉及的比较少，在矩阵分析中引入了$\lambda-$矩阵后，便比较好理解了，这里直接给出一些结论：</p>
-<p>由Jordan标准形存在定理可知，复数域上，<strong>任意一个方阵A</strong>总可以找到<strong>非奇异矩阵P</strong>，使得：</p>
-<script type="math/tex; mode=display">
-AP=PJ</script><p>这里$J$是Jordan标准型，这意味着$A$相似于$P$。</p>
+<p>由Jordan标准形存在定理可知，复数域上，<strong>任意一个方阵A</strong>总可以找到<strong>非奇异矩阵P</strong>，使得：<br>$$<br>AP=PJ<br>$$<br>这里$J$是Jordan标准型，这意味着$A$相似于$P$。</p>
 <p>值得注意的是：上述是在$\mathbb{C}$空间上讨论问题，即是$A \in \mathbb{R}^{n \times n}$，$J$和$P$也仍然在$\mathbb{C}^{n \times n}$中。</p>
-<h4 id="3-2-正交化方法与QR分解"><a href="#3-2-正交化方法与QR分解" class="headerlink" title="3.2 正交化方法与QR分解"></a>3.2 正交化方法与QR分解</h4><p>若$\alpha , \beta$是$V$空间中的向量，则$\alpha$在$\beta$上的正交投影$\gamma$是：</p>
-<script type="math/tex; mode=display">
-\gamma = \frac{\beta}{||\beta||}||\alpha|| \frac{<\alpha,\beta>}{||\alpha|| \cdot ||\beta||}
-=\frac{\beta}{||\beta||}<\frac{\beta}{||\beta||},\alpha></script><p>上面的公式是由单位方向矢量和模长两部分组成，用到了向量之间的夹角公式。</p>
+<h4 id="3-2-正交化方法与QR分解"><a href="#3-2-正交化方法与QR分解" class="headerlink" title="3.2 正交化方法与QR分解"></a>3.2 正交化方法与QR分解</h4><p>若$\alpha , \beta$是$V$空间中的向量，则$\alpha$在$\beta$上的正交投影$\gamma$是：<br>$$<br>\gamma = \frac{\beta}{||\beta||}||\alpha|| \frac{&lt;\alpha,\beta&gt;}{||\alpha|| \cdot ||\beta||}<br>=\frac{\beta}{||\beta||}&lt;\frac{\beta}{||\beta||},\alpha&gt;<br>$$<br>上面的公式是由单位方向矢量和模长两部分组成，用到了向量之间的夹角公式。</p>
 <p>那么如何由一组线性无关的向量组，构造出一个标准的正交向量组？这需要使用到Schmidt正交化方法：</p>
 <div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E6%AD%A3%E4%BA%A4%E5%88%86%E8%A7%A3.png" class="" title="正交分解"></div>
 
@@ -302,9 +294,7 @@ AP=PJ</script><p>这里$J$是Jordan标准型，这意味着$A$相似于$P$。</p
 <p>于是我们便得出了QR（正交-上三角）分解：</p>
 <p>任意<strong>非奇异方阵</strong>$A \in \mathbb{C}^{n \times n}$，必然可以唯一分解为$A=QR$其中$Q$为酉矩阵，$R$是正线（对角线元素为正数）上三角矩阵。</p>
 <p>值得注意的是：在Schmidt正交化过程中，我们是从矩阵$A$的第一列元素递推到最后一列元素，我们当然也可以从最后一列开始Schmidt正交化，这样得到的分解结果是一个酉矩阵乘一个正线下三角。</p>
-<h4 id="3-3、酉相似"><a href="#3-3、酉相似" class="headerlink" title="3.3、酉相似"></a>3.3、酉相似</h4><p>设$A,B \in \mathbb{C}^{n \times n}$或者($\mathbb{R}^{n \times n}$)，若存在$U \in U^{n \times n}$使得</p>
-<script type="math/tex; mode=display">
-U^HAU = U^{-1}AU=B</script><p>则称$A$与$B$酉相似（$A$酉相似于$B$）。</p>
+<h4 id="3-3、酉相似"><a href="#3-3、酉相似" class="headerlink" title="3.3、酉相似"></a>3.3、酉相似</h4><p>设$A,B \in \mathbb{C}^{n \times n}$或者($\mathbb{R}^{n \times n}$)，若存在$U \in U^{n \times n}$使得<br>$$<br>U^HAU = U^{-1}AU=B<br>$$<br>则称$A$与$B$酉相似（$A$酉相似于$B$）。</p>
 <p><strong>任何一个$n-$阶复矩阵$A$</strong>酉相似于一个上（下）三角矩阵，证明如下：</p>
 <p>由Jordan分解得到：$\exists P \in \mathbb{C}^{n \times n}$，$A = PJP^{-1}$；$P$是非奇异的。</p>
 <p>由QR分解得$P=QR$，带入得到$A=Q(RJR^{-1})Q^H$。</p>
@@ -321,31 +311,15 @@ U^HAU = U^{-1}AU=B</script><p>则称$A$与$B$酉相似（$A$酉相似于$B$）�
 <div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3.png" class="" title="奇异值分解"></div>
 
 <p>对于最后一句话，我们可以这样理解：</p>
-<p>$AA^H$是一个Hermite矩阵，他酉相似于一个对角阵，根据3.3节，我们知道这个对角阵中对角线元素是$AA^H$的特征值，也就是矩阵$A$奇异值的平方。对此对于左奇异值矩阵$U$，有如下的关系：</p>
-<script type="math/tex; mode=display">
-AA^H = UDD^HU^H</script><p>同理对于右奇异值矩阵，有如下关系：</p>
-<script type="math/tex; mode=display">
-A^HA = VD^HDV^H</script><p>需要指出的是，这里$DD^H$与$D^HD$在矩阵的角度上不相同，因为他们的维度不同，但是他们在主对角线的奇异值是相等的。</p>
+<p>$AA^H$是一个Hermite矩阵，他酉相似于一个对角阵，根据3.3节，我们知道这个对角阵中对角线元素是$AA^H$的特征值，也就是矩阵$A$奇异值的平方。对此对于左奇异值矩阵$U$，有如下的关系：<br>$$<br>AA^H = UDD^HU^H<br>$$<br>同理对于右奇异值矩阵，有如下关系：<br>$$<br>A^HA = VD^HDV^H<br>$$<br>需要指出的是，这里$DD^H$与$D^HD$在矩阵的角度上不相同，因为他们的维度不同，但是他们在主对角线的奇异值是相等的。</p>
 <p>SVD分解的几何意义：在入口和出口空间重新选取标准正交基，可以将任意线性变换的矩阵表示简化为对角矩阵。由于酉变换不改变标准长度，此分解揭示了线性变换的本质：沿着某正交坐标轴伸缩。</p>
 <h5 id="3-4-2、SVD分解的低秩逼近"><a href="#3-4-2、SVD分解的低秩逼近" class="headerlink" title="3.4.2、SVD分解的低秩逼近"></a>3.4.2、SVD分解的低秩逼近</h5><p>设矩阵$X \in \mathbb{C}^{m \times n}$，秩为$r$，$r \leq min(m,n)$，则该矩阵可以分解为：</p>
-<script type="math/tex; mode=display">
-X=\left[\begin{array}{llll}
-\mathbf{u}_{1} & \mathbf{u}_{2} & \cdots & \mathbf{u}_{r}
-\end{array}\right]\left[\begin{array}{cccc}
-\lambda_{1} & & & \\\\
-& \lambda_{2} & & \\\\
-& & \ddots & \\\\
-& & & \lambda_{r}
-\end{array}\right]\left[\begin{array}{c}
-\mathbf{v}_{1}^{T} \\\\
-\mathbf{v}_{2}^{T} \\\\
-\vdots \\\\
-\mathbf{v}_{r}^{T}
-\end{array}\right]</script><p>也可以表示为：($\lambda$从大到小排列)</p>
-<script type="math/tex; mode=display">
-X=\sum_{i=1}^{r}\lambda_i \mathbf{u}_i \mathbf{v}_i^T</script><p>低秩逼近是指：</p>
-<script type="math/tex; mode=display">
-X \approx \widetilde{X} = \sum_{i=1}^{k}\lambda_iu_iv_i^T，k \leq r</script>
+<p>$$<br>X=\left[\begin{array}{llll}<br>\mathbf{u}<em>{1} &amp; \mathbf{u}</em>{2} &amp; \cdots &amp; \mathbf{u}<em>{r}<br>\end{array}\right]\left[\begin{array}{cccc}<br>\lambda</em>{1} &amp; &amp; &amp; \\<br>&amp; \lambda_{2} &amp; &amp; \\<br>&amp; &amp; \ddots &amp; \\<br>&amp; &amp; &amp; \lambda_{r}<br>\end{array}\right]\left[\begin{array}{c}<br>\mathbf{v}<em>{1}^{T} \\<br>\mathbf{v}</em>{2}^{T} \\<br>\vdots \\<br>\mathbf{v}_{r}^{T}<br>\end{array}\right]<br>$$</p>
+<p>也可以表示为：($\lambda$从大到小排列)</p>
+<p>$$<br>X=\sum_{i=1}^{r}\lambda_i \mathbf{u}_i \mathbf{v}_i^T<br>$$</p>
+<p>低秩逼近是指：</p>
+<p>$$<br>X \approx \widetilde{X} = \sum_{i=1}^{k}\lambda_iu_iv_i^T，k \leq r<br>$$</p>
+
     </div>
 
     
@@ -466,14 +440,14 @@ X \approx \widetilde{X} = \sum_{i=1}^{k}\lambda_iu_iv_i^T，k \leq r</script>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -548,13 +522,13 @@ X \approx \widetilde{X} = \sum_{i=1}^{k}\lambda_iu_iv_i^T，k \leq r</script>
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">127k</span>
+    <span title="站点总字数">134k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:55</span>
+    <span title="站点阅读时长">2:02</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 
