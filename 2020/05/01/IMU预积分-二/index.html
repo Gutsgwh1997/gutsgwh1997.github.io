@@ -20,17 +20,22 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="这知识，它不进脑子啊！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="GWH Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2020/page/3/index.html">
+  <meta name="description" content="IMU预积分(二)——线性视觉惯导初始化这篇文章紧跟IMU预积分(一)，主要记录2012年那篇经典的预积分论文中的初始化部分。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IMU预积分(二)">
+<meta property="og:url" content="http://yoursite.com/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="这知识，它不进脑子啊！">
+<meta property="og:description" content="IMU预积分(二)——线性视觉惯导初始化这篇文章紧跟IMU预积分(一)，主要记录2012年那篇经典的预积分论文中的初始化部分。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/%E4%BB%A5%E9%A6%96%E5%B8%A7%E4%B8%BA%E5%8F%82%E8%80%83%E5%9D%90%E6%A0%87%E7%9A%84%E6%83%AF%E6%80%A7%E5%AF%BC%E8%88%AA.png">
+<meta property="article:published_time" content="2020-05-01T07:33:58.000Z">
+<meta property="article:modified_time" content="2020-05-01T07:36:15.892Z">
 <meta property="article:author" content="陌上&amp;烟雨">
+<meta property="article:tag" content="SLAM">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/%E4%BB%A5%E9%A6%96%E5%B8%A7%E4%B8%BA%E5%8F%82%E8%80%83%E5%9D%90%E6%A0%87%E7%9A%84%E6%83%AF%E6%80%A7%E5%AF%BC%E8%88%AA.png">
 
-<link rel="canonical" href="http://yoursite.com/archives/2020/page/3/">
+<link rel="canonical" href="http://yoursite.com/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/">
 
 
 <script id="page-configurations">
@@ -38,12 +43,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | GWH Blog</title>
+  <title>IMU预积分(二) | GWH Blog</title>
   
 
 
@@ -157,192 +162,144 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 28 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
+      <meta itemprop="name" content="陌上&烟雨">
+      <meta itemprop="description" content="这知识，它不进脑子啊！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GWH Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          IMU预积分(二)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-01 15:33:58 / 修改时间：15:36:15" itemprop="dateCreated datePublished" datetime="2020-05-01T15:33:58+08:00">2020-05-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/VIO/" itemprop="url" rel="index"><span itemprop="name">VIO</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
+        <h2 id="IMU预积分-二-——线性视觉惯导初始化"><a href="#IMU预积分-二-——线性视觉惯导初始化" class="headerlink" title="IMU预积分(二)——线性视觉惯导初始化"></a>IMU预积分(二)——线性视觉惯导初始化</h2><p>这篇文章紧跟IMU预积分(一)，主要记录2012年那篇经典的预积分论文中的初始化部分。</p>
+<a id="more"></a>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+<h3 id="1、以首帧位姿为参考坐标系"><a href="#1、以首帧位姿为参考坐标系" class="headerlink" title="1、以首帧位姿为参考坐标系"></a>1、以首帧位姿为参考坐标系</h3><p>IMU预积分(一)中，我们推导出了一种将若干惯性测量值集成到载体坐标系下的方法，这种方法可在载体初始条件未知的情况下进行积分，得出的一个重要公式如下：<br>$$<br>\begin{array}{l}<br>p_{t2}^n=p_{t1}^n+(t_2-t_1)v_{t1}^n+\frac{1}{2}(t_2-t_1)^2g^n+C_{bt1}^n\Delta p_{t2}^{+t1} \\<br>v_{t2}^n=v_{t1}^n+(t_2-t_1)g^n+C_{bt1}^n\Delta v_{t2}^{t1} \\<br>\phi_{t2}^{n} = EulerFromDCM(C_{bt1}^n\Delta C_{bt2}^{bt1}) –旋转矩阵到欧拉角<br>\end{array} \tag{1.1}<br>$$<br>然而，当预积分的观测数据融合到导航框架下，这些初始条件仍然是必须的，正如公式(1.1)所描述的，$p_{ta}^n，v_{t1}^n，C_{bt1}^n$在导航框架下仍是需要估计的。全球导航参考坐标系例如北京54坐标系等常用做惯性导航的导航坐标系，尤其有GPS观测时，在这个坐标系下重力是已知的，但还需要知道初始帧在导航坐标系中的位置、姿态和速度。对于大多数的SLAM应用，以起始帧作为导航坐标系就足够了，当没有绝对位姿观测时，甚至是必须的。下图展示了以首帧为参考坐标系的惯性导航：</p>
+<div style="width:65%;margin:auto" align=center><img src="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/%E4%BB%A5%E9%A6%96%E5%B8%A7%E4%B8%BA%E5%8F%82%E8%80%83%E5%9D%90%E6%A0%87%E7%9A%84%E6%83%AF%E6%80%A7%E5%AF%BC%E8%88%AA.png" class=""></div>
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-08T20:21:25+08:00"
-              content="2020-02-08">
-          02-08
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/08/Cyber-RT%E4%B8%8EROS%E5%AF%B9%E7%85%A7/" itemprop="url">
-            <span itemprop="name">Cyber RT与ROS对照</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-07T20:39:16+08:00"
-              content="2020-02-07">
-          02-07
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/" itemprop="url">
-            <span itemprop="name">Cyber RT构建新组件</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-05T23:29:25+08:00"
-              content="2020-02-05">
-          02-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B3%E2%80%94%E2%80%94Cyber-RT%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9D%97/" itemprop="url">
-            <span itemprop="name">Apollo的启动过程3——Cyber RT如何加载组件</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-05T17:07:59+08:00"
-              content="2020-02-05">
-          02-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/" itemprop="url">
-            <span itemprop="name">Apollo的启动过程2——功能模块加载</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-04T17:27:53+08:00"
-              content="2020-02-04">
-          02-04
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/04/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8/" itemprop="url">
-            <span itemprop="name">Apollo的启动过程1——启动命令解析</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-01T09:30:22+08:00"
-              content="2020-02-01">
-          02-01
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/01/hello-world/" itemprop="url">
-            <span itemprop="name">Hello World</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-01-31T21:55:51+08:00"
-              content="2020-01-31">
-          01-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/01/31/Bazel%E5%85%A5%E9%97%A81/" itemprop="url">
-            <span itemprop="name">Bazel入门1:编译C++项目</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-01-19T12:04:14+08:00"
-              content="2020-01-19">
-          01-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/" itemprop="url">
-            <span itemprop="name">最小二乘的几何解释</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+<p>在全局参考坐标系下，估计初始条件的主要问题或者难点来自旋转矩阵带来的非线性。若以第一帧为导航的参考坐标系，则载体的初始姿态就是完全确定的了（平移是0，旋转是单位矩阵），这消除了非线性的影响，然而，由于使用了方向任意的参考坐标系，在这个参考坐标系下重力是未知的。这种方法的优点在于对重力的估计是线性的，对初始条件中的旋转估计则不是。</p>
+<p>就是说，以全局参考坐标系为导航坐标系时，重力是已知的，但是初始的位置、速度、旋转需要估计，其中对旋转的估计是非线性的；以第一帧为导航坐标系时，初始的位置、旋转是完全确定的，但可以用线性的方法估计初始速度、重力。</p>
+<h3 id="2、初始速度估计"><a href="#2、初始速度估计" class="headerlink" title="2、初始速度估计"></a>2、初始速度估计</h3><p>重新排列公式（1.1）中的第一个公式，可以看出载体的初始速度是可以观测的：<br>$$<br>v_{t1}^n=\frac{p_{t1}^n-p_{t2}^n+C_{bt1}^n \Delta p_{t2}^{+t1}+\frac{1}{2}(t_2-t_1)^2g^n}{-(t_2-t_1)} \tag{1.2}<br>$$<br>因此，给定导航坐标系下的重力矢量以及另一个传感器（如相机）对两个位姿之间的相对位置估计，则平台的初始速度可以以线性的方式获取。可以看出，初始速度可观测的一个标准是能够估计出导航坐标系下的重力矢量。</p>
+<h3 id="3、重力矢量的估计"><a href="#3、重力矢量的估计" class="headerlink" title="3、重力矢量的估计"></a>3、重力矢量的估计</h3><p>使用两个连续的位置预积分，一个速度预积分，需要的公式如下：<br>$$<br>\begin{array}{l}<br>p_{t2}^n=p_{t1}^n+(t_2-t_1)v_{t1}^n+\frac{1}{2}(t_2-t_1)^2g^n+C_{bt1}^n\Delta p_{t2}^{+t1} \\<br>p_{t3}^n=p_{t2}^n+(t_3-t_2)v_{t2}^n+\frac{1}{2}(t_3-t_2)^2g^n+C_{bt2}^n\Delta p_{t3}^{+t2} \\<br>v_{t2}^n=v_{t1}^n+(t_2-t_1)g^n+C_{bt1}^n\Delta v_{t2}^{t1} \\<br>\end{array}\tag{1.3}<br>$$<br>将速度方程带入第二个位置方程：<br>$$<br>\begin{aligned}<br>p_{t 3}^{n}=&amp; p_{t 2}^{n}+(t 3-t 2)\left(v_{t 1}^{n}+(t 2-t 1) g^{n}+C_{b t 1}^{n} \Delta v_{t 2}^{t 1}\right) \\<br>&amp;+\frac{1}{2}(t 3-t 2)^{2} g^{n}+C_{b t 2}^{n} \Delta p_{t 3}^{+t 2} \\<br>=&amp; p_{t 2}^{n}+(t 3-t 2)\left(v_{t 1}^{n}+C_{b t 1}^{n} \Delta v_{t 2}^{t 1}\right)+C_{b t 2}^{n} \Delta p_{t 3}^{+t 2} \\<br>&amp;+(t 3-t 2)\left(\frac{1}{2}(t 3-t 2)+(t 2-t 1)\right) g^{n}<br>\end{aligned} \tag{1.4}<br>$$<br>将公式（1.3）中第一个位置方程中的$v_{t1}^n$分离，带入公式（1.4）并从中分离出重力矢量：<br>$$<br>g^{n}=\frac{p_{t 2}^{n}-p_{t 3}^{n}+(t 3-t 2)\left(\left(\frac{p_{t 1}^{n}-p_{t 2}^{n}+C_{b t 1}^{n} \Delta p_{t 2}^{+t 1}}{(t 2-t 1)}\right)+C_{b t 1}^{n} \Delta v_{t 2}^{t 1}\right)+C_{b t 2}^{n} \Delta p_{t 3}^{+t 2}}{(t 3-t 2)\left(\frac{1}{2}(t 3-t 2)+\frac{3}{2}(t 2-t 1)\right)}\tag{1.5}<br>$$<br> 这一推导表明，仅在三帧图像的相对位置被估计之后，就可以线性地获得载体的初始速度和重力矢量的估计值。重力矢量可观测带来的一个益处是，利用这个估计，可以提取出载体在导航系下的绝对横摇角和俯仰角。虽然此时我们有了一个重力矢量的估计，但是它并不准确，所以一些VIO在后端优化中也加入了对重力矢量的估计。VINS-mono对重力矢量的refine很巧妙，之后会记录。</p>
 
     </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>听说打赏我的人，最后都找到了真爱。</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E5%BE%AE%E4%BF%A1.jpg" alt="陌上&烟雨 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E6%94%AF%E4%BB%98%E5%AE%9D.jpg" alt="陌上&烟雨 支付宝">
+        <p>支付宝</p>
+      </div>
+
   </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%B8%80/" rel="prev" title="IMU预积分(一)">
+      <i class="fa fa-chevron-left"></i> IMU预积分(一)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
   
   
 
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2020/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/2020/">1</a><a class="page-number" href="/archives/2020/page/2/">2</a><span class="page-number current">3</span>
-  </nav>
-
+  </div>
 
 
           </div>
@@ -393,6 +350,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IMU预积分-二-——线性视觉惯导初始化"><span class="nav-text">IMU预积分(二)——线性视觉惯导初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、以首帧位姿为参考坐标系"><span class="nav-text">1、以首帧位姿为参考坐标系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、初始速度估计"><span class="nav-text">2、初始速度估计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、重力矢量的估计"><span class="nav-text">3、重力矢量的估计</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
