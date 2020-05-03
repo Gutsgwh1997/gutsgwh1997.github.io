@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="多视图三角化在介绍三角化之前，我们先引入一个符号“^”。通常我们通过下面的公式计算两个向量的叉乘（外积）： $$\boldsymbol{a} \times \boldsymbol{b}&#x3D;\left[\begin{array}{ccc}\boldsymbol{i} &amp; \boldsymbol{j} &amp; \boldsymbol{k} \\a_{1} &amp; a_{2} &amp;">
+  <meta name="description" content="多视图三角化在介绍三角化之前，我们先引入一个符号“^”。通常我们通过下面的公式计算两个向量的叉乘（外积）：  \boldsymbol{a} \times \boldsymbol{b}&#x3D;\left[\begin{array}{ccc} \boldsymbol{i} &amp; \boldsymbol{j} &amp; \boldsymbol{k} \\\\ a_{1} &amp; a_{2} &amp; a_{3} \\\\ b_">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多视图三角化">
 <meta property="og:url" content="http://yoursite.com/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="多视图三角化在介绍三角化之前，我们先引入一个符号“^”。通常我们通过下面的公式计算两个向量的叉乘（外积）： $$\boldsymbol{a} \times \boldsymbol{b}&#x3D;\left[\begin{array}{ccc}\boldsymbol{i} &amp; \boldsymbol{j} &amp; \boldsymbol{k} \\a_{1} &amp; a_{2} &amp;">
+<meta property="og:description" content="多视图三角化在介绍三角化之前，我们先引入一个符号“^”。通常我们通过下面的公式计算两个向量的叉乘（外积）：  \boldsymbol{a} \times \boldsymbol{b}&#x3D;\left[\begin{array}{ccc} \boldsymbol{i} &amp; \boldsymbol{j} &amp; \boldsymbol{k} \\\\ a_{1} &amp; a_{2} &amp; a_{3} \\\\ b_">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F.png">
 <meta property="og:image" content="http://yoursite.com/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F.png">
@@ -248,27 +248,64 @@
 
       
         <h2 id="多视图三角化"><a href="#多视图三角化" class="headerlink" title="多视图三角化"></a>多视图三角化</h2><p>在介绍三角化之前，我们先引入一个符号“^”。通常我们通过下面的公式计算两个向量的叉乘（外积）：</p>
-<p>$$<br>\boldsymbol{a} \times \boldsymbol{b}=\left[\begin{array}{ccc}<br>\boldsymbol{i} &amp; \boldsymbol{j} &amp; \boldsymbol{k} \\<br>a_{1} &amp; a_{2} &amp; a_{3} \\<br>b_{1} &amp; b_{2} &amp; b_{3}<br>\end{array}\right]=\left[\begin{array}{c}<br>a_{2} b_{3}-a_{3} b_{2} \\<br>a_{3} b_{1}-a_{1} b_{3} \\<br>a_{1} b_{2}-a_{2} b_{1}<br>\end{array}\right]=\left[\begin{array}{ccc}<br>0 &amp; -a_{3} &amp; a_{2} \\<br>a_{3} &amp; 0 &amp; -a_{1} \\<br>-a_{2} &amp; a_{1} &amp; 0<br>\end{array}\right] \boldsymbol{b} \triangleq \boldsymbol{a}^{\wedge} \boldsymbol{b}<br>$$</p>
-<p>引入“^”符号后，把$a$写成矩阵，实际上是一个反对称矩阵，如此就把外积$a \times b$写成了矩阵与向量的乘法$a^{\wedge}b$。</p>
-<a id="more"></a>
-
+<script type="math/tex; mode=display">
+\boldsymbol{a} \times \boldsymbol{b}=\left[\begin{array}{ccc}
+\boldsymbol{i} & \boldsymbol{j} & \boldsymbol{k} \\\\
+a_{1} & a_{2} & a_{3} \\\\
+b_{1} & b_{2} & b_{3}
+\end{array}\right]=\left[\begin{array}{c}
+a_{2} b_{3}-a_{3} b_{2} \\\\
+a_{3} b_{1}-a_{1} b_{3} \\\\
+a_{1} b_{2}-a_{2} b_{1}
+\end{array}\right]=\left[\begin{array}{ccc}
+0 & -a_{3} & a_{2} \\\\
+a_{3} & 0 & -a_{1} \\\\
+-a_{2} & a_{1} & 0
+\end{array}\right] \boldsymbol{b} \triangleq \boldsymbol{a}^{\wedge} \boldsymbol{b}</script><p>引入“^”符号后，把$a$写成矩阵，实际上是一个反对称矩阵，如此就把外积$a \times b$写成了矩阵与向量的乘法$a^{\wedge}b$。<br><a id="more"></a></p>
 <h3 id="1、两视图三角化"><a href="#1、两视图三角化" class="headerlink" title="1、两视图三角化"></a>1、两视图三角化</h3><p>在单目SLAM中，仅通过单张图像我们无法获得像素的深度信息，这时候需要通过三角测量的方法来估计地图点的深度。三角测量是指：通过在两处观察同一个点的夹角，确定该点的距离。</p>
 <div style="width:70%;margin:auto" align=center><img src="/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F.png" class="" title="三角测量"></div>
 
-<p>考虑$I_1$，$I_2$两帧图像，$R,t$是第二帧相对于第一帧的旋转矩阵和平移向量（对应的变换矩阵是$T_{12}$）。在$I_1$中有特征点$p_1$，对应于$I_2$中的匹配点$p_2$。根据相机的内参数矩阵$K$，我们便可以获得$p_1$在$I_1$帧归一化图像平面中的点$x_1=K^{-1}p_1$；$p_2$在$I_2$帧归一化平面中的点$x_2=K^{-1}p_2$。</p>
+<p>考虑$I<em>1$，$I_2$两帧图像，$R,t$是第二帧相对于第一帧的旋转矩阵和平移向量（对应的变换矩阵是$T</em>{12}$）。在$I_1$中有特征点$p_1$，对应于$I_2$中的匹配点$p_2$。根据相机的内参数矩阵$K$，我们便可以获得$p_1$在$I_1$帧归一化图像平面中的点$x_1=K^{-1}p_1$；$p_2$在$I_2$帧归一化平面中的点$x_2=K^{-1}p_2$。</p>
 <p>根据对极约束，他们满足如下的关系：</p>
-<p>$$<br>s_1x_1 = s_2Rx_2+t \tag{1.1}<br>$$</p>
-<p>先对公式（1.1）左右两端左乘$x_1^{\wedge}$，得到：</p>
-<p>$$<br>s_1x_1^{\wedge}x_1 = 0 = s_2x_1^{\wedge}Rx_2+x_1^{\wedge}t<br>\tag{1.2}<br>$$</p>
-<p>根据公式（1.2）的右端，可以计算出$s_2$，进而根据公式（1.1）计算出$s_1$，我们便可得到路标点$P$在这两帧中的深度。然而，在实际的位姿估计中，我们估计的值往往存在误差，公式（1.2）不严格为0。这时候我们可以计算最小二乘解，参见<a href="/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/" title="最小二乘的几何解释">最小二乘的几何解释</a></p>
+<script type="math/tex; mode=display">
+s_1x_1 = s_2Rx_2+t \tag{1.1}</script><p>先对公式（1.1）左右两端左乘$x_1^{\wedge}$，得到：</p>
+<script type="math/tex; mode=display">
+s_1x_1^{\wedge}x_1 = 0 = s_2x_1^{\wedge}Rx_2+x_1^{\wedge}t
+\tag{1.2}</script><p>根据公式（1.2）的右端，可以计算出$s_2$，进而根据公式（1.1）计算出$s_1$，我们便可得到路标点$P$在这两帧中的深度。然而，在实际的位姿估计中，我们估计的值往往存在误差，公式（1.2）不严格为0。这时候我们可以计算最小二乘解，参见<a href="/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/" title="最小二乘的几何解释">最小二乘的几何解释</a></p>
 <h3 id="2、多视图三角化"><a href="#2、多视图三角化" class="headerlink" title="2、多视图三角化"></a>2、多视图三角化</h3><p>在滑动窗口中，路标点经常被多个关键帧同时观测，考虑路标点$Y$，在多个关键帧$k=1，…,n$中观测到。</p>
 <div style="width:80%;margin:auto" align=center><img src="/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E6%B5%8B%E9%87%8F.png" class="" title="多视图三角测量"></div>
 
 <p>为了计算方便我们取$Y \in \mathbb{R}^4$，在每一帧中的观测取归一化平面坐标$x_k=[u_k,v_k,1]^T$（与像素坐标只差一个相机内参）。</p>
-<p>记投影矩阵$P_k=[R_k,t_k] \in \mathbb{R}^{3\times4}$，为World坐标系到Camera坐标系的变换。有如下的投影关系：<br>$$<br>\forall k,\lambda_kx_k=P_kY<br>\tag{2.1}<br>$$<br>展开：<br>$$<br>\lambda_k\left[\begin{array}{ccc}<br>u_k \\<br>v_k\\<br>1<br>\end{array}\right]<br>=\left[\begin{array}{ccc}<br>P_{k,1}^T \\<br>P_{k,2}^T \\<br>P_{k,3}^T<br>\end{array}\right]Y<br>\tag{2.2}<br>$$<br>根据公式（2.2）的第三行有：$\lambda_k = P_{k,3}^TY$，其中$P_{k,3}^T$是$P_k$的第3行。</p>
-<p>将第三行的结果带入前两行则有：<br>$$<br>u_kP_{k,3}^TY = P_{k,1}^TY<br>$$</p>
-<p>$$<br>v_kP_{k,3}^TY = P_{k,2}^TY<br>\tag{2.3}<br>$$<br>每次的观测都会提供两个这样的方程，$Y$是未知量，将$Y$移动到等式的另一侧：<br>$$<br>\left[\begin{array}{c}<br>u_{1} P_{1,3}^T-P_{1,1}^T \\<br>v_{1} P_{1,3}^T-P_{1,2}^T \\<br>\vdots \\<br>u_{n} P_{n, 3}^T-P_{n, 1}^T \\<br>v_{n} P_{n, 3}^T-P_{n, 2}^T<br>\end{array}\right] Y=0 \rightarrow \mathbf{D} Y=0<br>\tag{2.5}<br>$$</p>
-
+<p>记投影矩阵$P_k=[R_k,t_k] \in \mathbb{R}^{3\times4}$，为World坐标系到Camera坐标系的变换。有如下的投影关系：</p>
+<script type="math/tex; mode=display">
+\forall k,\lambda_kx_k=P_kY
+\tag{2.1}</script><p>展开：</p>
+<script type="math/tex; mode=display">
+\lambda_k\left[\begin{array}{ccc}
+u_k \\\\
+v_k\\\\
+1
+\end{array}\right]
+=\left[\begin{array}{ccc}
+P_{k,1}^T \\\\
+P_{k,2}^T \\\\
+P_{k,3}^T
+\end{array}\right]Y
+\tag{2.2}</script><p>根据公式（2.2）的第三行有：$\lambda<em>k = P</em>{k,3}^TY$，其中$P_{k,3}^T$是$P_k$的第3行。</p>
+<p>将第三行的结果带入前两行则有：</p>
+<script type="math/tex; mode=display">
+u_kP_{k,3}^TY = P_{k,1}^TY</script><script type="math/tex; mode=display">
+v_kP_{k,3}^TY = P_{k,2}^TY
+\tag{2.3}</script><p>每次的观测都会提供两个这样的方程，$Y$是未知量，将$Y$移动到等式的另一侧：</p>
+<script type="math/tex; mode=display">
+\left[\begin{array}{c}
+u_{1} P_{1,3}^T-P_{1,1}^T \\\\
+v_{1} P_{1,3}^T-P_{1,2}^T \\\\
+\vdots \\\\
+u_{n} P_{n, 3}^T-P_{n, 1}^T \\\\
+v_{n} P_{n, 3}^T-P_{n, 2}^T
+\end{array}\right] Y=0 \rightarrow \mathbf{D} Y=0
+\tag{2.5}</script>
     </div>
 
     
@@ -471,13 +508,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">137k</span>
+    <span title="站点总字数">135k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:04</span>
+    <span title="站点阅读时长">2:03</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 
