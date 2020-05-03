@@ -20,17 +20,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="这知识，它不进脑子啊！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="GWH Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2020/index.html">
+  <meta name="description" content="IMU预积分（三）——李代数上的预积分在之前的两篇IMU预积分的文章中，我们推导了2012年首篇提出IMU预积分的文章中的公式。C Forster等在2015年将其进一步扩展到了李代数上，形成了一套优雅的理论体系。北航的邱笑晨博士对这套理论进行了详尽的推导，所谓前人种树后人乘凉，我这里白嫖一下邱博的成果，只在原资料的基础上加了一些微不足道的注释。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IMU预积分(三)">
+<meta property="og:url" content="http://yoursite.com/2020/05/03/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%B8%89/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="这知识，它不进脑子啊！">
+<meta property="og:description" content="IMU预积分（三）——李代数上的预积分在之前的两篇IMU预积分的文章中，我们推导了2012年首篇提出IMU预积分的文章中的公式。C Forster等在2015年将其进一步扩展到了李代数上，形成了一套优雅的理论体系。北航的邱笑晨博士对这套理论进行了详尽的推导，所谓前人种树后人乘凉，我这里白嫖一下邱博的成果，只在原资料的基础上加了一些微不足道的注释。">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-03T10:32:12.000Z">
+<meta property="article:modified_time" content="2020-05-03T10:40:05.740Z">
 <meta property="article:author" content="陌上&amp;烟雨">
+<meta property="article:tag" content="SLAM">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/archives/2020/">
+<link rel="canonical" href="http://yoursite.com/2020/05/03/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%B8%89/">
 
 
 <script id="page-configurations">
@@ -38,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | GWH Blog</title>
+  <title>IMU预积分(三) | GWH Blog</title>
   
 
 
@@ -157,232 +160,146 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 29 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/03/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%B8%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
+      <meta itemprop="name" content="陌上&烟雨">
+      <meta itemprop="description" content="这知识，它不进脑子啊！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GWH Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          IMU预积分(三)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-03 18:32:12 / 修改时间：18:40:05" itemprop="dateCreated datePublished" datetime="2020-05-03T18:32:12+08:00">2020-05-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/VIO/" itemprop="url" rel="index"><span itemprop="name">VIO</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>499</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
+        <h2 id="IMU预积分（三）——李代数上的预积分"><a href="#IMU预积分（三）——李代数上的预积分" class="headerlink" title="IMU预积分（三）——李代数上的预积分"></a>IMU预积分（三）——李代数上的预积分</h2><p>在之前的两篇IMU预积分的文章中，我们推导了2012年首篇提出IMU预积分的文章中的公式。C Forster等在2015年将其进一步扩展到了李代数上，形成了一套优雅的理论体系。北航的邱笑晨博士对这套理论进行了详尽的推导，所谓前人种树后人乘凉，我这里白嫖一下邱博的成果，只在原资料的基础上加了一些微不足道的注释。</p>
+<a id="more"></a>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-03T18:32:12+08:00"
-              content="2020-05-03">
-          05-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/03/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%B8%89/" itemprop="url">
-            <span itemprop="name">IMU预积分(三)</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-01T15:33:58+08:00"
-              content="2020-05-01">
-          05-01
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/" itemprop="url">
-            <span itemprop="name">IMU预积分(二)</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-05-01T10:38:12+08:00"
-              content="2020-05-01">
-          05-01
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%B8%80/" itemprop="url">
-            <span itemprop="name">IMU预积分(一)</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-03T17:17:55+08:00"
-              content="2020-04-03">
-          04-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/04/03/std-async%E4%B8%8Estd-thread/" itemprop="url">
-            <span itemprop="name">std::async与std::thread</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-03T17:14:00+08:00"
-              content="2020-04-03">
-          04-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/04/03/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C/" itemprop="url">
-            <span itemprop="name">原子操作</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-03T16:36:52+08:00"
-              content="2020-04-03">
-          04-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/04/03/Ax-0%E7%9A%84%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E8%A7%A3/" itemprop="url">
-            <span itemprop="name">Ax=0的最小二乘解</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-03T16:35:44+08:00"
-              content="2020-04-03">
-          04-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/" itemprop="url">
-            <span itemprop="name">常用矩阵分解--理论篇</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-31T23:43:58+08:00"
-              content="2020-03-31">
-          03-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/03/31/%E6%88%91%E7%9A%84%E7%A5%9E%E5%85%B5%E5%88%A9%E5%99%A8/" itemprop="url">
-            <span itemprop="name">我的开发工具</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-31T23:19:54+08:00"
-              content="2020-03-31">
-          03-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/" itemprop="url">
-            <span itemprop="name">多视图三角化</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-30T20:25:04+08:00"
-              content="2020-03-30">
-          03-30
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/03/30/Dynamic-SLAM-%E5%8A%A8%E6%80%81%E7%82%B9%E5%8E%BB%E9%99%A4/" itemprop="url">
-            <span itemprop="name">Dynamic SLAM 动态点去除</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+<p>扩展后的这套理论与2012年或者VINS-mono中使用的预积分技术实现的目的是完全一致的，只是使用的数学工具不太一样。总体来说，我们使用IMU预积分要完成这几项工作：</p>
+<ol>
+<li>递推地计算预积分项（位移、速度、旋转）的结果；</li>
+<li>确定预积分结果的不确定性，也就是要推导出协方差矩阵；</li>
+<li>线性地修正IMU的bias变化带来的预积分的改变；</li>
+<li>计算预积分的残差以及残差对应的雅可比矩阵（与其他传感器融合时残差才能计算出来）。</li>
+</ol>
+<p>邱博推导这套理论，主要是在李代数上推导的雅克比矩阵，只有很少部分的公式采用扰动的方式来推导。相比于VINS-mono中完全使用扰动的方式推导求解雅克比矩阵，这里看起来会稍微复杂一些，但是邱博对每一步推导都给出了理论依据，所以不会出现看不懂的变换。资料如下：</p>
+<div class="pdfobject-container" data-target="预计分总结与公式推导.pdf" data-height="500px"></div> 
 
     </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>听说打赏我的人，最后都找到了真爱。</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E5%BE%AE%E4%BF%A1.jpg" alt="陌上&烟雨 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E6%94%AF%E4%BB%98%E5%AE%9D.jpg" alt="陌上&烟雨 支付宝">
+        <p>支付宝</p>
+      </div>
+
   </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/" rel="prev" title="IMU预积分(二)">
+      <i class="fa fa-chevron-left"></i> IMU预积分(二)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
   
   
 
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/2020/page/2/">2</a><a class="page-number" href="/archives/2020/page/3/">3</a><a class="extend next" rel="next" href="/archives/2020/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
-
+  </div>
 
 
           </div>
@@ -433,6 +350,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IMU预积分（三）——李代数上的预积分"><span class="nav-text">IMU预积分（三）——李代数上的预积分</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
