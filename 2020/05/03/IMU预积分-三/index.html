@@ -239,6 +239,7 @@
       
         <h2 id="IMU预积分（三）——李代数上的预积分"><a href="#IMU预积分（三）——李代数上的预积分" class="headerlink" title="IMU预积分（三）——李代数上的预积分"></a>IMU预积分（三）——李代数上的预积分</h2><p>在之前的两篇IMU预积分的文章中，我们推导了2012年首篇提出IMU预积分的文章中的公式。C Forster等在2015年将其进一步扩展到了李代数上，形成了一套优雅的理论体系。北航的邱笑晨博士对这套理论进行了详尽的推导，所谓前人种树后人乘凉，我这里白嫖一下邱博的成果，只在原资料的基础上加了一些微不足道的注释。</p>
 <a id="more"></a>
+
 <p>扩展后的这套理论与2012年或者VINS-mono中使用的预积分技术实现的目的是完全一致的，只是使用的数学工具不太一样。总体来说，我们使用IMU预积分要完成这几项工作：</p>
 <ol>
 <li>递推地计算预积分项（位移、速度、旋转）的结果；</li>
@@ -248,6 +249,7 @@
 </ol>
 <p>邱博推导这套理论，主要是在李代数上推导的雅克比矩阵，只有很少部分的公式采用扰动的方式来推导。相比于VINS-mono中完全使用扰动的方式推导求解雅克比矩阵，这里看起来会稍微复杂一些，但是邱博对每一步推导都给出了理论依据，所以不会出现看不懂的变换。资料如下(右击可下载)：</p>
 <div class="pdfobject-container" data-target="预计分总结与公式推导.pdf" data-height="500px"></div> 
+
 
     </div>
 
@@ -289,7 +291,10 @@
     <a href="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/" rel="prev" title="IMU预积分(二)">
       <i class="fa fa-chevron-left"></i> IMU预积分(二)
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/04/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E5%9B%9B/" rel="next" title="IMU预积分(四)">
+      IMU预积分(四) <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -365,7 +370,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -447,13 +452,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">135k</span>
+    <span title="站点总字数">138k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:03</span>
+    <span title="站点阅读时长">2:05</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 

@@ -219,7 +219,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.7k</span>
+              <span>1.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -239,61 +239,17 @@
 
       
         <h2 id="AX-0的最小二乘解"><a href="#AX-0的最小二乘解" class="headerlink" title="AX=0的最小二乘解"></a>AX=0的最小二乘解</h2><p>结论：当$||x||=1$时，$Ax=0$的最小二乘解是$A^TA$的最小特征值对应的特征向量。</p>
-<p>上个命题等同于：$A^TA$的最小特征值所对应的特征向量可使得$||Ax||$最小。证明如下：<br><a id="more"></a></p>
+<p>上个命题等同于：$A^TA$的最小特征值所对应的特征向量可使得$||Ax||$最小。证明如下：</p>
+<a id="more"></a>
+
 <p>case 1：</p>
-<p>若$x$为$A^TA$的特征向量，则有$A^TAx=\lambda x$，可以得到：</p>
-<script type="math/tex; mode=display">
-||Ax||=(Ax)^T(Ax)=x^TA^TAx=\lambda x^Tx=\lambda</script><p>由上式子可见，取$A^TA$的最小特征值对应的特征向量，可以使得$||Ax||$最小。</p>
+<p>若$x$为$A^TA$的特征向量，则有$A^TAx=\lambda x$，可以得到：<br>$$<br>||Ax||=(Ax)^T(Ax)=x^TA^TAx=\lambda x^Tx=\lambda<br>$$<br>由上式子可见，取$A^TA$的最小特征值对应的特征向量，可以使得$||Ax||$最小。</p>
 <p>（因为$A^TA$是Hermite矩阵，所以$A^TA$酉相似于一个实对角矩阵，对角阵中的元素是$A^TA$的特征值，即有$A^TA=U B U^H$，$B$是由$A^TA$的特征值组成的向量，$U$是对应的特征向量组成的酉矩阵，这些文字是为了说明$x^Tx=1$）</p>
 <p>case 2：</p>
-<p>若$x$不是$A^TA$的特征向量，则对$A$做SVD分解，得到：(奇异值按照降序排列)</p>
-<script type="math/tex; mode=display">
-A = U \Sigma V^T</script><p>则有：</p>
-<script type="math/tex; mode=display">
-||Ax||=(Ax)^T(Ax)=x^TA^TAx \\\\
-=x^TV \Sigma^T U^T U \Sigma V^T x\\\\
-= x^TV \Sigma^T \Sigma V^T x
-\tag{1}</script><p>又因为：</p>
-<script type="math/tex; mode=display">
-\Sigma^T \Sigma = \left[\begin{array}{ccc}
-\delta_{1}^{2} & & \\\\
-& \delta_{2}^{2} & \ldots & \\\\
-& & & \delta_{n}^{2}
-\end{array}\right]
-\tag{2}</script><p>在SVD分解中，右奇异矩阵$V$是一组$n$维的标准正交基，即：</p>
-<script type="math/tex; mode=display">
-V = [\begin{array}{llll}
-v_{1} & v_{2} & \cdots & v_{n}
-\end{array}]</script><p>因此，$n$维向量$x$可用该组基来表示：</p>
-<script type="math/tex; mode=display">
-x=\alpha_{1} v_{1}+\alpha_{2} v_{2}+\cdots+\alpha_{n} v_{n}=\left[\begin{array}{llll}
-v_{1} & v_{2} & \cdots & v_{n}
-\end{array}\right]\left[\begin{array}{l}
-\alpha_{1} \\\\
-\alpha_{2} \\\\
-\cdots \\\\
-\alpha_{n}
-\end{array}\right]
-\tag{3}</script><p>将公式（2）、（3）带入公式（1）中，可以得到：</p>
-<script type="math/tex; mode=display">
-||Ax|| = \left[\begin{array}{llll}
-\alpha_{1} & \alpha_{2} & \cdots & \alpha_{n}
-\end{array}\right]\left[\begin{array}{llll}
-\delta_{1}^{2} & & & \\\\
-& \delta_{2}^{2} & & \\\\
-& & \cdots & \\\\
-& & & \delta_{n}^{2}
-\end{array}\right]\left[\begin{array}{l}
-\alpha_{1} \\\\
-\alpha_{2} \\\\
-\cdots \\\\
-\alpha_{n}
-\end{array}\right]</script><script type="math/tex; mode=display">
-||Ax||=\alpha_1^2\delta_1^2 + \alpha_2^2\delta_2^2+\cdots+\alpha_n^2\delta_n^2</script><p>因为$||x||=1$，因此有：</p>
-<script type="math/tex; mode=display">
-(\alpha_1^2+\alpha_2^2+ \cdots +\alpha_n^2)=1</script><p>所以有</p>
-<script type="math/tex; mode=display">
-||Ax|| \geq \alpha_n^2\delta_n^2 + \alpha_2^2\delta_n^2+\cdots+\alpha_n^2\delta_n^2=\delta_n^2</script><p>上个公式说明，若$x$不是特征向量，则$||Ax||$一定大于等于$x$是$A$的最小特征值对应的特征向量时的数值。</p>
+<p>若$x$不是$A^TA$的特征向量，则对$A$做SVD分解，得到：(奇异值按照降序排列)<br>$$<br>A = U \Sigma V^T<br>$$<br>则有：<br>$$<br>||Ax||=(Ax)^T(Ax)=x^TA^TAx \\<br>=x^TV \Sigma^T U^T U \Sigma V^T x\\<br>= x^TV \Sigma^T \Sigma V^T x<br>\tag{1}<br>$$<br>又因为：<br>$$<br>\Sigma^T \Sigma = \left[\begin{array}{ccc}<br>\delta_{1}^{2} &amp; &amp; \\<br>&amp; \delta_{2}^{2} &amp; \ldots &amp; \\<br>&amp; &amp; &amp; \delta_{n}^{2}<br>\end{array}\right]<br>\tag{2}<br>$$<br>在SVD分解中，右奇异矩阵$V$是一组$n$维的标准正交基，即：<br>$$<br>V = [\begin{array}{llll}<br>v_{1} &amp; v_{2} &amp; \cdots &amp; v_{n}<br>\end{array}]<br>$$<br>因此，$n$维向量$x$可用该组基来表示：<br>$$<br>x=\alpha_{1} v_{1}+\alpha_{2} v_{2}+\cdots+\alpha_{n} v_{n}=\left[\begin{array}{llll}<br>v_{1} &amp; v_{2} &amp; \cdots &amp; v_{n}<br>\end{array}\right]\left[\begin{array}{l}<br>\alpha_{1} \\<br>\alpha_{2} \\<br>\cdots \\<br>\alpha_{n}<br>\end{array}\right]<br>\tag{3}<br>$$</p>
+<p>将公式（2）、（3）带入公式（1）中，可以得到：<br>$$<br>||Ax|| = \left[\begin{array}{llll}<br>\alpha_{1} &amp; \alpha_{2} &amp; \cdots &amp; \alpha_{n}<br>\end{array}\right]\left[\begin{array}{llll}<br>\delta_{1}^{2} &amp; &amp; &amp; \\<br>&amp; \delta_{2}^{2} &amp; &amp; \\<br>&amp; &amp; \cdots &amp; \\<br>&amp; &amp; &amp; \delta_{n}^{2}<br>\end{array}\right]\left[\begin{array}{l}<br>\alpha_{1} \\<br>\alpha_{2} \\<br>\cdots \\<br>\alpha_{n}<br>\end{array}\right]<br>$$</p>
+<p>$$<br>||Ax||=\alpha_1^2\delta_1^2 + \alpha_2^2\delta_2^2+\cdots+\alpha_n^2\delta_n^2<br>$$</p>
+<p>因为$||x||=1$，因此有：<br>$$<br>(\alpha_1^2+\alpha_2^2+ \cdots +\alpha_n^2)=1<br>$$<br>所以有<br>$$<br>||Ax|| \geq \alpha_n^2\delta_n^2 + \alpha_2^2\delta_n^2+\cdots+\alpha_n^2\delta_n^2=\delta_n^2<br>$$<br>上个公式说明，若$x$不是特征向量，则$||Ax||$一定大于等于$x$是$A$的最小特征值对应的特征向量时的数值。</p>
 <p>综上：取$A^TA$的最小特征值或者奇异值对应的特征向量可使得$Ax=0$在$||x||=1$的条件下得到最优解法。</p>
 
     </div>
@@ -416,7 +372,7 @@ v_{1} & v_{2} & \cdots & v_{n}
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -498,13 +454,13 @@ v_{1} & v_{2} & \cdots & v_{n}
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">135k</span>
+    <span title="站点总字数">138k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:03</span>
+    <span title="站点阅读时长">2:05</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 

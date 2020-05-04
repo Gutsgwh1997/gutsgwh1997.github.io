@@ -30,8 +30,8 @@
 <meta property="article:published_time" content="2020-02-13T05:06:15.000Z">
 <meta property="article:modified_time" content="2020-03-21T10:26:37.717Z">
 <meta property="article:author" content="陌上&amp;烟雨">
-<meta property="article:tag" content="C++11">
 <meta property="article:tag" content="C++">
+<meta property="article:tag" content="C++11">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://yoursite.com/2020/02/13/C-%E4%B8%AD%E7%9A%84%E5%B7%A6%E5%80%BC%E5%92%8C%E5%8F%B3%E5%80%BC/">
@@ -247,13 +247,18 @@
         <p>原文：<a href="https://eli.thegreenplace.net/2011/12/15/understanding-lvalues-and-rvalues-in-c-and-c" target="_blank" rel="noopener">Understanding lvalues and rvalues in C and C++</a></p>
 <p>我们在 C/C++ 编程中并不会经常用到 <strong>左值 (lvalue)和 右值 (rvalue)</strong>两个术语。然而一旦遇见，又常常不清楚它们的含义。最可能出现两这个术语的地方是在编译错误或警告的信息中。例如，使用 <code>gcc</code> 编译以下代码时：</p>
 <a id="more"></a>
+
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">foo</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> <span class="number">2</span>;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    foo() = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;<span class="comment">//编译命令g++ -std=c++11 % -Wall -o test.cpp</span></span><br></pre></td></tr></table></figure>
+
 <p>你会得到：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">test.c: In function 'main':</span><br><span class="line">test.c:8:5: error: lvalue required as left operand of assignment</span><br></pre></td></tr></table></figure>
+
 <p>这个例子有点夸张，不像是你能写出来的代码。不过错误信息中提到了<code>左值 (lvalue)</code>。另一个例子是当你用 <code>g++</code> 编译以下代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span>&amp; <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>现在错误信息是：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">testcpp.cpp: In function 'int&amp; foo()':</span><br><span class="line">testcpp.cpp:5:12: error: invalid initialization of non-const reference of type 'int&amp;' from an rvalue of type 'int'</span><br></pre></td></tr></table></figure>
+
 <p>同样的，错误信息中提到了术语<code>右值 (rvalue)</code>。那么，在 C 和 C++ 中，左值 和 右值 到底是什么意思呢？</p>
 <h2 id="简单的定义"><a href="#简单的定义" class="headerlink" title="简单的定义"></a>简单的定义</h2><p>左值和右值的简化版本定义，文章剩下的部分还会进行详细的介绍。</p>
 <ul>
@@ -262,41 +267,51 @@
 </ul>
 <h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>我们假设定义并赋值了一个整形变量：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> var;</span><br><span class="line">var = <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+
 <p>赋值操作需要左操作数是一个左值。<code>var</code> 是一个有内存位置的对象，因此它是左值。然而，下面的写法则是错的：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">4</span> = var;       <span class="comment">// 错误！</span></span><br><span class="line">(var + <span class="number">1</span>) = <span class="number">4</span>; <span class="comment">// 错误！</span></span><br></pre></td></tr></table></figure>
+
 <p>常量 <code>4</code> 和表达式 <code>var + 1</code> 都不是左值（也就是说，它们是右值），因为它们都是表达式的临时结果，而没有可识别的内存位置（也就是说，只存在于计算过程中的每个临时寄存器中（对比微机原理中的8086加法寄存器等））。因此，赋值给它们是没有任何语义上的意义的——我们赋值到了一个不存在的位置。</p>
 <p>那么，我们就能理解第一个代码片段中的错误信息的含义了。<code>foo</code> 返回的是一个临时的值。它是一个右值，赋值给它是错误的。因此当编译器看到 <code>foo() = 2</code> 时，会报错——赋值语句的左边应当是一个左值。</p>
 <p>然而，给函数返回的结果赋值，不一定总是错误的操作。例如，C++ 的引用让我们可以这样写：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> globalvar = <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span>&amp; <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> globalvar;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    foo() = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>这里 <code>foo</code> 返回一个引用，<strong>引用一个左值</strong>，因此可以赋值给它。实际上，C++ 中函数可以返回左值的功能对实现一些重载的操作符非常重要。</p>
 <h2 id="可修改的左值"><a href="#可修改的左值" class="headerlink" title="可修改的左值"></a>可修改的左值</h2><p>左值一开始在 C 中定义为“可以出现在赋值操作左边的值”。然而，当 ISO C 加入 <code>const</code> 关键字后，这个定义便不再成立。毕竟：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> a = <span class="number">10</span>; <span class="comment">// 'a' 是左值</span></span><br><span class="line">a = <span class="number">10</span>;           <span class="comment">// 但不可以赋值给它！</span></span><br></pre></td></tr></table></figure>
+
 <p>于是定义需要继续精化。不是所有的左值都可以被赋值。可赋值的左值被称为 <strong>可修改左值 (modifiable lvalues)</strong> 。C99标准定义可修改左值为：</p>
-<pre><code>[…] 可修改左值是特殊的左值，不含有数组类型、不完整类型、const 修饰的类型。如果它是 `struct` 或 `union`，它的成员都（递归地）不应含有 const 修饰的类型。
-</code></pre><h2 id="左值与右值间的转换"><a href="#左值与右值间的转换" class="headerlink" title="左值与右值间的转换"></a>左值与右值间的转换</h2><p>通常来说，计算对象的值的语言成分，都使用右值作为参数。例如，两元加法操作符 <code>&#39;+&#39;</code> 就需要两个右值参数，并返回一个右值：</p>
+<pre><code>[…] 可修改左值是特殊的左值，不含有数组类型、不完整类型、const 修饰的类型。如果它是 `struct` 或 `union`，它的成员都（递归地）不应含有 const 修饰的类型。</code></pre><h2 id="左值与右值间的转换"><a href="#左值与右值间的转换" class="headerlink" title="左值与右值间的转换"></a>左值与右值间的转换</h2><p>通常来说，计算对象的值的语言成分，都使用右值作为参数。例如，两元加法操作符 <code>&#39;+&#39;</code> 就需要两个右值参数，并返回一个右值：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;     <span class="comment">// a 是左值</span></span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;     <span class="comment">// b 是左值</span></span><br><span class="line"><span class="keyword">int</span> c = a + b; <span class="comment">// + 需要右值，所以 a 和 b 被转换成右值</span></span><br><span class="line">               <span class="comment">// + 返回右值</span></span><br></pre></td></tr></table></figure>
+
 <p>上述例子中，<code>a</code> 和 <code>b</code> 都是左值。因此，在第三行中，它们经历了<strong>隐式的左值到右值转换</strong> 。<u>除了数组、函数、不完整类型的所有左值都可以转换为右值。</u></p>
 <p><strong>那右值能否转换为左值呢？当然不能！</strong>根据左值的定义，这违反了左值的本质。【注1：右值可以显式地赋值给左值。之所以没有隐式的转换，是因为右值不能使用在左值应当出现的位置。】</p>
 <p>不过，右值可以通过一些更显式的方法产生左值。例如，一元解引用操作符 <code>&#39;*&#39;</code> 需要一个右值参数，但返回一个左值结果。考虑这样的代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> arr[] = &#123;<span class="number">1</span>, <span class="number">2</span>&#125;;</span><br><span class="line"><span class="keyword">int</span>* p = &amp;arr[<span class="number">0</span>];</span><br><span class="line">*(p + <span class="number">1</span>) = <span class="number">10</span>;   <span class="comment">// 正确: p + 1 是右值，但 *(p + 1) 是左值</span></span><br></pre></td></tr></table></figure>
+
 <p>相反地，一元取地址操作符 <code>&#39;&amp;&#39;</code> 需要一个左值参数，返回一个右值：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> var = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span>* bad_addr = &amp;(var + <span class="number">1</span>); <span class="comment">// 错误: 一元 '&amp;' 操作符需要左值参数</span></span><br><span class="line"><span class="keyword">int</span>* addr = &amp;var;           <span class="comment">// 正确: var 是左值</span></span><br><span class="line">&amp;var = <span class="number">40</span>;                  <span class="comment">// 错误: 赋值操作的左操作数需要是左值</span></span><br></pre></td></tr></table></figure>
+
 <p>在 C++ 中 <code>&#39;&amp;&#39;</code> 符号还有另一个功能——定义引用类型。引用类型又叫做“左值引用”。因此，<strong>不能将一个右值赋值给（非常量的）左值引用：</strong></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span>&amp; sref = <span class="built_in">std</span>::<span class="built_in">string</span>();  <span class="comment">// 错误: 非常量的引用 'std::string&amp;' 错误地使用右值 'std::string` 初始化(改为const + ...)</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>常量的左值引用可以使用右值赋值</strong>。因为你无法通过常量的引用修改变量的值，也就不会出现修改了右值的情况。这也使得 C++ 中一个常见的习惯成为可能：<strong>函数的参数使用<u>常量引用</u>接收参数，避免创建不必要的临时对象</strong>。</p>
 <h2 id="CV限定的右值"><a href="#CV限定的右值" class="headerlink" title="CV限定的右值"></a>CV限定的右值</h2><p>如果我们仔细阅读 C++ 标准中关于左值到右值的转换的部分【注2：在新的 C++11 标准草稿的第 4.1 节】，我们会发现：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一个非函数、非数组的类型T的左值可以转换为右值。 […] 如果T不是类类型【类类型即C++中使用类定义的类型，区别与内置类型】，转换后的右值的类型是T的未限定CV的版本 (cv-unqualified version of T)。其他情况下，转换后的右值类型就是T本身。</span><br></pre></td></tr></table></figure>
+
 <p>什么叫做 “未限定 CV” (cv-unqualified) 呢？ <em>CV 限定符</em> 这个术语指的是 <em>const</em> 和 <em>volatile</em> 两个类型限定符。C++ 标准的 3.9.3 节写到：</p>
-<pre><code>每个类型都有三个对应的 CV-限定类型版本： `const 限定` 、 `volatile 限定` 和 `const-volatile 限定` 版本。有或无 CV 限定的不同版本的类型是不同的类型，但写法和赋值需求都是相同的。
-</code></pre><p>那么，这些又和右值有什么关系呢？在 C 中，只有左值有 CV 限定的类型，而右值从来没有。而在 C++ 中，类右值可以有 CV 限定的类型，但内置类型 (如 <code>int</code>) 则没有。考虑下面的例子：</p>
+<pre><code>每个类型都有三个对应的 CV-限定类型版本： `const 限定` 、 `volatile 限定` 和 `const-volatile 限定` 版本。有或无 CV 限定的不同版本的类型是不同的类型，但写法和赋值需求都是相同的。</code></pre><p>那么，这些又和右值有什么关系呢？在 C 中，只有左值有 CV 限定的类型，而右值从来没有。而在 C++ 中，类右值可以有 CV 限定的类型，但内置类型 (如 <code>int</code>) 则没有。考虑下面的例子：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"A::foo() const\n"</span>; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span> </span>&#123; <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"A::foo()\n"</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">A <span class="title">bar</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> A(); &#125;</span><br><span class="line"><span class="function"><span class="keyword">const</span> A <span class="title">cbar</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> A(); &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    bar().foo();  <span class="comment">// calls foo</span></span><br><span class="line">    cbar().foo(); <span class="comment">// calls foo const</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>main</code> 中的第二个函数调用实际上调用的是 <code>A</code> 中的 <code>foo() const</code> 函数，因为 <code>cbar</code> 返回的类型是 <code>const A</code>，这和 <code>A</code> 是两个不同的类型。这就是上面的引用中最后一句话所表达的意思。另外注意到，<code>cbar</code> 的返回值是一个右值，所以这是一个实际的 CV 限定的右值的例子。</p>
 <h2 id="C-11的右值引用"><a href="#C-11的右值引用" class="headerlink" title="C++11的右值引用"></a>C++11的右值引用</h2><p>C++11 标准中引入的最强有力的特性就是右值引用，以及相关的移动语义 (move semantics)概念。</p>
 <p>这篇文章的大部分内容都在解释：左值和右值的主要区别是，左值可以被修改，而右值不能。不过，C++11 改变了这一区别。在一些特殊的情况下，我们可以使用右值的引用，并对右值进行修改。</p>
 <p>假设我们有一个很大的类，叫做<code>Foo</code>:</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> &#123;</span></span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        <span class="keyword">int</span> i;</span><br><span class="line">         <span class="comment">// 假设这里有许许多多你看不见的属性</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>接着有一个函数<code>f()</code>，使他返回<code>Foo</code>：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Foo <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Foo a;</span><br><span class="line">  a.i = <span class="number">101</span>;</span><br><span class="line">  <span class="keyword">return</span> a;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>由于<code>Foo</code>很大，当我们使用<code>f()</code>的返回值，比如<code>Foo foo = f();</code>的时候，按照常理，<code>f()</code>的返回值会被赋予<code>foo</code>，这个过程<strong>可能会发生拷贝</strong>，导致性能下降。这时候靠谱的编译器会自动进行返回值优化，避免这个拷贝。这个聪明的动作叫做<a href="https://en.wikipedia.org/wiki/Copy_elision#Return_value_optimization" target="_blank" rel="noopener">Return Value Optimization</a>。这就是所谓的编译器自动优化。</p>
 <p>那总有些情况，编译器是无法优化的，只好靠手动优化了。</p>
 <h3 id="1、使用const引用"><a href="#1、使用const引用" class="headerlink" title="1、使用const引用"></a>1、使用const引用</h3><p>我们可以把<code>foo</code>变成函数返回值的引用，比如：<code>const Foo&amp; foo = f();</code>。由于是引用，所以就避免了拷贝。这里有几点需要注意：</p>
@@ -309,17 +324,22 @@
 <h3 id="2、使用右值引用"><a href="#2、使用右值引用" class="headerlink" title="2、使用右值引用"></a>2、使用右值引用</h3><p>右值引用的写法是<code>&amp;&amp;</code>，所以可以把<code>const Foo&amp; foo = f();</code>改写成右值引用形式：<code>const Foo&amp;&amp; foo = f();</code>。这样做看起来好像没有多大差别！那再改一下，把const去掉：<code>Foo&amp;&amp; foo = f();</code>。这就是右值的好处，不加const就可以直接指向右值，而且可以对右值进行更改，比如：<code>foo.i = 122;</code>。</p>
 <p>再谈一下右值引用和左值引用的关系和差别：右值引用本身是一个左值，所以左值引用可以指向一个右值引用：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> k = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span>&amp;&amp; i = <span class="number">1</span>;</span><br><span class="line">i++;   <span class="comment">// 右值引用是左值，可以加加</span></span><br><span class="line">i = k; <span class="comment">// 右值引用是左值，可以重新复制</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span>&amp;&amp; j = k; <span class="comment">//错误，一个右值引用不能指向左值</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="3、偷天换日"><a href="#3、偷天换日" class="headerlink" title="3、偷天换日"></a>3、偷天换日</h3><p>上面写到对于这个语句<code>Foo foo = f();</code>，编译器会自动优化，直接用<code>f()</code>的返回值当作<code>foo</code>。但是，在<code>foo</code>太复杂的情况，或者是编译器不够聪明的情况下，优化有可能不会进行。这时候默认的行为是调用Foo的拷贝构造函数，用<code>f()</code>返回的临时变量来拷贝构造 <code>foo</code>。我们的假设是Foo很复杂，所以这是个很大的工程，非常消耗性能。但这里有一点可以优化，也就是<code>f()</code>返回的是临时变量，不会有其他人使用了，何不将其的内容直接搬移过来使用，说不定可以节省许多在拷贝构造中所需要的内存分配和释放的操作。这个偷天换日的任务就交给右值引用了。</p>
 <p>首先，偷天换日之前有一个准备工作要做，那就是定义一个<strong>搬移构造函数（move constructor，也叫移动构造函数）</strong>。和拷贝构造函数<code>Foo(Foo&amp;)</code>不一样的是，搬移构造函数接受的是一个右值引用：<strong><code>Foo(Foo&amp;&amp;)</code></strong>。如果是从一个临时变量来构造新的<code>Foo</code>的话，编译器会优先调用搬移构造函数，来把临时对象开膛破肚，取出自己需要的东西。拷贝构造函数就不敢这么做，因为它不确定对象在其他地方有没有被使用，如果误操作了，恐怕会被人打。</p>
 <p>和搬移构造函数有异曲同工之妙的是<strong>移动赋值操作符（move assignment operator）</strong>，考虑如下的程序：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Foo v;</span><br><span class="line">v = Foo(<span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+
 <p>虽然这里的例子中是赋值一个新创建的 Foo，但它可以代表更一般的情况——<strong>创建了一个临时的右值</strong>，然后赋值给 <code>v</code> （例如当一个函数返回 Foo 的情况）。在没有移动操作符时，编译器会先生成一个临时对象，然后调用赋值操作符。有了移动复制操作符，便可以把这个临时对象开膛破肚。</p>
 <h3 id="4、std-move"><a href="#4、std-move" class="headerlink" title="4、std::move"></a>4、std::move</h3><p>C++11提供了<code>std::move</code>来废弃一个对象，也就是把它标识为临时变量，这样可以丢给搬移构造函数处理，比如下面的例子：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> x1 = <span class="string">"hello, world!"</span>;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> x2 = <span class="built_in">std</span>::<span class="built_in">move</span>(x1);</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"x1 = "</span> &lt;&lt; x1 &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"x2 = "</span> &lt;&lt; x2 &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br></pre></td></tr></table></figure>
+
 <p>由于<code>x1</code>通过<code>std::move</code>被标识为临时对象，于是就被<code>x2</code>给开膛破肚，存储的内容被抢走了。上面的例子输出结果是：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x1 &#x3D; </span><br><span class="line">x2 &#x3D; hello, world!</span><br></pre></td></tr></table></figure>
+
 <p>对于函数的返回值，如果编译器没有办法自动优化，我们提供搬移构造函数给编译器，从而降低拷贝构造的成本。这时候可以返回局部变量的std::move()用户自己来优化，例如：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&#123;</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">A <span class="title">fun</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    A a;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">move</span>(a); <span class="comment">//这里显式调用 std：move 强制 A 的移动构造函数被调用，因此它可能会在调用 fun（）时禁止返回值优化;对于这个简单的例子，return a;更优。</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> f = fun();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><a href="https://www.cnblogs.com/zl1991/p/9020343.html" target="_blank" rel="noopener">C++函数返回局部变量的std::move()的使用场景</a></p>
 
     </div>
@@ -350,8 +370,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/C-11/" rel="tag"># C++11</a>
               <a href="/tags/C/" rel="tag"># C++</a>
+              <a href="/tags/C-11/" rel="tag"># C++11</a>
           </div>
 
         
@@ -442,7 +462,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -524,13 +544,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">135k</span>
+    <span title="站点总字数">138k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:03</span>
+    <span title="站点阅读时长">2:05</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 
