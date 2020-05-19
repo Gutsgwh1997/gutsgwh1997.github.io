@@ -20,17 +20,20 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="这知识，它不进脑子啊！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="GWH Blog">
-<meta property="og:url" content="http://yoursite.com/tags/%E6%97%A0%E4%BA%BA%E9%A9%BE%E9%A9%B6/index.html">
+  <meta name="description" content="1、张式相机标定法相机标定是我们实际运行一个SLAM系统必不可少的一步，虽然我们可以通过Matlab的CameraCalibration工具包或者OpenCV等工具轻松获取参数，甚至无须知晓原理、细节。但是学习相机标定的算法可以帮助我们更好的理解SLAM问题，借助《计算机视觉测量与导航》的大作业，将张正友相机标定法的推导记录如下(以下PDF可供下载，chrom浏览器可能不会显示pdf插件的一些功能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="张正友相机标定法">
+<meta property="og:url" content="http://yoursite.com/2020/05/19/%E5%BC%A0%E6%AD%A3%E5%8F%8B%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E6%B3%95/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="这知识，它不进脑子啊！">
+<meta property="og:description" content="1、张式相机标定法相机标定是我们实际运行一个SLAM系统必不可少的一步，虽然我们可以通过Matlab的CameraCalibration工具包或者OpenCV等工具轻松获取参数，甚至无须知晓原理、细节。但是学习相机标定的算法可以帮助我们更好的理解SLAM问题，借助《计算机视觉测量与导航》的大作业，将张正友相机标定法的推导记录如下(以下PDF可供下载，chrom浏览器可能不会显示pdf插件的一些功能">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-19T10:57:38.000Z">
+<meta property="article:modified_time" content="2020-05-19T12:43:30.642Z">
 <meta property="article:author" content="陌上&amp;烟雨">
+<meta property="article:tag" content="SLAM">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/tags/%E6%97%A0%E4%BA%BA%E9%A9%BE%E9%A9%B6/">
+<link rel="canonical" href="http://yoursite.com/2020/05/19/%E5%BC%A0%E6%AD%A3%E5%8F%8B%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E6%B3%95/">
 
 
 <script id="page-configurations">
@@ -38,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: 无人驾驶 | GWH Blog</title>
+  <title>张正友相机标定法 | GWH Blog</title>
   
 
 
@@ -157,130 +160,143 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">无人驾驶
-          <small>标签</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/19/%E5%BC%A0%E6%AD%A3%E5%8F%8B%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
+      <meta itemprop="name" content="陌上&烟雨">
+      <meta itemprop="description" content="这知识，它不进脑子啊！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GWH Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          张正友相机标定法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-19 18:57:38 / 修改时间：20:43:30" itemprop="dateCreated datePublished" datetime="2020-05-19T18:57:38+08:00">2020-05-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/VSLAM/" itemprop="url" rel="index"><span itemprop="name">VSLAM</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>452</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
+        <h2 id="1、张式相机标定法"><a href="#1、张式相机标定法" class="headerlink" title="1、张式相机标定法"></a>1、张式相机标定法</h2><p>相机标定是我们实际运行一个SLAM系统必不可少的一步，虽然我们可以通过Matlab的CameraCalibration工具包或者OpenCV等工具轻松获取参数，甚至无须知晓原理、细节。但是学习相机标定的算法可以帮助我们更好的理解SLAM问题，借助《计算机视觉测量与导航》的大作业，将张正友相机标定法的推导记录如下(以下PDF可供下载，chrom浏览器可能不会显示pdf插件的一些功能，换为火狐正常显示)：</p>
+<a id="more"></a>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+<div class="pdfobject-container" data-target="张氏标定法.pdf" data-height="500px"></div>
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-08T20:21:25+08:00"
-              content="2020-02-08">
-          02-08
-        </time>
-      </div>
+<h2 id="2、平面视觉测量"><a href="#2、平面视觉测量" class="headerlink" title="2、平面视觉测量"></a>2、平面视觉测量</h2><p>相机标定完成后我们可以简单地实现平面视觉测量，原理如下：</p>
+<div class="pdfobject-container" data-target="平面视觉测量.pdf" data-height="500px"></div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/08/Cyber-RT%E4%B8%8EROS%E5%AF%B9%E7%85%A7/" itemprop="url">
-            <span itemprop="name">Cyber RT与ROS对照</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-07T20:39:16+08:00"
-              content="2020-02-07">
-          02-07
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/07/Cyber-RT%E6%9E%84%E5%BB%BA%E6%96%B0%E7%BB%84%E4%BB%B6/" itemprop="url">
-            <span itemprop="name">Cyber RT构建新组件</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-05T23:29:25+08:00"
-              content="2020-02-05">
-          02-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B3%E2%80%94%E2%80%94Cyber-RT%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9D%97/" itemprop="url">
-            <span itemprop="name">Apollo的启动过程3——Cyber RT如何加载组件</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-05T17:07:59+08:00"
-              content="2020-02-05">
-          02-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/05/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B2%E2%80%94%E2%80%94%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD/" itemprop="url">
-            <span itemprop="name">Apollo的启动过程2——功能模块加载</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-02-04T17:27:53+08:00"
-              content="2020-02-04">
-          02-04
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/02/04/Apollo%E7%9A%84%E5%90%AF%E5%8A%A8/" itemprop="url">
-            <span itemprop="name">Apollo的启动过程1——启动命令解析</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+<h2 id="3、参考文献"><a href="#3、参考文献" class="headerlink" title="3、参考文献"></a>3、参考文献</h2><p>以上两个pdf来自于我的课程报告，主要参考了以下的知乎文章，原知乎文章写的很详细，但是一些推导比较笨重，本篇在此系列的基础上对某些推导进行了优化。<br>1.<a href="https://zhuanlan.zhihu.com/p/35223115" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（一）相机成像模型</a><br>2.<a href="https://zhuanlan.zhihu.com/p/35309172" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（二）单应矩阵</a><br>3.<a href="https://zhuanlan.zhihu.com/p/35391837" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（三）推导求解</a><br>4.<a href="https://zhuanlan.zhihu.com/p/35392121" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（四）优化算法前传</a><br>5.<a href="https://zhuanlan.zhihu.com/p/35476851" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（五）优化算法正传</a></p>
 
     </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>听说打赏我的人，最后都找到了真爱。</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E5%BE%AE%E4%BF%A1.jpg" alt="陌上&烟雨 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E6%94%AF%E4%BB%98%E5%AE%9D.jpg" alt="陌上&烟雨 支付宝">
+        <p>支付宝</p>
+      </div>
+
   </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/04/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E5%9B%9B/" rel="prev" title="IMU预积分(四)">
+      <i class="fa fa-chevron-left"></i> IMU预积分(四)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
   
   
 
-  
-
+  </div>
 
 
           </div>
@@ -331,6 +347,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、张式相机标定法"><span class="nav-text">1、张式相机标定法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、平面视觉测量"><span class="nav-text">2、平面视觉测量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、参考文献"><span class="nav-text">3、参考文献</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
