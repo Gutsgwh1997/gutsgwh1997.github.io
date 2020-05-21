@@ -20,19 +20,23 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="这知识，它不进脑子啊！">
+  <meta name="description" content="VINS中的视觉残差1、视觉残差定义VINS中的重投影是在归一化相机平面中完成的，重投影误差是估计值与测量值的差，有如下的形式：$$r_c&#x3D;\left[\begin{array}{c}\frac{X_c}{Z_c}-u \\\frac{Y_c}{Z_c}-v \\\end{array}\right]\tag{1}$$">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Dynamic SLAM 动态点去除">
-<meta property="og:url" content="http://yoursite.com/2020/03/30/Dynamic-SLAM-%E5%8A%A8%E6%80%81%E7%82%B9%E5%8E%BB%E9%99%A4/index.html">
+<meta property="og:title" content="VINS中的视觉残差">
+<meta property="og:url" content="http://yoursite.com/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="这知识，它不进脑子啊！">
+<meta property="og:description" content="VINS中的视觉残差1、视觉残差定义VINS中的重投影是在归一化相机平面中完成的，重投影误差是估计值与测量值的差，有如下的形式：$$r_c&#x3D;\left[\begin{array}{c}\frac{X_c}{Z_c}-u \\\frac{Y_c}{Z_c}-v \\\end{array}\right]\tag{1}$$">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-03-30T12:25:04.000Z">
-<meta property="article:modified_time" content="2020-03-30T12:25:04.458Z">
+<meta property="og:image" content="http://yoursite.com/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/%E5%85%AC%E5%BC%8F3.png">
+<meta property="og:image" content="http://yoursite.com/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/%E7%89%B9%E5%BE%81%E7%82%B9%E7%AE%A1%E7%90%86.png">
+<meta property="article:published_time" content="2020-05-21T05:03:42.000Z">
+<meta property="article:modified_time" content="2020-05-21T05:32:38.231Z">
 <meta property="article:author" content="陌上&amp;烟雨">
+<meta property="article:tag" content="SLAM">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/%E5%85%AC%E5%BC%8F3.png">
 
-<link rel="canonical" href="http://yoursite.com/2020/03/30/Dynamic-SLAM-%E5%8A%A8%E6%80%81%E7%82%B9%E5%8E%BB%E9%99%A4/">
+<link rel="canonical" href="http://yoursite.com/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/">
 
 
 <script id="page-configurations">
@@ -45,7 +49,7 @@
   };
 </script>
 
-  <title>Dynamic SLAM 动态点去除 | GWH Blog</title>
+  <title>VINS中的视觉残差 | GWH Blog</title>
   
 
 
@@ -164,7 +168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/30/Dynamic-SLAM-%E5%8A%A8%E6%80%81%E7%82%B9%E5%8E%BB%E9%99%A4/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
@@ -177,7 +181,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Dynamic SLAM 动态点去除
+          VINS中的视觉残差
         </h1>
 
         <div class="post-meta">
@@ -186,8 +190,22 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-03-30 20:25:04" itemprop="dateCreated datePublished" datetime="2020-03-30T20:25:04+08:00">2020-03-30</time>
+              <time title="创建时间：2020-05-21 13:03:42 / 修改时间：13:32:38" itemprop="dateCreated datePublished" datetime="2020-05-21T13:03:42+08:00">2020-05-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/VIO/" itemprop="url" rel="index"><span itemprop="name">VIO</span></a>
+                </span>
             </span>
 
           
@@ -203,14 +221,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>2.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -222,7 +240,30 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h2 id="VINS中的视觉残差"><a href="#VINS中的视觉残差" class="headerlink" title="VINS中的视觉残差"></a>VINS中的视觉残差</h2><h3 id="1、视觉残差定义"><a href="#1、视觉残差定义" class="headerlink" title="1、视觉残差定义"></a>1、视觉残差定义</h3><p>VINS中的重投影是在归一化相机平面中完成的，重投影误差是估计值与测量值的差，有如下的形式：<br>$$<br>r_c=<br>\left[<br>\begin{array}{c}<br>\frac{X_c}{Z_c}-u \\<br>\frac{Y_c}{Z_c}-v \\<br>\end{array}<br>\right]<br>\tag{1}<br>$$</p>
+<a id="more"></a>
+<p>其中优化变量是特征点在相机坐标系下的空间坐标$(X_c,Y_c,Z_c)$，$(u,v)$是特征点在归一化相机平面上的测量值。<strong>实际在VINS的优化变量中，VINS并未优化路标点的所有维度，只对特征点的逆深度做了优化</strong>，相机坐标系中的点与归一化平面中的点有如下的关系:<br>$$<br>\left[\begin{array}{c}X_c\\Y_c\\Z_c\end{array}\right]<br>=<br>Z_c\left[\begin{array}{c}u\\v\\1\end{array}\right]<br>=<br>\frac{1}\lambda\left[\begin{array}{c}u\\v\\1\end{array}\right]<br>\tag{2}<br>$$<br>其中$\lambda$就是特征点的逆深度。VINS中具体的重投影误差可做如下推导：</p>
+<div style="width:100%;margin:auto" align=center><img src="/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/%E5%85%AC%E5%BC%8F3.png" class=""></div>
+
+<p>它表示在第$i$帧归一化平面的观测凭借运动关系，投影到第$j$帧相机坐标系下的坐标，则视觉重投影误差为：<br>$$<br>r_c=<br>\left[<br>\begin{array}{c}<br>\frac{x_{cj}}{z_{cj}}-u_{cj} \\<br>\frac{y_{cj}}{z_{cj}}-v_{cj} \\<br>\end{array}<br>\right]<br>\tag{4}<br>$$<br>视觉残差包含的优化变量有两个时刻的姿态$T_{wbj}、T_{wbi}$、外参$T_{bc}$、特征点的逆深度$\lambda$。使用逆深度的优点在于，在极线搜索和块匹配中，我们假设深度值满足高斯分布。然而仔细想想会发现，深度的正态分布确实存在一些问题：</p>
+<ol>
+<li>.实际想表达的是：这个场景深度大概是5-10米，可能有一些更远的点，但近处肯定不会小于相机焦距（或者认为深度不会小于0）.这个分布并不是像高斯分布那样，形成一个对称的形状。它的尾部可能稍长，而负数区域则为零。</li>
+<li>在一些室外应用中，可能存在距离非常远，乃至无穷远处的点。我们的初始值中难以覆盖这些点，并且用高斯分布描述他们会有一些数值计算上的困难。</li>
+<li>在Bundle Ajustment中，参数空间通常呈现出高维度、非线性的特点。其中对于3D特征点的优化占据了大量的运算量。然而当特征点的距离很远时，该特征点带来的误差就会很大，代价函数需要对该特征点进行较大幅度的调整才能进一步降低代价函数。</li>
+</ol>
+<p>于是，逆深度应运而生。人们在仿真中发现，假设深度的倒数（也就是逆深度），为高斯分布是比较有效的。</p>
+<h3 id="2、VINS中的特征点管理"><a href="#2、VINS中的特征点管理" class="headerlink" title="2、VINS中的特征点管理"></a>2、VINS中的特征点管理</h3><p>谈到视觉误差，我们有必要了解实际代码中VINS是如何管理特征点的，以便于进行视觉重投影误差的计算，VINS中描述特征点主要使用了两个类，定义在<code>feature_manager.h</code> 中：</p>
+<div style="width:100%;margin:auto" align=center><img src="/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/%E7%89%B9%E5%BE%81%E7%82%B9%E7%AE%A1%E7%90%86.png" class=""></div>
+
+<p>上图中绿色的框和蓝色的框形象地说明了这两个类的关系，FeaturePerFrame类定义如下，它描述了绿色的框表示的信息。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief 3D特征点投影到每一帧上产生的信息</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FeaturePerFrame</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  FeaturePerFrame(<span class="keyword">const</span> Eigen::Matrix&lt;<span class="keyword">double</span>, <span class="number">7</span>, <span class="number">1</span>&gt; &amp;_point, <span class="keyword">double</span> td)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">point</span>.x() = _point(<span class="number">0</span>);</span><br><span class="line">    <span class="built_in">point</span>.y() = _point(<span class="number">1</span>);</span><br><span class="line">    <span class="built_in">point</span>.z() = _point(<span class="number">2</span>);</span><br><span class="line">    uv.x() = _point(<span class="number">3</span>);</span><br><span class="line">    uv.y() = _point(<span class="number">4</span>);</span><br><span class="line">    velocity.x() = _point(<span class="number">5</span>);</span><br><span class="line">    velocity.y() = _point(<span class="number">6</span>);</span><br><span class="line">    cur_td = td;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">double</span> cur_td;      <span class="comment">//imu-camera的不同步时的相差时间</span></span><br><span class="line">  Vector3d <span class="built_in">point</span>;     <span class="comment">//特征点空间坐标</span></span><br><span class="line">  Vector2d uv;        <span class="comment">//特征点映射到该帧上的图像坐标</span></span><br><span class="line">  Vector2d velocity;  <span class="comment">//特征点的跟踪速度</span></span><br><span class="line">  <span class="keyword">double</span> z;</span><br><span class="line">  <span class="keyword">bool</span> is_used;</span><br><span class="line">  <span class="keyword">double</span> parallax;</span><br><span class="line">  MatrixXd A;</span><br><span class="line">  VectorXd b;</span><br><span class="line">  <span class="keyword">double</span> dep_gradient;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>FeaturePerId是绿色框的集合，表示了一个路标点的所有信息，因为VINS的前端使用光流法，<strong>蓝色的框包含的一定是连续的几个绿色的框</strong>，代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief 一个3D路标点</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FeaturePerId</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">int</span> feature_id;                         <span class="comment">// 特征点ID</span></span><br><span class="line">  <span class="keyword">int</span> start_frame;                              <span class="comment">// 从哪一帧开始被观测</span></span><br><span class="line">  <span class="built_in">vector</span>&lt;FeaturePerFrame&gt; feature_per_frame;    <span class="comment">// 此路标点被哪些帧观测,假如一个3Dlandmark被1，2，3帧中被观测到，</span></span><br><span class="line">                                                <span class="comment">// FeaturePerFrame存储的是3D点在对应帧中的像素坐标等信息。由于是光流跟踪，被观测的帧一定是连续的</span></span><br><span class="line">  <span class="keyword">int</span> used_num;                                 <span class="comment">// 被观测到的次数，等于feature_per_frame.size()</span></span><br><span class="line">  <span class="keyword">bool</span> is_outlier;</span><br><span class="line">  <span class="keyword">bool</span> is_margin;</span><br><span class="line">  <span class="keyword">double</span> estimated_depth;                       <span class="comment">// 特征点在第一次观测到它的帧中的深度</span></span><br><span class="line">  <span class="keyword">int</span> solve_flag;                               <span class="comment">// 0 haven't solve yet; 1 solve succ; 2 solve fail;</span></span><br><span class="line"></span><br><span class="line">  Vector3d gt_p;</span><br><span class="line"></span><br><span class="line">  FeaturePerId(<span class="keyword">int</span> _feature_id, <span class="keyword">int</span> _start_frame)</span><br><span class="line">      : feature_id(_feature_id), start_frame(_start_frame),</span><br><span class="line">        used_num(<span class="number">0</span>), estimated_depth(<span class="number">-1.0</span>), solve_flag(<span class="number">0</span>) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">int</span> <span class="title">endFrame</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、视觉残差的Jacobian"><a href="#3、视觉残差的Jacobian" class="headerlink" title="3、视觉残差的Jacobian"></a>3、视觉残差的Jacobian</h3><p>在后端优化时，我们需要提供残差函数关于优化变量的Jacobian矩阵，视觉残差的Jacobian矩阵推导如下，字写得比较潦草，将就看吧，以下PDF可供下载：</p>
+<h3 id="4、参考"><a href="#4、参考" class="headerlink" title="4、参考"></a>4、参考</h3><p>1.图像来源<a href="https://blog.csdn.net/liuzheng1/article/details/90052050" target="_blank" rel="noopener">https://blog.csdn.net/liuzheng1/article/details/90052050</a></p>
+
     </div>
 
     
@@ -250,6 +291,9 @@
 
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
+          </div>
 
         
 
@@ -257,13 +301,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/03/30/%E8%8E%B7%E5%8F%96%E7%BA%BF%E7%A8%8B%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E5%80%BC/" rel="prev" title="获取线程函数返回值">
-      <i class="fa fa-chevron-left"></i> 获取线程函数返回值
+    <a href="/2020/05/19/%E5%BC%A0%E6%AD%A3%E5%8F%8B%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E6%B3%95/" rel="prev" title="张正友相机标定法">
+      <i class="fa fa-chevron-left"></i> 张正友相机标定法
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/03/31/%E5%A4%9A%E8%A7%86%E5%9B%BE%E4%B8%89%E8%A7%92%E5%8C%96/" rel="next" title="多视图三角化">
-      多视图三角化 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -323,6 +364,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#VINS中的视觉残差"><span class="nav-text">VINS中的视觉残差</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、视觉残差定义"><span class="nav-text">1、视觉残差定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、VINS中的特征点管理"><span class="nav-text">2、VINS中的特征点管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、视觉残差的Jacobian"><span class="nav-text">3、视觉残差的Jacobian</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、参考"><span class="nav-text">4、参考</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
