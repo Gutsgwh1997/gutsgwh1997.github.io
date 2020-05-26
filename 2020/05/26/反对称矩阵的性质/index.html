@@ -20,33 +20,24 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="矩阵分解理论本节主要记录常用的矩阵分解，知识主要来源于上学期所学的矩阵分析课程。不同于大多数的博客，我这里主要在复线性空间和酉空间中讨论。没有矩阵分析基础的同学，文章前边的一些内容看起来会比较晦涩，但是学过线代看明白矩阵分解部分的内容是不成问题的。">
+  <meta name="description" content="反对称矩阵的性质因为这一部分的知识比较少，本来打算将这块的内容插入到其他博客文章中。后来想想反对称矩阵在SLAM中特别常用，还是单独写一篇博客，详细地推导一些反对称矩阵的性质。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="常用矩阵分解--理论篇">
-<meta property="og:url" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/index.html">
+<meta property="og:title" content="反对称矩阵的性质">
+<meta property="og:url" content="http://yoursite.com/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="矩阵分解理论本节主要记录常用的矩阵分解，知识主要来源于上学期所学的矩阵分析课程。不同于大多数的博客，我这里主要在复线性空间和酉空间中讨论。没有矩阵分析基础的同学，文章前边的一些内容看起来会比较晦涩，但是学过线代看明白矩阵分解部分的内容是不成问题的。">
+<meta property="og:description" content="反对称矩阵的性质因为这一部分的知识比较少，本来打算将这块的内容插入到其他博客文章中。后来想想反对称矩阵在SLAM中特别常用，还是单独写一篇博客，详细地推导一些反对称矩阵的性质。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E7%9A%84%E5%AE%9A%E4%B9%89.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E7%9A%84%E6%80%A7%E8%B4%A8.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E9%87%8D%E9%80%89%E5%85%A5%E5%8F%A3%E5%92%8C%E5%87%BA%E5%8F%A3%E5%9F%BA.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E6%AD%A3%E4%BA%A4%E5%88%86%E8%A7%A3.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/QR%E5%88%86%E8%A7%A3.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E6%AD%A3%E8%A7%84%E7%9F%A9%E9%98%B5%E7%9A%84%E9%85%89%E7%9B%B8%E4%BC%BC.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E6%AD%A3%E8%A7%84%E7%9F%A9%E9%98%B5%E7%9A%84%E6%8E%A8%E8%AE%BA.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E5%A5%87%E5%BC%82%E5%80%BC%E7%9A%84%E5%AE%9A%E4%B9%89.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3.png">
-<meta property="og:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E4%BD%8E%E7%A7%A9%E9%80%BC%E8%BF%91.png">
-<meta property="article:published_time" content="2020-04-03T08:35:44.000Z">
-<meta property="article:modified_time" content="2020-05-26T04:58:44.856Z">
+<meta property="og:image" content="http://yoursite.com/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/%E8%AF%81%E6%98%8E1.png">
+<meta property="og:image" content="http://yoursite.com/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/%E8%AF%81%E6%98%8E2.png">
+<meta property="article:published_time" content="2020-05-26T04:20:21.000Z">
+<meta property="article:modified_time" content="2020-05-26T04:39:57.043Z">
 <meta property="article:author" content="陌上&amp;烟雨">
 <meta property="article:tag" content="SLAM数学基础">
 <meta property="article:tag" content="矩阵论">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E7%9A%84%E5%AE%9A%E4%B9%89.png">
+<meta name="twitter:image" content="http://yoursite.com/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/%E8%AF%81%E6%98%8E1.png">
 
-<link rel="canonical" href="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/">
+<link rel="canonical" href="http://yoursite.com/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/">
 
 
 <script id="page-configurations">
@@ -59,7 +50,7 @@
   };
 </script>
 
-  <title>常用矩阵分解--理论篇 | GWH Blog</title>
+  <title>反对称矩阵的性质 | GWH Blog</title>
   
 
 
@@ -178,7 +169,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
@@ -191,7 +182,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          常用矩阵分解--理论篇
+          反对称矩阵的性质
         </h1>
 
         <div class="post-meta">
@@ -200,16 +191,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-04-03 16:35:44" itemprop="dateCreated datePublished" datetime="2020-04-03T16:35:44+08:00">2020-04-03</time>
+              <time title="创建时间：2020-05-26 12:20:21 / 修改时间：12:39:57" itemprop="dateCreated datePublished" datetime="2020-05-26T12:20:21+08:00">2020-05-26</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 12:58:44" itemprop="dateModified" datetime="2020-05-26T12:58:44+08:00">2020-05-26</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -256,92 +241,41 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="矩阵分解理论"><a href="#矩阵分解理论" class="headerlink" title="矩阵分解理论"></a>矩阵分解理论</h2><p>本节主要记录常用的矩阵分解，知识主要来源于上学期所学的矩阵分析课程。不同于大多数的博客，我这里主要在复线性空间和酉空间中讨论。没有矩阵分析基础的同学，文章前边的一些内容看起来会比较晦涩，但是学过线代看明白矩阵分解部分的内容是不成问题的。<br><a id="more"></a></p>
-<h3 id="1、线性映射"><a href="#1、线性映射" class="headerlink" title="1、线性映射"></a>1、线性映射</h3><p>线性映射的定义：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E7%9A%84%E5%AE%9A%E4%B9%89.png" class="" title="线性映射的定义"></div>
+        <h2 id="反对称矩阵的性质"><a href="#反对称矩阵的性质" class="headerlink" title="反对称矩阵的性质"></a>反对称矩阵的性质</h2><p>因为这一部分的知识比较少，本来打算将这块的内容插入到其他博客文章中。后来想想反对称矩阵在SLAM中特别常用，还是单独写一篇博客，详细地推导一些反对称矩阵的性质。</p>
+<a id="more"></a>
 
-<p>当入口空间和出口空间是同一个时，线性映射就是线性变换。线性映射的性质：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E7%9A%84%E6%80%A7%E8%B4%A8.png" class="" title="线性映射的性质"></div>
+<p>我们知道反对称矩阵的引入使得向量的叉乘可以写成如下的矩阵表示形式：</p>
+<p>$$<br>\boldsymbol{a} \times \boldsymbol{b}=\left[\begin{array}{ccc}<br>\boldsymbol{i} &amp; \boldsymbol{j} &amp; \boldsymbol{k} \\<br>a_{1} &amp; a_{2} &amp; a_{3} \\<br>b_{1} &amp; b_{2} &amp; b_{3}<br>\end{array}\right]=\left[\begin{array}{c}<br>a_{2} b_{3}-a_{3} b_{2} \\<br>a_{3} b_{1}-a_{1} b_{3} \\<br>a_{1} b_{2}-a_{2} b_{1}<br>\end{array}\right]=\left[\begin{array}{ccc}<br>0 &amp; -a_{3} &amp; a_{2} \\<br>a_{3} &amp; 0 &amp; -a_{1} \\<br>-a_{2} &amp; a_{1} &amp; 0<br>\end{array}\right] \boldsymbol{b} \triangleq \boldsymbol{a}^{\wedge} \boldsymbol{b}<br>$$</p>
+<p>这个由一个三维向量表示的反对称矩阵有很多有用的性质，我们来开始推导。</p>
+<p>（1）$\forall u,v \in R^3$，$v^{\wedge}u=-u^{\wedge}v$</p>
+<p>这个结论没什么好说的，根据叉乘的性质这条显然成立。</p>
+<p>（2）$v^{\wedge T} = -v^{\wedge}$</p>
+<p>这一条也没什么好说的，根据反对称矩阵的表示形式显然成立。</p>
+<p>（3）$v^{\wedge}u^{\wedge}=uv^T-v^TuI_{3\times 3}$</p>
+<p>在证明这条性质之前我们先来看三重积公式：<br>$$<br>v\times (u\times a) = u(v\cdot a)-a(v\cdot u)<br>$$<br>相信很多人看这个公式觉得眼熟，但忘记是什么时候学的了，我也一样，这知识不用他就不进脑子。我们将这些个叉乘、点乘统统写成矩阵表示的形式，则有如下：<br>$$<br>v^{\wedge}u^{\wedge}a=uv^{T}a-av^{T}u<br>$$<br>注意到$v^{T}u$就是一个实数，所以我们可以将$a$提取出来：<br>$$<br>v^{\wedge}u^{\wedge}a=(uv^{T}-v^{T}uI_{3\times 3})a<br>$$<br>因为对于任意的$a\in R^{3}$上述公式都成立，所以我们就能得出：</p>
+<p>$$<br>v^{\wedge}u^{\wedge}=uv^T-v^TuI_{3\times 3}<br>$$<br>所以第（3）条性质得以证明。</p>
+<p>（4）$v^{\wedge 2} = vv^T-||v||^2_2 I_{3\times 3}$</p>
+<p>这个性质是第（3）条性质的特例，这里的$||v||_2$表示向量$v$的二范数，等于向量$v$的模长$\sqrt{&lt;v,v&gt;}$。</p>
+<p>（5）$v^{\wedge 3} = -||v||^{2}_{2}v^{ \wedge}$</p>
+<p>在第（4）条性质的基础上我们左乘$v^{\wedge}$，因为$v\times v=0$所以我们很容易能得到这条性质。利用这条性质我们可以推导出来反对称矩阵$v^{\wedge}$的特征值，理解接来下的推导需要有一定的矩阵论基础。根据这个性质，我们可以写出$v^{\wedge}$的零化多项式，他就是$\lambda^3+||v||^2_2\lambda=0$，实际上这也是$v^{\wedge}$的最小多项式。那么最小多项式为什么不是$\lambda^2+||v||^2_2=0$呢？这是因为0是$v^{\wedge}$的一个特征值。</p>
+<p>因为$v^{\wedge}v=0v$所以我们可以看出$v^{\wedge}$的核空间是一维的，0必定是$v^{\wedge}$的一个特征值，进而$v^{\wedge}$一定是不满秩的，$v^{\wedge}$不可逆！（所以我们想在第（5）条性质的左右两端乘以$v^{\wedge}$的逆来降低零化多项式的维度是不可取的）。我们解$v^{\wedge}$的最小多项式，可以得到$v^{\wedge}$的三个特征值如下：<br>$$<br>\lambda_1=0、\lambda_{2,3}=i||v||_2<br>$$<br>（6）$rank(v^{\wedge})=2，v \neq0$</p>
+<p>在第（5）条性质中，我们求解出了$v^{\wedge}$的特征值，有一个是0，另外两个是相等的虚数，所以在$v\neq0$的情况下，$v^{\wedge}$的秩一定是2。当$v=0$时，$v^{\wedge}$是一个零矩阵，零矩阵的秩自然为0了。</p>
+<p>（7）$Null(v^{\wedge})=span(v) $</p>
+<p>在第（5）条性质的推导中，显然能看到这个结论成立。</p>
+<p>（8）$a,b,c \in R^{3},a^Tb^{\wedge}c=b^Tc^{\wedge}a=c^Ta^{\wedge}b$——轮换对称性</p>
+<p>这条性质是与混合积的性质等价的：$a\cdot (b\times c)=b\cdot (c\times a)=c\cdot(a\times b)$。混合积是有几何和代数意义的：</p>
+<ol>
+<li>几何意义：表示以$a,b,c$为棱长组成的平行6面体的体积；</li>
+<li>代数意义：$det([a,b,c])=a\cdot(b\times c)$；轮换对称性正是因为偶数次的列交换不改变矩阵的行列式。</li>
+</ol>
+<p>（9） $a=Ub,\quad a,b\in R^3，\quad U\in R^{3\times 3},\quad |U|=1$（右手系），$U^TU=$（正交系），则有$a^{\wedge}=(Ub)^{\wedge}=Ub^{\wedge}U^T$。</p>
+<p>这条性质属于反对称矩阵的变换性质，在SLAM中我们经常使用旋转矩阵对点进行变换，这条性质会被经常用到。证明如下：<br>$$<br>(Ub)^{\wedge} = Ub^{\wedge}U^T \\<br>$$<br>$$<br>\begin{aligned}<br>&amp;\Leftrightarrow (Ub)^{\wedge}U=Ub^{\wedge}U^TU=Ub^{\wedge} \\<br>&amp;\Leftrightarrow \forall a \in R^3, \quad (Ub)^{\wedge}Ua=Ub^{\wedge}a \\<br>&amp;\Leftrightarrow \forall a \in R^3, \quad (Ub)\times(Ua) = U(b\times a)<br>\end{aligned}<br>$$<br>最后一个公式利用向量叉乘的旋转变换不变性可以证明，之后我们可以反推出来本条性质的正确性。</p>
+<p>（10）$a=Ab,\quad a,b\in R^3，\quad A \in R^{3\times 3},\quad |A| \neq0$，则有$a^{\wedge}=(A^{-1})^Tb^{\wedge}A^{-1}\cdot|A|^{-1}$。</p>
+<p>可以看出第（9）条性质不过是这条性质的一个特例，它不要求变换是右手系的旋转矩阵，但变换要满足可逆条件，一个证明如下：</p>
+<div style="width:80%;margin:auto" align=center><img src="/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/%E8%AF%81%E6%98%8E1.png" class=""></div>
 
-<p><strong>有限维</strong>线性空间上线性映射的矩阵表示：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E7%BA%BF%E6%80%A7%E6%98%A0%E5%B0%84%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA.png" class="" title="线性映射的矩阵表示"></div>
+<div style="width:60%;margin:auto" align=center><img src="/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/%E8%AF%81%E6%98%8E2.png" class=""></div>
 
-<p>有了矩阵表示的定义以及线性映射的性质，我们可以推出下面的公式：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E9%87%8D%E9%80%89%E5%85%A5%E5%8F%A3%E5%92%8C%E5%87%BA%E5%8F%A3%E5%9F%BA.png" class="" title="重选入口和出口基"></div>
-
-<p>$AP=QB$这个公式的几何意义：任意线性映射都可以通过重新选入口基和出口基的方式，将矩阵表示化简。在下面的小节中我会不断地提及这句话。</p>
-<h3 id="2、特殊矩阵"><a href="#2、特殊矩阵" class="headerlink" title="2、特殊矩阵"></a>2、特殊矩阵</h3><h4 id="2-1、Hermite矩阵"><a href="#2-1、Hermite矩阵" class="headerlink" title="2.1、Hermite矩阵"></a>2.1、Hermite矩阵</h4><p>$A \in \mathbb{C}^{n \times n}$，若$A^H=A$，（$H$代表共轭转置），称$A$为Hermite矩阵，若$A^H=-A$，则称$A$为反Hermite矩阵。$H$矩阵的对角线元素的虚部为零。</p>
-<p>对于Hermite矩阵$A$，有$\forall x \in \mathbb{C}^{n}$，$x^HAx \geq 0$，这说明Hermite矩阵是正半定，若$A$非奇异，则$A$是正定的。</p>
-<p>对于Hermite矩阵$B$，若$B$同时还是一个上（下）三角矩阵，则$B$是对角阵。</p>
-<h4 id="2-2、酉矩阵"><a href="#2-2、酉矩阵" class="headerlink" title="2.2、酉矩阵"></a>2.2、酉矩阵</h4><p>设$A$是一个$n$-阶复矩阵，如果其满足：</p>
-<script type="math/tex; mode=display">
-A^HA = AA^H=I</script><p>则称$A$是酉矩阵，一般记为$A \in U^{n \times n}$。我们常说的旋转矩阵，就是酉矩阵。</p>
-<p>设$A，B \in U^{n \times n}$，有如下的性质：</p>
-<ul>
-<li>$A^{-1} = A^H \in U^{n \times n}$；</li>
-<li>$|det(A)|=1$；</li>
-<li>$AB,BA \in U^{n \times n}$。</li>
-</ul>
-<p>$A$是一个酉矩阵的充分必要条件是$A$的$n$个列（或行）向量组是一个（标准内积意义下的）标准正交向量组。</p>
-<p>酉矩阵的列向量组是该空间的一个标准正交基。（因为内积度量矩阵Gramian矩阵等于$I$），从变换的角度考虑，酉变换意味着坐标的旋转（$det(A)=1$）或者镜像($det(A)=-1$)，变换前后不改变内积，既不改变向量的大小，也不改变向量的夹角关系：</p>
-<script type="math/tex; mode=display">
-<Ux,Uy>=x^HU^HUy=x^Hy=<x,y></script><p>若矩阵$A$即是酉矩阵又是上（下）三角矩阵，则$A$是单位矩阵。简单的证明：因为$A$是上三角矩阵，所以$A^{-1}$是上三角矩阵，又因为$A^{-1}=A^H$，所以$A^{-1}$又是下三角矩阵，所以$A$是对角阵，进而是单位矩阵。</p>
-<h4 id="2-3、正规矩阵"><a href="#2-3、正规矩阵" class="headerlink" title="2.3、正规矩阵"></a>2.3、正规矩阵</h4><p>设$A \in \mathbb{C}^{n \times n}$，如果$A$满足：</p>
-<script type="math/tex; mode=display">
-A^HA=AA^H</script><p>则称$A$是正规矩阵，对角矩阵，Hermite矩阵，酉矩阵都是正规矩阵。</p>
-<p>若$A$是正规矩阵，且$A$是上三角矩阵，则$A$是对角矩阵。</p>
-<h3 id="3、常用矩阵分解"><a href="#3、常用矩阵分解" class="headerlink" title="3、常用矩阵分解"></a>3、常用矩阵分解</h3><h4 id="3-1-Jordan分解"><a href="#3-1-Jordan分解" class="headerlink" title="3.1 Jordan分解"></a>3.1 Jordan分解</h4><p>Jordan标准型在线性代数中涉及的比较少，在矩阵分析中引入了$\lambda-$矩阵后，便比较好理解了，这里直接给出一些结论：</p>
-<p>由Jordan标准形存在定理可知，复数域上，<strong>任意一个方阵A</strong>总可以找到<strong>非奇异矩阵P</strong>，使得：</p>
-<script type="math/tex; mode=display">
-AP=PJ</script><p>这里$J$是Jordan标准型，这意味着$A$相似于$P$。</p>
-<p>值得注意的是：上述是在$\mathbb{C}$空间上讨论问题，即是$A \in \mathbb{R}^{n \times n}$，$J$和$P$也仍然在$\mathbb{C}^{n \times n}$中。</p>
-<h4 id="3-2-正交化方法与QR分解"><a href="#3-2-正交化方法与QR分解" class="headerlink" title="3.2 正交化方法与QR分解"></a>3.2 正交化方法与QR分解</h4><p>若$\alpha , \beta$是$V$空间中的向量，则$\alpha$在$\beta$上的正交投影$\gamma$是：</p>
-<script type="math/tex; mode=display">
-\gamma = \frac{\beta}{||\beta||}||\alpha|| \frac{<\alpha,\beta>}{||\alpha|| \cdot ||\beta||}
-=\frac{\beta}{||\beta||}<\frac{\beta}{||\beta||},\alpha></script><p>上面的公式是由单位方向矢量和模长两部分组成，用到了向量之间的夹角公式。</p>
-<p>那么如何由一组线性无关的向量组，构造出一个标准的正交向量组？这需要使用到Schmidt正交化方法：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E6%AD%A3%E4%BA%A4%E5%88%86%E8%A7%A3.png" class="" title="正交分解"></div>
-
-<p>将上图中的公式移项处理：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/QR%E5%88%86%E8%A7%A3.png" class="" title="QR分解"></div>
-
-<p>最后一个公式的几何意义为：由$A=[\alpha_1,\alpha_2,…\alpha_n]$的各列递推构造一个标准正交基，并将$A$的各列重新表示为这个基的线性组合。</p>
-<p>于是我们便得出了QR（正交-上三角）分解：</p>
-<p>任意<strong>非奇异方阵</strong>$A \in \mathbb{C}^{n \times n}$，必然可以唯一分解为$A=QR$其中$Q$为酉矩阵，$R$是正线（对角线元素为正数）上三角矩阵。</p>
-<p>值得注意的是：在Schmidt正交化过程中，我们是从矩阵$A$的第一列元素递推到最后一列元素，我们当然也可以从最后一列开始Schmidt正交化，这样得到的分解结果是一个酉矩阵乘一个正线下三角。</p>
-<h4 id="3-3、酉相似"><a href="#3-3、酉相似" class="headerlink" title="3.3、酉相似"></a>3.3、酉相似</h4><p>设$A,B \in \mathbb{C}^{n \times n}$或者($\mathbb{R}^{n \times n}$)，若存在$U \in U^{n \times n}$使得</p>
-<script type="math/tex; mode=display">
-U^HAU = U^{-1}AU=B</script><p>则称$A$与$B$酉相似（$A$酉相似于$B$）。</p>
-<p><strong>任何一个$n-$阶复矩阵$A$</strong>酉相似于一个上（下）三角矩阵，证明如下：</p>
-<p>由Jordan分解得到：$\exists P \in \mathbb{C}^{n \times n}$，$A = PJP^{-1}$；$P$是非奇异的。</p>
-<p>由QR分解得$P=QR$，带入得到$A=Q(RJR^{-1})Q^H$。</p>
-<p>这个定理说明：任意线性变换都能够通过重新选取标准正交坐标系，简化表示矩阵。</p>
-<p>对于正规矩阵，酉相似有更特殊的性质：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E6%AD%A3%E8%A7%84%E7%9F%A9%E9%98%B5%E7%9A%84%E9%85%89%E7%9B%B8%E4%BC%BC.png" class="" title="正规矩阵的酉相似"></div>
-
-<p>在此基础上，我们有如下的推论：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E6%AD%A3%E8%A7%84%E7%9F%A9%E9%98%B5%E7%9A%84%E6%8E%A8%E8%AE%BA.png" class="" title="正规矩阵的推论"></div>
-
-<h4 id="3-4、奇异值分解"><a href="#3-4、奇异值分解" class="headerlink" title="3.4、奇异值分解"></a>3.4、奇异值分解</h4><h5 id="3-4-1、奇异值的定义及SVD分解："><a href="#3-4-1、奇异值的定义及SVD分解：" class="headerlink" title="3.4.1、奇异值的定义及SVD分解："></a>3.4.1、奇异值的定义及SVD分解：</h5><div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E5%A5%87%E5%BC%82%E5%80%BC%E7%9A%84%E5%AE%9A%E4%B9%89.png" class="" title="奇异值的定义"></div>
-
-<p>若矩阵$A$是Hermite矩阵，则$A$的特征值就是它的奇异值。<br>SVD分解：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3.png" class="" title="奇异值分解"></div>
-
-<p>对于最后一句话，我们可以这样理解：</p>
-<p>$AA^H$是一个Hermite矩阵，他酉相似于一个对角阵，根据3.3节，我们知道这个对角阵中对角线元素是$AA^H$的特征值，也就是矩阵$A$奇异值的平方。对此对于左奇异值矩阵$U$，有如下的关系：</p>
-<script type="math/tex; mode=display">
-AA^H = UDD^HU^H</script><p>同理对于右奇异值矩阵，有如下关系：</p>
-<script type="math/tex; mode=display">
-A^HA = VD^HDV^H</script><p>需要指出的是，这里$DD^H$与$D^HD$在矩阵的角度上不相同，因为他们的维度不同，但是他们在主对角线的奇异值是相等的。</p>
-<p>SVD分解的几何意义：在入口和出口空间重新选取标准正交基，可以将任意线性变换的矩阵表示简化为对角矩阵。由于酉变换不改变标准长度，此分解揭示了线性变换的本质：沿着某正交坐标轴伸缩。</p>
-<h5 id="3-4-2、SVD分解的低秩逼近"><a href="#3-4-2、SVD分解的低秩逼近" class="headerlink" title="3.4.2、SVD分解的低秩逼近"></a>3.4.2、SVD分解的低秩逼近</h5><p>设矩阵$X \in \mathbb{C}^{m \times n}$，秩为$r$，$r \leq min(m,n)$，则该矩阵可以分解为：</p>
-<div style="width:100%;margin:auto" align=center><img src="/2020/04/03/%E5%B8%B8%E7%94%A8%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-%E7%90%86%E8%AE%BA%E7%AF%87/%E4%BD%8E%E7%A7%A9%E9%80%BC%E8%BF%91.png" class=""></div>
-
-<p>也可以表示为：($\lambda$从大到小排列)</p>
-<script type="math/tex; mode=display">
-X=\sum_{i=1}^{r}\lambda_i \mathbf{u}_i \mathbf{v}_i^T</script><p>低秩逼近是指：</p>
-<script type="math/tex; mode=display">
-X \approx \widetilde{X} = \sum_{i=1}^{k}\lambda_iu_iv_i^T，k \leq r</script>
     </div>
 
     
@@ -380,12 +314,12 @@ X \approx \widetilde{X} = \sum_{i=1}^{k}\lambda_iu_iv_i^T，k \leq r</script>
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/03/31/%E6%88%91%E7%9A%84%E7%A5%9E%E5%85%B5%E5%88%A9%E5%99%A8/" rel="prev" title="我的开发工具">
-      <i class="fa fa-chevron-left"></i> 我的开发工具
+    <a href="/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/" rel="prev" title="VINS中的视觉残差">
+      <i class="fa fa-chevron-left"></i> VINS中的视觉残差
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/03/Ax-0%E7%9A%84%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E8%A7%A3/" rel="next" title="Ax=0的最小二乘解">
-      Ax=0的最小二乘解 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/05/26/%E6%9C%AC%E8%B4%A8%E7%9F%A9%E9%98%B5%E7%9A%84%E5%88%86%E8%A7%A3/" rel="next" title="本质矩阵的分解">
+      本质矩阵的分解 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -446,7 +380,7 @@ X \approx \widetilde{X} = \sum_{i=1}^{k}\lambda_iu_iv_i^T，k \leq r</script>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#矩阵分解理论"><span class="nav-text">矩阵分解理论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、线性映射"><span class="nav-text">1、线性映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、特殊矩阵"><span class="nav-text">2、特殊矩阵</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1、Hermite矩阵"><span class="nav-text">2.1、Hermite矩阵</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2、酉矩阵"><span class="nav-text">2.2、酉矩阵</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3、正规矩阵"><span class="nav-text">2.3、正规矩阵</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、常用矩阵分解"><span class="nav-text">3、常用矩阵分解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Jordan分解"><span class="nav-text">3.1 Jordan分解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-正交化方法与QR分解"><span class="nav-text">3.2 正交化方法与QR分解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3、酉相似"><span class="nav-text">3.3、酉相似</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4、奇异值分解"><span class="nav-text">3.4、奇异值分解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-1、奇异值的定义及SVD分解："><span class="nav-text">3.4.1、奇异值的定义及SVD分解：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-2、SVD分解的低秩逼近"><span class="nav-text">3.4.2、SVD分解的低秩逼近</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#反对称矩阵的性质"><span class="nav-text">反对称矩阵的性质</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

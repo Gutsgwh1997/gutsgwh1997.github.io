@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="1.投影与投影映射假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V&#x3D;S \oplus T$，其中$\oplus$代表$S,T$构成直和关系且$S,T$构成全空间$V$($V &#x3D; S + T$)。对于$\forall \alpha \in V$，可唯一的表示为：$$\alpha &#x3D; x + y, x\in S, y \in T$$">
+  <meta name="description" content="1.投影与投影映射假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V&#x3D;S \oplus T$，其中$\oplus$代表$S,T$构成直和关系且$S,T$构成全空间$V$($V &#x3D; S + T$)。对于$\forall \alpha \in V$，可唯一的表示为：$$\alpha &#x3D; x + y, \quad x\in S, y \in T$$">
 <meta property="og:type" content="article">
 <meta property="og:title" content="最小二乘的几何解释">
 <meta property="og:url" content="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="1.投影与投影映射假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V&#x3D;S \oplus T$，其中$\oplus$代表$S,T$构成直和关系且$S,T$构成全空间$V$($V &#x3D; S + T$)。对于$\forall \alpha \in V$，可唯一的表示为：$$\alpha &#x3D; x + y, x\in S, y \in T$$">
+<meta property="og:description" content="1.投影与投影映射假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V&#x3D;S \oplus T$，其中$\oplus$代表$S,T$构成直和关系且$S,T$构成全空间$V$($V &#x3D; S + T$)。对于$\forall \alpha \in V$，可唯一的表示为：$$\alpha &#x3D; x + y, \quad x\in S, y \in T$$">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98.jpg">
 <meta property="og:image" content="http://yoursite.com/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88.png">
 <meta property="article:published_time" content="2020-01-19T04:04:14.000Z">
-<meta property="article:modified_time" content="2020-04-03T10:17:21.408Z">
+<meta property="article:modified_time" content="2020-05-26T05:13:44.921Z">
 <meta property="article:author" content="陌上&amp;烟雨">
 <meta property="article:tag" content="SLAM数学基础">
 <meta property="article:tag" content="矩阵论">
@@ -199,7 +199,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-03 18:17:21" itemprop="dateModified" datetime="2020-04-03T18:17:21+08:00">2020-04-03</time>
+                <time title="修改时间：2020-05-26 13:13:44" itemprop="dateModified" datetime="2020-05-26T13:13:44+08:00">2020-05-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,7 +247,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1-投影与投影映射"><a href="#1-投影与投影映射" class="headerlink" title="1.投影与投影映射"></a>1.投影与投影映射</h2><p>假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V=S \oplus T$，其中$\oplus$代表$S,T$构成直和关系且$S,T$构成全空间$V$($V = S + T$)。对于$\forall \alpha \in V$，可<strong>唯一</strong>的表示为：<br>$$<br>\alpha = x + y, x\in S, y \in T<br>$$</p>
+        <h2 id="1-投影与投影映射"><a href="#1-投影与投影映射" class="headerlink" title="1.投影与投影映射"></a>1.投影与投影映射</h2><p>假设$S,T$是$n-$维酉（欧氏）空间$V$的子集，且$V=S \oplus T$，其中$\oplus$代表$S,T$构成直和关系且$S,T$构成全空间$V$($V = S + T$)。对于$\forall \alpha \in V$，可<strong>唯一</strong>的表示为：<br>$$<br>\alpha = x + y, \quad x\in S, y \in T<br>$$</p>
 <a id="more"></a>
 <p>则称$x$是$\alpha$沿$T$在$S$上的投影，$y$是$\alpha$沿$S$在$T$上的投影，也称$\mathcal{T}_{S,T}:V \rightarrow S$是$V$沿着$T$至$S$的投影映射。  </p>
 <p>值得注意的是：</p>
@@ -255,7 +255,7 @@
 <li><strong>上式的分解是唯一的，这种唯一性是由直和决定的</strong>。所谓直和关系，即空间$S \cap T = {0}$，可以理解为构成$S,T$这两个空间的基底是线性无关的。</li>
 <li><strong>投影映射是线性映射</strong>，对与一个投影映射$\mathcal{T}_{S,T}$存在一个矩阵表示$A$，并且$A^2 = A$，<strong>即投影映射的矩阵表示一定是一个幂等矩阵</strong>。  </li>
 </ol>
-<p>唯一性的简单证明：<br>对于$\forall \alpha \in V$,<br>$$<br>\alpha =\mathcal{T}(\alpha) + \alpha-\mathcal{T}(\alpha), \\<br>\mathcal{T}(\alpha) \in S, \alpha-\mathcal{T}(\alpha) \in T\\<br>$$<br>假设$\beta \in {S \cap T}$,则由于$\beta \in S$,故$\exists \gamma \in V$,使得$\beta = \mathcal{T}(\gamma)$。同理$\beta \in T$,故$\exists l\in V$,使得$\beta = l-\mathcal{T}(l)$，则:$\mathcal{T}(\gamma) = l-\mathcal{T}(l)$。对上式两端再做一次投影映射：<br>$$<br>\mathcal{T}^2(\gamma) = \mathcal{T}(l) - \mathcal{T}^2(l)=0=\beta(幂等矩阵性质)<br>$$<br>由此可见，幂等性质保证了分解是直和关系，而直和关系保证了分解是唯一的。<br>当上式中的$S \perp T$时，称这个投影映射为<strong>正交映射</strong>。正交映射有很多优良的性质，当为正交映射时，$T$空间中的任意向量与$S$空间中的任意向量是正交的，即$T$空间中的任意向量与$S$空间的基底是正交的。然鹅，正交投影和最小二乘又有什么关系呢？这便要说明一下高维空间的勾股定理。</p>
+<p>唯一性的简单证明：<br>对于$\forall \alpha \in V$,<br>$$<br>\alpha =\mathcal{T}(\alpha) + \alpha-\mathcal{T}(\alpha), \\<br>\quad \mathcal{T}(\alpha) \in S, \alpha-\mathcal{T}(\alpha) \in T\\<br>$$<br>假设$\beta \in {S \cap T}$,则由于$\beta \in S$,故$\exists \gamma \in V$,使得$\beta = \mathcal{T}(\gamma)$。同理$\beta \in T$,故$\exists l\in V$,使得$\beta = l-\mathcal{T}(l)$，则:$\mathcal{T}(\gamma) = l-\mathcal{T}(l)$。对上式两端再做一次投影映射：<br>$$<br>\mathcal{T}^2(\gamma) = \mathcal{T}(l) - \mathcal{T}^2(l)=0=\beta(幂等矩阵性质)<br>$$<br>由此可见，幂等性质保证了分解是直和关系，而直和关系保证了分解是唯一的。<br>当上式中的$S \perp T$时，称这个投影映射为<strong>正交映射</strong>。正交映射有很多优良的性质，当为正交映射时，$T$空间中的任意向量与$S$空间中的任意向量是正交的，即$T$空间中的任意向量与$S$空间的基底是正交的。然鹅，正交投影和最小二乘又有什么关系呢？这便要说明一下高维空间的勾股定理。</p>
 <h2 id="2-高维空间的勾股定理"><a href="#2-高维空间的勾股定理" class="headerlink" title="2.高维空间的勾股定理"></a>2.高维空间的勾股定理</h2><p>对于二维空间，我们知道三角形的斜边的平方等于两个直角边的平方和。但是这种关系在高维空间中是否还如此优美呢？这里我们要先明确一下长度的概念，向量的长度是通过内积定义的即$||\alpha||= \sqrt{&lt;\alpha,\alpha&gt;}=\sqrt{\alpha^H \alpha}$。现在假设在欧氏空间$V_n(R)$中，有$a,b$两个向量，那么$||a-b||^2?=?||a||^2+||b||^2$成立吗？我们计算一下长度不就可以解决了:<br>$$<br>\begin{equation}<br>\begin{aligned}<br>||a-b||^2=&lt;a-b,a-b&gt; &amp;= &lt;a,a&gt; - &lt;a,b&gt; - &lt;b,a&gt; + &lt;b,b&gt;\\<br>&amp;=||a||^2 - &lt;a,b&gt; - &lt;b,a&gt; + ||b||^2<br>\end{aligned}<br>\end{equation}<br>$$<br>这似乎是差了一点东西啊，那为什么勾股定理在二维空间中成立呢?这要归功于直角三角形前提，即$a,b$是垂直的，也就是正交的,这使得$ &lt;a,b&gt; = &lt;b,a&gt; = 0 $。若是在高维空间中也有这种关系，那勾股定理也就成立了。在正交映射的条件下，在$S$空间中任取$a$向量，在$T$空间中取一个$b$向量，这不天然满足正交要求吗，高维勾股定理不就天然成立了。</p>
 <h2 id="3-最小二乘"><a href="#3-最小二乘" class="headerlink" title="3.最小二乘"></a>3.最小二乘</h2><p>啰嗦了半天，重于到重点了，先放一张镇楼图.</p>
 <div style="width:50%;margin:auto" align=center><img src="/2020/01/19/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E7%9A%84%E5%87%A0%E4%BD%95%E8%A7%A3%E9%87%8A/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98.jpg" class="" title="几何解释"></div>
@@ -392,7 +392,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -474,13 +474,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">141k</span>
+    <span title="站点总字数">147k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:08</span>
+    <span title="站点阅读时长">2:13</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 
