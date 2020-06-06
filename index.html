@@ -286,7 +286,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-06 09:21:02" itemprop="dateModified" datetime="2020-06-06T09:21:02+08:00">2020-06-06</time>
+                <time title="修改时间：2020-06-06 10:12:19" itemprop="dateModified" datetime="2020-06-06T10:12:19+08:00">2020-06-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -308,7 +308,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>6.4k</span>
+              <span>6.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -327,7 +327,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="VINS中外参、Bias初始化"><a href="#VINS中外参、Bias初始化" class="headerlink" title="VINS中外参、Bias初始化"></a>VINS中外参、Bias初始化</h2><p>我们要知道，视觉与IMU有良好的互补性，IMU可以提高系统处理快速运动的性能，摄像机可以解决慢速运动下IMU的漂移问题。这种单目视觉-惯性系统的主要优点是具有可观测的度量尺度，这让需要有度量尺度的导航任务成为可能，尺度的确定就是在初始化阶段完成的。在<a href="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/" title="IMU预积分(二)">IMU预积分(二)</a>——线性视觉惯导初始化中我们分析出预积分需要估计出初始帧的速度、重力，在VINS-Mono中我们也需要完成这项工作。除此之外，VINS-Mono还估计了陀螺仪的bias来提高预积分精度，并且提供了在线外参矫正功能。</p>
+          <h2 id="VINS中外参、Bias初始化"><a href="#VINS中外参、Bias初始化" class="headerlink" title="VINS中外参、Bias初始化"></a>VINS中外参、Bias初始化</h2><p>我们要知道，视觉与IMU有良好的互补性，IMU可以提高系统处理快速运动的性能，摄像机可以解决慢速运动下IMU的漂移问题。这种单目视觉-惯性系统的主要优点是具有可观测的度量尺度，这让需要有度量尺度的导航任务成为可能，尺度的确定就是在初始化阶段完成的。在<a href="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%BA%8C/" title="IMU预积分(二)">IMU预积分(二)</a>——线性视觉惯导初始化中我们分析出预积分需要估计出初始帧的速度、重力，在VINS-Mono中我们也需要完成这项工作。除此之外，VINS-Mono还估计了陀螺仪的bias来提高预积分精度，并且提供了在线外参矫正功能。<br>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/06/05/VINS-Mono%E5%88%9D%E5%A7%8B%E5%8C%96/#more" rel="contents">
