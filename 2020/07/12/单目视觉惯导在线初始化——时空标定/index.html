@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="单目视觉惯导在线初始化——时空校准该方法可以在线标定相机与IMU之间的相对位姿(空间)和时间(时间)偏移以及估计初始阶段的尺度、速度、重力、陀螺仪和加速度计Bias的初始值。看该方法前，请务必了解预积分的相关知识，可以看之前我写的几篇博客。 该算法分为三个步骤：  通过最小化相机和IMU之间的旋转误差来估计外参中的旋转、时间偏移(time offset)和陀螺仪Bias； 利用插值得到的摄像机位姿">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单目视觉惯导在线初始化——时空标定">
+<meta property="og:url" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/index.html">
+<meta property="og:site_name" content="GWH Blog">
+<meta property="og:description" content="单目视觉惯导在线初始化——时空校准该方法可以在线标定相机与IMU之间的相对位姿(空间)和时间(时间)偏移以及估计初始阶段的尺度、速度、重力、陀螺仪和加速度计Bias的初始值。看该方法前，请务必了解预积分的相关知识，可以看之前我写的几篇博客。 该算法分为三个步骤：  通过最小化相机和IMU之间的旋转误差来估计外参中的旋转、时间偏移(time offset)和陀螺仪Bias； 利用插值得到的摄像机位姿">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E4%BC%A0%E6%84%9F%E5%99%A8%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BB.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BB%E5%85%B3%E7%B3%BB.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BBtd.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BB%E7%9F%AB%E6%AD%A3%E7%9A%84%E8%BF%90%E5%8A%A8%E5%85%B3%E7%B3%BB.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%80%9F%E5%BA%A6%E6%8E%A8%E5%AF%BC.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E6%8F%92%E5%80%BC.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E4%BD%8D%E5%A7%BF%E6%8F%92%E5%80%BC.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E7%B3%BB%E7%9A%84%E6%97%8B%E8%BD%AC%E5%92%8C%E5%B9%B3%E7%A7%BB.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E9%A2%84%E7%A7%AF%E5%88%86%E5%85%AC%E5%BC%8F.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%A2%84%E7%A7%AF%E5%88%86%E9%A1%B9%E7%9A%84%E7%BA%BF%E6%80%A7%E4%BF%AE%E6%AD%A3.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E4%B8%8ECamera%E5%9D%90%E6%A0%87%E7%9A%84%E8%BD%AC%E6%8D%A2.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E9%A2%84%E7%A7%AF%E5%88%86%E6%97%8B%E8%BD%AC%E9%A1%B9%E8%AF%AF%E5%B7%AE.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E7%AC%AC%E4%B8%80%E6%AD%A5.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%A2%84%E7%A7%AF%E5%88%86%E7%9A%84%E4%BD%8D%E7%A7%BB%E9%A1%B9%E7%9B%AE.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%A2%84%E7%A7%AF%E5%88%86%E7%9A%84%E9%80%9F%E5%BA%A6%E9%A1%B9.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E5%B9%B3%E7%A7%BB%E5%AF%B9%E9%BD%90.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%87%8D%E5%8A%9Brefine.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%87%8D%E5%8A%9B%E7%9A%84%E5%8F%82%E6%95%B0%E5%8C%96.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%87%8D%E5%8A%9B%E5%8F%82%E6%95%B0%E5%8C%96%E5%90%8E%E7%9A%84%E5%B9%B3%E7%A7%BB%E9%87%8F%E5%AF%B9%E9%BD%90.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E5%8F%82%E6%95%B0%E5%8C%96%E5%90%8E%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E5%8F%82%E6%95%B0%E5%8C%96%E5%90%8E%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA%E7%BB%86%E8%8A%82.png">
+<meta property="article:published_time" content="2020-07-12T03:48:03.000Z">
+<meta property="article:modified_time" content="2020-07-12T04:53:09.386Z">
+<meta property="article:author" content="陌上&amp;烟雨">
+<meta property="article:tag" content="SLAM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E4%BC%A0%E6%84%9F%E5%99%A8%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BB.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>单目视觉惯导在线初始化——时空标定 | GWH Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">GWH Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+
+  <a href="https://github.com/Gutsgwh1997" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
+      <meta itemprop="name" content="陌上&烟雨">
+      <meta itemprop="description" content="这知识，它不进脑子啊！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GWH Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          单目视觉惯导在线初始化——时空标定
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-12 11:48:03 / 修改时间：12:53:09" itemprop="dateCreated datePublished" datetime="2020-07-12T11:48:03+08:00">2020-07-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/VIO/" itemprop="url" rel="index"><span itemprop="name">VIO</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="单目视觉惯导在线初始化——时空校准"><a href="#单目视觉惯导在线初始化——时空校准" class="headerlink" title="单目视觉惯导在线初始化——时空校准"></a>单目视觉惯导在线初始化——时空校准</h2><p>该方法可以在线标定相机与IMU之间的相对位姿(空间)和时间(时间)偏移以及估计初始阶段的尺度、速度、重力、陀螺仪和加速度计Bias的初始值。看该方法前，请务必了解预积分的相关知识，可以看之前我写的几篇博客。</p>
+<p>该算法分为三个步骤：</p>
+<ol>
+<li>通过最小化相机和IMU之间的旋转误差来估计外参中的旋转、时间偏移(time offset)和陀螺仪Bias；</li>
+<li>利用插值得到的摄像机位姿，忽略加速度计的Bias，近似估计尺度因子、重力矢量和外参中的平移向量；</li>
+<li>通过考虑加速度计偏差和重力大小，在第二种过程中估计的值进一步细化。</li>
+</ol>
+<a id="more"></a>
+
+<h3 id="1、传感器短时运动插值"><a href="#1、传感器短时运动插值" class="headerlink" title="1、传感器短时运动插值"></a>1、传感器短时运动插值</h3><p>首先对时间偏移量建模：</p>
+<div style="width:80%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E4%BC%A0%E6%84%9F%E5%99%A8%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BB.png" class=""></div>
+
+<p>如上图所示，每个传感器以恒定频率离散采样（上面的坐标轴），然而，由于时钟不同步、传输延迟、传感器响应和操作系统开销等，总是存在一个延迟，使测量流（时间戳生成流，下面的坐标轴）与采样流不一致。考虑IMU和相机在同一时刻采样，对于每一个传感器，其时间戳$t_s$与真实的采样时间$t$存在一个延迟$t_d$：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BB%E5%85%B3%E7%B3%BB.png" class=""></div>
+
+<p>不同传感器的时间延迟一般是不一样的，这就导致上图中的现象，实际第1帧与第2帧图像帧之间有第1、2、3、4帧IMU的测量数据（采样流），但是由于相机和IMU的延迟不同，从测量流中读取到的数据就会变为第1帧与第2帧图像帧之间有只有第1、2、3帧的IMU测量数据，这就会导致IMU预积分的不准确。所以估计不同传感器时间延迟之间的差值$t_d$是有必要的。</p>
+<div style="width:72%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BBtd.png" class=""></div>
+
+<p>这样通过将Camera的测量流滞后$t_d$或者将IMU的测量流提前$t_d$就可将两个传感器对齐，如此便有下面的关系：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E6%97%B6%E9%97%B4%E5%81%8F%E7%A7%BB%E7%9F%AB%E6%AD%A3%E7%9A%84%E8%BF%90%E5%8A%A8%E5%85%B3%E7%B3%BB.png" class=""></div>
+
+<p>这里，$T_{b}^w(t)$和$T_{c}^w(t)$分别是IMU和相机在时间戳$t$处的位姿。</p>
+<p>下面使用线性插值方法获得$T(t+t_d)$的近似计算，<strong>假设相机在短时间内的运动是匀速的</strong>，则任意时刻的相机位姿可以用其最近的相机位姿、角速度和线速度插值获得。若$T_{c_i}^{w}$与$T_{c_j}^{w}$是单目VO获得的在时间戳$t_{c_i}$和$t_{c_j}$处的位姿，则相机在时间戳$t_{c_i}$的角速度$\omega_{c_i}$和线速度$\tilde v_{c_i}$可通过下式获取：(注意，速度与米制单位相差一个尺度$s$)</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%80%9F%E5%BA%A6%E6%8E%A8%E5%AF%BC.png" class=""></div>
+
+<p>相机在$t_i+t_d$处的位姿通过线性插值得到：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E6%8F%92%E5%80%BC.png" class=""></div>
+
+<p>同理IMU在$t_i-t_d$处的位姿也可通过线性插值得到：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E4%BD%8D%E5%A7%BF%E6%8F%92%E5%80%BC.png" class=""></div>
+
+<p>这里的$\overline \omega_{b_i}$是$t_i$时刻IMU坐标系下的角速度，$v_{b_i}^w$是IMU的线速度在世界坐标系下的表示。</p>
+<h3 id="2、转换关系"><a href="#2、转换关系" class="headerlink" title="2、转换关系"></a>2、转换关系</h3><p>考虑time offset $t_d$和尺度因子$s$，根据IMU与相机时间对齐的关系（上边的公式），在时间戳$t_i$处IMU系的旋转和平移可分别表示为：</p>
+<div style="width:80%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E7%B3%BB%E7%9A%84%E6%97%8B%E8%BD%AC%E5%92%8C%E5%B9%B3%E7%A7%BB.png" class=""></div>
+
+<h3 id="3、三步走初始化策略"><a href="#3、三步走初始化策略" class="headerlink" title="3、三步走初始化策略"></a>3、三步走初始化策略</h3><h3 id="3-1、外参中的旋转、时间偏移-time-offset-和陀螺仪Bias修正"><a href="#3-1、外参中的旋转、时间偏移-time-offset-和陀螺仪Bias修正" class="headerlink" title="3.1、外参中的旋转、时间偏移(time offset)和陀螺仪Bias修正"></a>3.1、外参中的旋转、时间偏移(time offset)和陀螺仪Bias修正</h3><p>直接引入预积分的公式，这个公式来自VINS-Mono中的推导，$\alpha_{b_{k+1}}^{b_k}$、$\beta_{b_{k+1}}^{b_k}$、$\gamma_{b_{k+1}}^{b_k}$就是预积分的位置项、速度项、旋转项（四元数表示）：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E9%A2%84%E7%A7%AF%E5%88%86%E5%85%AC%E5%BC%8F.png" class=""></div>
+
+<p>预积分项的线性修正（bias修正，详情请看IMU预积分系列文章）：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%A2%84%E7%A7%AF%E5%88%86%E9%A1%B9%E7%9A%84%E7%BA%BF%E6%80%A7%E4%BF%AE%E6%AD%A3.png" class=""></div>
+
+<p>于是IMU预积分旋转项的误差为：</p>
+<div style="width:100%;margin:auto" align=center></div>
+$$
+e_{rot(k,k+1)}=
+\left[(\hat{\gamma}_{b_{k+1}}^{b_{k}} \otimes\left[\begin{array}{c}
+1 \\\\
+\frac{1}{2} \mathbf{J}_{b_{w}}^{\gamma} \delta \mathbf{b}_{w_{k}}
+\end{array}\right])^{-1}q_{w}^{b_k}\otimes q_{b_{k+1}}^{w}\right]_{x y z}
+$$
+
+<p>根据第二节<strong>2、转换关系</strong>的公式，可有：</p>
+<div style="width:100%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E4%B8%8ECamera%E5%9D%90%E6%A0%87%E7%9A%84%E8%BD%AC%E6%8D%A2.png" class=""></div>
+
+<p>考虑time offset，重新带入$e_{rot(k,k+1)}$中，则有：</p>
+<div style="width:80%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/IMU%E9%A2%84%E7%A7%AF%E5%88%86%E6%97%8B%E8%BD%AC%E9%A1%B9%E8%AF%AF%E5%B7%AE.png" class=""></div>
+
+<p>这里使用旋转矩阵代替了四元数的表示方法，本质上都是一样的。若有N帧关键帧，外参中的旋转$R_b^c$、time offset $t_d$、陀螺仪的bias $\delta b_g$可以通过最小化所有帧的旋转项误差来获得：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E7%AC%AC%E4%B8%80%E6%AD%A5.png" class=""></div>
+
+<p>这里使用加权的最小二乘，$\sum _{\Delta R}$是预积分旋转项的信息矩阵。这个信息矩阵可从IMU预积分时的协方差矩阵中提取。在恢复出陀螺仪的Bias后，根据新的陀螺仪Bias重新计算预积分，获取更加精确的预积分结果。</p>
+<h3 id="3-2、近似的尺度、重力和外参中的平移项修正"><a href="#3-2、近似的尺度、重力和外参中的平移项修正" class="headerlink" title="3.2、近似的尺度、重力和外参中的平移项修正"></a>3.2、近似的尺度、重力和外参中的平移项修正</h3><p>一旦外参的旋转$R_c^b$、time offset $t_d$、陀螺仪的bias $\delta_{b_g}$估计出来，尺度因子$s$、重力矢量$g^w$和外参中的平移$p_b^c$就可粗略的估计了。预积分中的位移项和速度项可以写为：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%A2%84%E7%A7%AF%E5%88%86%E7%9A%84%E4%BD%8D%E7%A7%BB%E9%A1%B9%E7%9B%AE.png" class=""></div>
+
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%A2%84%E7%A7%AF%E5%88%86%E7%9A%84%E9%80%9F%E5%BA%A6%E9%A1%B9.png" class=""></div>
+
+<p>这个步骤不估计加速度计的bias，令$J_{\Delta \overline p_{ij}}^{a}$与$J_{\Delta \overline v_{ij}}^{a}$为0，同样在估计出陀螺仪的bias后，重新计算预积分，这里的$J_{\Delta \overline p_{ij}}^{g}$与$J_{\Delta \overline v_{ij}}^{g}$同样设为0。</p>
+<p>将第2节转换关系中的公式带入，可有：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E5%B9%B3%E7%A7%BB%E5%AF%B9%E9%BD%90.png" class=""></div>
+
+<p>其中$R_b^{c*}$是第一步估计出的结果，考虑连续的三帧$i,i+1,i+2$和速度预积分项，将上式中的$v_{bi}^w$搞掉，并将待估计变量$s$、$g^w$、$p_b^c$分离出来，写成矩阵表示的形式，有：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA.png" class=""></div>
+
+<p>其中：</p>
+<div style="width:65%;margin:auto" align=center></div>
+
+<p>若有$N$帧，可以获得$N-2$个上述的约束方程，所有的观测可以堆叠成一个线性超定方程$B_{3(N-2) \times 7} \cdot X_{7 \times 1} = C_{3(N-2) \times 1}$。可见至少5帧才可求解，求解这个方程可使用SVD分解。得到的粗略估计结果记为$s^*$，$g^{w*}$，$P_b^{c*}$。</p>
+<h3 id="3-3、估计加速度计偏置，Refine尺度、重力、外参中的平移矢量"><a href="#3-3、估计加速度计偏置，Refine尺度、重力、外参中的平移矢量" class="headerlink" title="3.3、估计加速度计偏置，Refine尺度、重力、外参中的平移矢量"></a>3.3、估计加速度计偏置，Refine尺度、重力、外参中的平移矢量</h3><p>在这一步，将地球坐标系下的重力矢量的模长考虑进来，进而refine尺度、重力、外参中的平移矢量。使用上一步估计出来的重力矢量$g^{w*}$,将这个矢量与地球坐标下的重力矢量$G^e$的方向对齐：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%87%8D%E5%8A%9Brefine.png" class=""></div>
+
+<p>通过加入一个微小的扰动对旋转矩阵$R_e^w$进行调整：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%87%8D%E5%8A%9B%E7%9A%84%E5%8F%82%E6%95%B0%E5%8C%96.png" class=""></div>
+
+<p>将重新参数化的重力带入3.2节中的公式，可有：</p>
+<div style="width:75%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E9%87%8D%E5%8A%9B%E5%8F%82%E6%95%B0%E5%8C%96%E5%90%8E%E7%9A%84%E5%B9%B3%E7%A7%BB%E9%87%8F%E5%AF%B9%E9%BD%90.png" class=""></div>
+
+<p>在这一步中估计加速度计的bias，相关的Jacobian矩阵不当做0来处理了，同样的手段，考虑连续的三帧、搞掉速度项并写成矩阵表示的形式，可有：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E5%8F%82%E6%95%B0%E5%8C%96%E5%90%8E%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA.png" class=""></div>
+
+<p>其中：</p>
+<div style="width:70%;margin:auto" align=center><img src="/2020/07/12/%E5%8D%95%E7%9B%AE%E8%A7%86%E8%A7%89%E6%83%AF%E5%AF%BC%E5%9C%A8%E7%BA%BF%E5%88%9D%E5%A7%8B%E5%8C%96%E2%80%94%E2%80%94%E6%97%B6%E7%A9%BA%E6%A0%87%E5%AE%9A/%E5%8F%82%E6%95%B0%E5%8C%96%E5%90%8E%E7%9A%84%E7%9F%A9%E9%98%B5%E8%A1%A8%E7%A4%BA%E7%BB%86%E8%8A%82.png" class=""></div>
+
+<p>$[ \cdot ](:,1:2)$表示矩阵的前两列。若有$N$帧，可以获得$N-2$个上述的约束方程，所有的观测可以堆叠成一个线性超定方程$D_{3(N-2) \times 9} \cdot y_{9 \times 1} = E_{3(N-2) \times 1}$。<strong>注意上面的$\delta \theta_{xy}$表示只估计roll和pitch角，因为yaw角不可观测。</strong></p>
+<p>上述变量估计出来后，加速度计的bias为：$b_a = 0_{3 \times 1}+\delta b_a$，优化后的重力矢量为：$g^{w} = R_e^wExp(\delta \theta)G^e$。</p>
+<h3 id="4、初始速度估计"><a href="#4、初始速度估计" class="headerlink" title="4、初始速度估计"></a>4、初始速度估计</h3><p>重力矢量估计出来后，速度项的估计就是水到渠成的事情了，根据预积分的平移项，可有<br>$$<br>v_{b_i}^w = \frac{p_{bj}^{w}-p_{bi}^{w}-\frac{1}{2}g^w\Delta t_{ij}^2-R_{bi}^w \Delta \overline p_{ij}}{\Delta t_{ij}}<br>$$</p>
+<h3 id="5、附录：3-1节非线性优化所需的Jacobian的推导"><a href="#5、附录：3-1节非线性优化所需的Jacobian的推导" class="headerlink" title="5、附录：3.1节非线性优化所需的Jacobian的推导"></a>5、附录：3.1节非线性优化所需的Jacobian的推导</h3><div class="pdfobject-container" data-target="Jacobian的推导.pdf" data-height="500px"></div> 
+<h3 id="6、参考文献"><a href="#6、参考文献" class="headerlink" title="6、参考文献"></a>6、参考文献</h3><p>1、Visual-Inertial-Aided Navigation for High-Dynamic Motion in Built Environments Without Initial Conditions</p>
+<p>2、Online Initialization and Extrinsic Spatial-Temporal Calibration for Monocular Visual-Inertial Odometry</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>听说打赏我的人，最后都找到了真爱。</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E5%BE%AE%E4%BF%A1.jpg" alt="陌上&烟雨 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E6%94%AF%E4%BB%98%E5%AE%9D.jpg" alt="陌上&烟雨 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/06/VINS-Mono%E9%87%8D%E5%8A%9B%E7%9A%84%E4%BC%98%E5%8C%96/" rel="prev" title="VINS-Mono重力的优化">
+      <i class="fa fa-chevron-left"></i> VINS-Mono重力的优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/12/SVO%E6%B7%B1%E5%BA%A6%E6%BB%A4%E6%B3%A2%E5%99%A8%E7%9A%84%E6%8E%A8%E5%AF%BC/" rel="next" title="SVO深度滤波器的推导">
+      SVO深度滤波器的推导 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#单目视觉惯导在线初始化——时空校准"><span class="nav-text">单目视觉惯导在线初始化——时空校准</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、传感器短时运动插值"><span class="nav-text">1、传感器短时运动插值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、转换关系"><span class="nav-text">2、转换关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、三步走初始化策略"><span class="nav-text">3、三步走初始化策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1、外参中的旋转、时间偏移-time-offset-和陀螺仪Bias修正"><span class="nav-text">3.1、外参中的旋转、时间偏移(time offset)和陀螺仪Bias修正</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2、近似的尺度、重力和外参中的平移项修正"><span class="nav-text">3.2、近似的尺度、重力和外参中的平移项修正</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3、估计加速度计偏置，Refine尺度、重力、外参中的平移矢量"><span class="nav-text">3.3、估计加速度计偏置，Refine尺度、重力、外参中的平移矢量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、初始速度估计"><span class="nav-text">4、初始速度估计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、附录：3-1节非线性优化所需的Jacobian的推导"><span class="nav-text">5、附录：3.1节非线性优化所需的Jacobian的推导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6、参考文献"><span class="nav-text">6、参考文献</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="陌上&烟雨"
+      src="/images/%E5%A4%B4%E5%83%8F.jpeg">
+  <p class="site-author-name" itemprop="name">陌上&烟雨</p>
+  <div class="site-description" itemprop="description">这知识，它不进脑子啊！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Gutsgwh1997" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Gutsgwh1997" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:guanwenhaohit@gmail.com" title="E-Mail → mailto:guanwenhaohit@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/images/%E8%81%94%E7%B3%BB%E6%96%B9%E5%BC%8F.jpg" title="WeChat → &#x2F;images&#x2F;联系方式.jpg"><i class="fa fa-fw fa-wechat"></i>WeChat</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/YiChenCityU/Recent_SLAM_Research" title="https:&#x2F;&#x2F;github.com&#x2F;YiChenCityU&#x2F;Recent_SLAM_Research" rel="noopener" target="_blank">SLAM前沿</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://leetcode.com/" title="https:&#x2F;&#x2F;leetcode.com&#x2F;" rel="noopener" target="_blank">LeetCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/daohu527/Dig-into-Apollo" title="https:&#x2F;&#x2F;github.com&#x2F;daohu527&#x2F;Dig-into-Apollo" rel="noopener" target="_blank">百度Apollo笔记</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">陌上&烟雨</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">158k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:24</span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
