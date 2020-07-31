@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="LeGo-LOAM中的featureAssociation节点LeGo-LOAM是在LOAM基础上改进的激光雷达定位与建图方法，它对地面点进行了优化、提出了两步LM优化算法，加入了闭环检测和全局因子图优化等。本系列博客只说明了关键代码的功能实现，以及一些关键地方的数学推导，详细的解释都写在了代码注释中，注释后的代码在融合相机后会传到github。同时也列出来一些问题提醒自己有条件时实际去验证。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LeGo-LOAM中的featureAssociation节点">
+<meta property="og:url" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/index.html">
+<meta property="og:site_name" content="GWH Blog">
+<meta property="og:description" content="LeGo-LOAM中的featureAssociation节点LeGo-LOAM是在LOAM基础上改进的激光雷达定位与建图方法，它对地面点进行了优化、提出了两步LM优化算法，加入了闭环检测和全局因子图优化等。本系列博客只说明了关键代码的功能实现，以及一些关键地方的数学推导，详细的解释都写在了代码注释中，注释后的代码在融合相机后会传到github。同时也列出来一些问题提醒自己有条件时实际去验证。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E4%BC%A0%E6%84%9F%E5%99%A8%E5%9D%90%E6%A0%87%E5%85%B3%E7%B3%BB.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E7%82%B9%E4%BA%91%E6%A8%A1%E5%9E%8B-%E5%90%88%E5%B9%B6.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/IMU%E5%8E%BB%E9%99%A4%E7%95%B8%E5%8F%98.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E4%B8%8D%E5%8F%AF%E9%9D%A0%E7%82%B9%E5%8E%BB%E9%99%A4.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E6%88%91%E7%9A%84%E6%A8%A1%E5%9E%8B.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E5%85%AC%E5%BC%8F1.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E7%82%B9%E4%BA%91%E6%A8%A1%E5%9E%8B2.jpg">
+<meta property="article:published_time" content="2020-07-31T15:00:42.000Z">
+<meta property="article:modified_time" content="2020-07-31T15:44:38.411Z">
+<meta property="article:author" content="陌上&amp;烟雨">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="LeGo-LOAM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E4%BC%A0%E6%84%9F%E5%99%A8%E5%9D%90%E6%A0%87%E5%85%B3%E7%B3%BB.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LeGo-LOAM中的featureAssociation节点 | GWH Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">GWH Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+
+  <a href="https://github.com/Gutsgwh1997" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
+      <meta itemprop="name" content="陌上&烟雨">
+      <meta itemprop="description" content="这知识，它不进脑子啊！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GWH Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LeGo-LOAM中的featureAssociation节点
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-31 23:00:42 / 修改时间：23:44:38" itemprop="dateCreated datePublished" datetime="2020-07-31T23:00:42+08:00">2020-07-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/LOAM/" itemprop="url" rel="index"><span itemprop="name">LOAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/LOAM/LeGo-LOAM/" itemprop="url" rel="index"><span itemprop="name">LeGo-LOAM</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>13 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="LeGo-LOAM中的featureAssociation节点"><a href="#LeGo-LOAM中的featureAssociation节点" class="headerlink" title="LeGo-LOAM中的featureAssociation节点"></a>LeGo-LOAM中的featureAssociation节点</h2><p>LeGo-LOAM是在LOAM基础上改进的激光雷达定位与建图方法，它对地面点进行了优化、提出了两步LM优化算法，加入了闭环检测和全局因子图优化等。<br>本系列博客只说明了关键代码的功能实现，以及一些关键地方的数学推导，详细的解释都写在了代码注释中，注释后的代码在融合相机后会传到github。同时也列出来一些问题提醒自己有条件时实际去验证。</p>
+<a id="more"></a>
+<h3 id="这个模块接收四种消息："><a href="#这个模块接收四种消息：" class="headerlink" title="这个模块接收四种消息："></a>这个模块接收四种消息：</h3><ul>
+<li>从”/segmented_cloud”话题接收到的分割点云（1/5地面点和有效分割点），保存到成员变量segmentedCloud中；</li>
+<li>从”/segmented_cloud_info”话题接收到的描述segmentedCloud点云的附加信息，保存到成员变量segInfo中；</li>
+<li>从”/outlier_cloud”话题接收到的外点（5倍降采样后的非地面无效分割点云），保存到outlierCloud中；</li>
+<li>从”/imu/data”话题接收原始IMU数据，将数据存入缓存队列，并进行惯性积分；</li>
+</ul>
+<p>Lego-LOAM可选择使用高频的IMU来辅助进行运动补偿，去除点云的畸变。辅助去除运动中的非线性项，使得帧间运动符合匀速运动假设是IMU最大的作用，IMU并未用来紧耦合或者松耦合位姿。IMU的处理在featureAssociation.cpp中，从代码中来看，Lego-LOAM要求IMU能够提供方位角orientation、加速度linear_acceleration、角速度angular_velocity，且IMU的频率至少是要高于Lidar的频率的。这个cpp文件中隐含了传感器间的坐标关系，它与KITTI数据集中IMU与Lidar的坐标关系保持一致：</p>
+<div style="width:60%;margin:auto" align=center><img src="/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E4%BC%A0%E6%84%9F%E5%99%A8%E5%9D%90%E6%A0%87%E5%85%B3%E7%B3%BB.png" class=""></div>
+
+<p>featureAssociation.cpp中有两个重要的接口函数，其中一个就是FeatureAssociation的构造函数，重点在它定义了接收消息的回调函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">FeatureAssociation() : nh(<span class="string">"~"</span>) &#123;</span><br><span class="line">  <span class="comment">// 地面点(仅有1/5)和有效分割点，intensity通道为对应点在rangeMat_中的索引</span></span><br><span class="line">  subLaserCloud = nh.subscribe&lt;sensor_msgs::PointCloud2&gt;(<span class="string">"/segmented_cloud"</span>, <span class="number">1</span>, &amp;FeatureAssociation::laserCloudHandler, <span class="keyword">this</span>);</span><br><span class="line">  <span class="comment">// 接收imageProjection.cpp中的segMsg_</span></span><br><span class="line">  subLaserCloudInfo = nh.subscribe&lt;cloud_msgs::cloud_info&gt;(<span class="string">"/segmented_cloud_info"</span>, <span class="number">1</span>, &amp;FeatureAssociation::laserCloudInfoHandler, <span class="keyword">this</span>);</span><br><span class="line">  <span class="comment">// 非地面无效分割点云(5倍降采样后)，intensity通道表示对应点在rangeMat_中的索引</span></span><br><span class="line">  subOutlierCloud = nh.subscribe&lt;sensor_msgs::PointCloud2&gt;(<span class="string">"/outlier_cloud"</span>, <span class="number">1</span>, &amp;FeatureAssociation::outlierCloudHandler, <span class="keyword">this</span>);</span><br><span class="line">  <span class="comment">// 接收IMU的消息，IMU频率比较高，所以缓存区设的比较大</span></span><br><span class="line">  subImu = nh.subscribe&lt;sensor_msgs::Imu&gt;(imuTopic, <span class="number">50</span>, &amp;FeatureAssociation::imuHandler, <span class="keyword">this</span>);</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除了IMU消息的回调函数，其他消息的回调函数功能都比较单一，就是简单的将接收到的消息转存到对应的成员变量中。</p>
+<h3 id="1、回调函数imuHandler-中完成的处理"><a href="#1、回调函数imuHandler-中完成的处理" class="headerlink" title="1、回调函数imuHandler()中完成的处理"></a>1、回调函数imuHandler()中完成的处理</h3><p>我们必须明确IMU的原始测量值是相对于惯性空间的测量在载体坐标系(body系)下的投影！IMU数据通过<code>imuHandler()</code>函数读入，每来一帧IMU数据，首先要完成以下几件事情：</p>
+<ol>
+<li>根据方位角信息去除重力对加速度的影响，计算得到IMU的真实加速度（body系下）；</li>
+<li>进行坐标轴交换，统一到z轴向前,x轴向左，y轴向上的右手坐标系；</li>
+<li>将当前帧IMU消息的时间戳、方位角、真实加速度(body系下)、角速度（body系下），保存到imuTime[]，imuRoll、Pitch、Yaw[]，imuAccX、Y、Z[]，imuAngularVeloX、Y、Z[]缓存队列中；</li>
+<li>调用函数AccumulateIMUShiftAndRotation()进行速度、位移、角度积分。</li>
+</ol>
+<h3 id="2、AccumulateIMUShiftAndRotation-函数完成惯性积分："><a href="#2、AccumulateIMUShiftAndRotation-函数完成惯性积分：" class="headerlink" title="2、AccumulateIMUShiftAndRotation()函数完成惯性积分："></a>2、AccumulateIMUShiftAndRotation()函数完成惯性积分：</h3><ol>
+<li>缓存队列中存储的IMU测量值是在body系下的投影，这里计算速度积分、位置积分时先把加速度投影到惯性系下；</li>
+<li>只有当IMU的频率高于Lidar的频率，才进行惯性积分，惯性积分得到当前IMU帧在惯性系下的速度、惯性系下的位移、以及相对于首帧IMU的旋转；这三种信息分别保存在队列imuVeloX、Y、Z[]，imuShiftX、Y、Z[]，imuAngularRotationX、Y、Z[]中；</li>
+</ol>
+<p>这里需要注意的是<strong>原始IMU消息所在的坐标系是x轴向前，y轴向左，z轴向上的右手坐标系</strong>，Lego-LOAM对坐标系进行了统一，统一转换到<strong>z轴向前，x轴向左，y轴向上的右手坐标系</strong>。在<code>imuHandler()</code>函数中，只对加速度做了这个转换，方位角、角速度还在原来x轴向前的坐标系下。所以这里在后续计算的时候需要注意，例如我们从一帧IMU消息中读取到方位角orientation，根据这个方位角计算出来roll、pitch、yaw，则$Rz(yaw)Ry(pitch)Rx(roll)$表示的是原始IMU坐标系到惯性系的旋转变换，表示为$R_{xyz}^{w}$；那么新的IMU坐标系到惯性系的旋转变换$R_{zxy}^{w}$是这样计算的：$Ry(yaw)Rx(pitch)Rz(roll)$。</p>
+<p>另外一个接口函数是在<strong>接收到消息后</strong>才被使用的，它是<code>runFeatureAssociation()</code>——FeatureAssociation节点真正处理数据的函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">runFeatureAssociation</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="comment">// 判断如果3个点云消息都接收成功，且时间戳一致，才开始执行程序</span></span><br><span class="line">	...</span><br><span class="line">    <span class="comment">// 主要对激光点统一坐标系，计算激光点在一帧中的时间比例s，若有IMU，去除点云旋转畸变以及加减速产生的畸变（之后可使用匀速模型补偿位移畸变）</span></span><br><span class="line">    adjustDistortion();</span><br><span class="line">    <span class="comment">// 对segmentedCloud中所有点计算曲率，并保存曲率的计算结果</span></span><br><span class="line">    calculateSmoothness();</span><br><span class="line">    <span class="comment">// LOAM论文中在提取激光特征点时说明了两种不稳定的情况，这个函数就是处理这的</span></span><br><span class="line">    markOccludedPoints();</span><br><span class="line">    <span class="comment">// 提取特征点，这一步减少了参与后续计算的点云中点的数量，减少了计算量</span></span><br><span class="line">    extractFeatures();</span><br><span class="line">    <span class="comment">// 发布当前帧提取的sharp、lessSharp、flat和lessFlat特征点集</span></span><br><span class="line">    publishCloud();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果系统还未初始化</span></span><br><span class="line">    <span class="keyword">if</span> (!systemInitedLM)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">// 跳过第一帧点云，关键在于将第一帧的点云设为source点云</span></span><br><span class="line">      checkSystemInitialization();</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 给待估计变量transformCur[]赋一个初始值</span></span><br><span class="line">    updateInitialGuess();</span><br><span class="line">    <span class="comment">// 构建距离约束，求解帧间位姿transformCur[]</span></span><br><span class="line">    updateTransformation();</span><br><span class="line">    <span class="comment">// 帧间位姿transformCur[]整合为全局位姿transformSum[]</span></span><br><span class="line">    integrateTransformation();</span><br><span class="line"></span><br><span class="line">    publishOdometry();</span><br><span class="line">	<span class="comment">// cloud to mapOptimization</span></span><br><span class="line">    publishCloudsLast(); </span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>IMU的作用主要体现在adjustDistortion()函数中，若不使用IMU，这个函数的功能很简单，可以参考A-LOAM的代码。下面我会说明使用IMU和不使用IMU的差别体现在哪里。以下是我对代码的理解，不保证完全正确。</p>
+<div style="width:100%;margin:auto" align=center><img src="/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E7%82%B9%E4%BA%91%E6%A8%A1%E5%9E%8B-%E5%90%88%E5%B9%B6.jpg" class=""></div>
+
+<p>左边这幅图来自LOAM的原论文，它清楚的说明了如何estimate lidar motion。稍微解释一下，$t_k$表示第一帧点云的采样时刻，$t_{k+1}$表示第二帧点云的采样时刻，若Lidar的采样频率是10Hz，那么$t_{k+1} - t_{k} = 100ms$。蓝色的线表示这100ms内一帧点云中点的数量是线性增长的，绿色的线表示将一帧点云去畸变后投影到当前帧结束点时刻的Lidar坐标系下。同时这幅图默认第一帧点云结束点时刻等于第二帧点云起始点时刻，若按LOAM中的硬件（使用单线雷达来模拟3D雷达）能较好的符合这种假设，使用3D雷达可不会是这种情况，大部分会是右边的图描述的情况。使用右边的图来解释代码中IMU的部分会更好理解。</p>
+<h3 id="3、运动补偿函数adjustDistortion-中完成的处理"><a href="#3、运动补偿函数adjustDistortion-中完成的处理" class="headerlink" title="3、运动补偿函数adjustDistortion()中完成的处理"></a>3、运动补偿函数adjustDistortion()中完成的处理</h3><p>1、若不使用IMU，这个函数就是计算一帧segmented_cloud点云中每一点的时间比例因子s，并存储起来给后续函数使用：<br>$$<br>s = \frac{t_i - t_{start}}{scanPeriod}<br>$$<br>2、若使用IMU，除了第1步，这里还会去除点云<strong>加减速</strong>产生的位移畸变以及旋转畸变：</p>
+<div style="width:48%;margin:auto" align=center><img src="/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/IMU%E5%8E%BB%E9%99%A4%E7%95%B8%E5%8F%98.png" class=""></div>
+
+<p>对于点云中的激光点，首先在时间轴上找到其左右两侧最近的IMU数据，进行一个线性插值来近似该时刻Lidar坐标系在惯性系下的方位角、速度以及位移。根据第j个激光点时刻lidar坐标系的方位角，可以计算此时Lidar系到惯性系的旋转变换$R_{lidar_j}^{n}$。由此可将一帧点云的旋转部分的畸变去除，即对应上图中粉色的线，旋转部分去掉畸变投影到起始点时刻Lidar坐标系下：<br>$$<br>P^{lidar_{start}} = (R_{lidar_{start}}^{n})^{-1} R_{lidar_j}^{n} P^{lidar_j}<br>$$<br>根据第j个激光点时刻lidar坐标系在惯性系下的位移，以及第0个激光点时刻lidar坐标系在惯性系下的位移和速度，可以计算由于加减速产生的位移：<br>$$<br>\Delta p = P_j^{n} - P_{0}^{n} - V_{0}^{n} \times \Delta t<br>$$<br>这个位移是在惯性坐标系下的，将这个位移根据第0个激光点时刻lidar坐标系的方位角，转换到第0个激光点时刻lidar坐标系下：<br>$$<br>\Delta p_{lidar_j}^{lidar_{start}} = R_{n}^{lidar_{start}} \Delta p<br>$$<br>如此去除非线性运动造成的点云畸变。<font color=red>经过这步处理，一帧点云可以看做投影到了起始点时刻Lidar坐标系下（旋转部分），位移部分从此符合匀速运动假设。</font></p>
+<p><strong>时间戳的说明：</strong>可以看出来若不使用IMU，点云的时间戳在一帧点云的起始、中间、结束时刻都不要紧，因为这里只计算时间比例因子供给后续函数使用，它与时间戳无关！但是使用IMU后，若还想保持原有点云的去畸变方式，就需要知道点云的起始时刻以及一帧点云的采样时间（用来寻找时间范围内的IMU数据），若点云的时间戳在一帧点云的中间，如KITTI数据集，就得根据这个时间戳近似一个起始时刻的时间戳来使用。（PS：KITTI数据集的IMU频率与雷达频率一致，不做额外努力也用不了IMU）。</p>
+<h3 id="4、计算曲率、提取特征点"><a href="#4、计算曲率、提取特征点" class="headerlink" title="4、计算曲率、提取特征点"></a>4、计算曲率、提取特征点</h3><p><code>calculateSmoothness()</code>函数计算点云segmentedCloud中每个点的曲率，这里曲率的计算与LOAM中的不同，Lego-LOAM中第i个点的曲率按照如下公式计算：<br>$$<br>\begin{aligned}<br>&amp;d_i = sqrt(x_i^2+y_i^2+z_i^2)\\<br>&amp;diffRange_i = d_{i-5}+d_{i-4}+d_{i-3}+d_{i-2}+d_{i-1}+d_{i+1}+d_{i+2}+d_{i+3}+d_{i+4}+d_{i+5}-10d_{i}\\<br>&amp;Curvature_i = diffRange_i * diffRange_i<br>\end{aligned}<br>$$<br><code>markOccludedPoints()</code>函数对不可靠的点进行去除，不可靠的点就是LOAM论文中提及的（a）激光点平行于激光线、（b）遮挡区域后方的点这两种情况。</p>
+<div style="width:80%;margin:auto" align=center><img src="/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E4%B8%8D%E5%8F%AF%E9%9D%A0%E7%82%B9%E5%8E%BB%E9%99%A4.png" class=""></div>
+
+<p>判断的代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief    遍历segmentedCloud，剔除不可靠点</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * 1、对LOAM中出现遮挡、障碍物平行于激光线扫的情况进行处理，LOAM中的Fig.4的(b)、(a)两种情况</span></span><br><span class="line"><span class="comment"> * 2、将不稳定点的cloudNeighborPicked[]标记为1，不会在这些点上提取特征点</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">markOccludedPoints</span><span class="params">()</span>  </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> cloudSize = segmentedCloud-&gt;points.<span class="built_in">size</span>();</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">5</span>; i &lt; cloudSize - <span class="number">6</span>; ++i) &#123;</span><br><span class="line">    <span class="keyword">float</span> depth1 = segInfo.segmentedCloudRange[i];</span><br><span class="line">    <span class="keyword">float</span> depth2 = segInfo.segmentedCloudRange[i + <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">int</span> columnDiff = <span class="built_in">std</span>::<span class="built_in">abs</span>(<span class="keyword">int</span>(segInfo.segmentedCloudColInd[i + <span class="number">1</span>] - segInfo.segmentedCloudColInd[i]));</span><br><span class="line">    <span class="comment">// 如果这两点水平线束差小于10 (Horizon_SCAN)</span></span><br><span class="line">    <span class="comment">// 点云之间相互遮挡，而且又靠得很近的点，LOAM论文Fig.4的(b)情况</span></span><br><span class="line">    <span class="keyword">if</span> (columnDiff &lt; <span class="number">10</span>) &#123;</span><br><span class="line">      <span class="comment">// 将位于远处的5个点标记为1，这些点不会被选为特征点（Velodyne雷达顺时针扫描）</span></span><br><span class="line">      <span class="keyword">if</span> (depth1 - depth2 &gt; <span class="number">0.3</span>) &#123;</span><br><span class="line">        cloudNeighborPicked[i - <span class="number">5</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i - <span class="number">4</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i - <span class="number">3</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i - <span class="number">2</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i - <span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i] = <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">if</span> (depth2 - depth1 &gt; <span class="number">0.3</span>)&#123;</span><br><span class="line">        cloudNeighborPicked[i + <span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i + <span class="number">2</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i + <span class="number">3</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i + <span class="number">4</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i + <span class="number">5</span>] = <span class="number">1</span>;</span><br><span class="line">        cloudNeighborPicked[i + <span class="number">6</span>] = <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 障碍物平行于laser beam，LOAM论文Fig.4的(a)情况</span></span><br><span class="line">    <span class="keyword">float</span> diff1 = <span class="built_in">std</span>::<span class="built_in">abs</span>(segInfo.segmentedCloudRange[i - <span class="number">1</span>] - segInfo.segmentedCloudRange[i]);</span><br><span class="line">    <span class="keyword">float</span> diff2 = <span class="built_in">std</span>::<span class="built_in">abs</span>(segInfo.segmentedCloudRange[i + <span class="number">1</span>] - segInfo.segmentedCloudRange[i]);</span><br><span class="line">    <span class="keyword">if</span> (diff1 &gt; <span class="number">0.02</span> * segInfo.segmentedCloudRange[i] &amp;&amp; diff2 &gt; <span class="number">0.02</span> * segInfo.segmentedCloudRange[i])</span><br><span class="line">      cloudNeighborPicked[i] = <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>extractFeatures()</code>函数用来提取特征点，Lego-LOAM自称是Ground-Optimized，在这个函数里就可以体现。遍历一帧点云中的每条scan，为了使特征点均匀分布，将一条scan分成6片。每片扇区在<strong>非地面分割点</strong>上选取2个曲率最大的点作为极大边线点集，在<strong>非地面分割点</strong>上选取20个曲率最大点作为次极大边线点集；每片扇区在<strong>地面点上</strong>选取4个曲率最小的点作为极小平面点集，除去次极大边线点集后剩余的点作为次极小平面点集。这个次极小平面点集比较大，进行了一次降采样。</p>
+<h3 id="5、checkSystemInitialization-初始系统"><a href="#5、checkSystemInitialization-初始系统" class="headerlink" title="5、checkSystemInitialization()初始系统"></a>5、checkSystemInitialization()初始系统</h3><p>此函数主要用来跳过第一帧点云，将第一帧点云设为source点云，同时还有一个小细节：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从IMU消息中保存初始帧在惯性系下的Roll和Pitch角，作为累积位姿的初始值</span></span><br><span class="line"><span class="comment">// Yaw角和pos部分都未赋初值，即假设开始时刻的偏航角为0，位于惯性系下的原点位置，静态地球假设下，东北天坐标系当做惯性系</span></span><br><span class="line"><span class="comment">// 这里可以理解为IMU的加入使得系统的roll和pitch角可观，若使用IMU，则world坐标系就是第一帧点云处的东北天</span></span><br><span class="line">transformSum[<span class="number">0</span>] += imuPitchStart;</span><br><span class="line">transformSum[<span class="number">2</span>] += imuRollStart;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6、updateInitialGuess-给优化变量赋予初始值"><a href="#6、updateInitialGuess-给优化变量赋予初始值" class="headerlink" title="6、updateInitialGuess()给优化变量赋予初始值"></a>6、updateInitialGuess()给优化变量赋予初始值</h3><p>transformCur[]是本模块的待优化变量，在这个函数中给他赋予初始值。transformCur[0~2]是欧拉角、tansformCur[3~5]是平移项，是否加入IMU，在给transformCur[0~2]赋予初始值时应该体现出来：</p>
+<div style="width:60%;margin:auto" align=center><img src="/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E6%88%91%E7%9A%84%E6%A8%A1%E5%9E%8B.png" class=""></div>
+
+<p>若使用IMU，旋转项transformCur[0~2]应该表示粉色的点云到绿色点云的位姿变换，<font color=red>它是一个小量，旋转项对应的欧拉角直接赋值为0比较好</font>；若不使用IMU，点云的旋转畸变没有得到补偿，旋转项transformCur[0~2]表示的是当前帧最后一点到当前帧点云初始点的位姿变换$R_{end}^{start}$，<u>实际应该是当前帧结束点到上一帧点云结束点的位姿变换</u>，有差别，但是不大，置于为什么是这样，稍后在函数<code>integrateTransformation()</code>中说明，原始代码中旋转项transformCur[0~2]赋予的初始值为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用上一帧点云转过的角度给当前帧点云转过的角度赋一个初始值，即给transformCur中的旋转项赋一个初始值</span></span><br><span class="line"><span class="comment">// transformCur[]要表示的是当前帧最后一点到当前帧点云初始点的位姿变换T_&#123;end&#125;^&#123;start&#125;</span></span><br><span class="line"><span class="comment">// 此时R_&#123;end&#125;^&#123;start&#125; = Ry(-yaw)*Rx(-pitch)*Rz(-roll)</span></span><br><span class="line"><span class="keyword">if</span> (imuAngularFromStartX != <span class="number">0</span> || imuAngularFromStartY != <span class="number">0</span> || imuAngularFromStartZ != <span class="number">0</span>)&#123;</span><br><span class="line">	transformCur[<span class="number">0</span>] = - imuAngularFromStartY;  <span class="comment">// = pitch</span></span><br><span class="line">	transformCur[<span class="number">1</span>] = - imuAngularFromStartZ;  <span class="comment">// = yaw        </span></span><br><span class="line">	transformCur[<span class="number">2</span>] = - imuAngularFromStartX;  <span class="comment">// = roll</span></span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span>:若没有去除旋转项的畸变这样赋初始值比较好，若点云旋转的畸变去除了，赋0比较好</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码中的roll、pitch、yaw还是在原始x轴向前，y轴向左，z轴向上的IMU系下，注意这里有一个负号，所以<code>TransformToStart()</code>函数对应的变换是这个if语句上面注释的旋转变换。</p>
+<p>transformCur[3~5]是平移项，<font color=red>平移项和旋转项表示的含义不相同</font>，平移表示当前帧起始点到当前帧点云结束点的位置变换，<u>实际应该是上一帧结束点到当前帧点云结束点的位置变换</u>，$t_{start}^{end}$，原始代码中平移项transformCur[3~5]赋予的初始值为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据速度畸变，为transformCur的平移项赋一个初始值，(对于匀速运动假设的一个补偿)</span></span><br><span class="line"><span class="comment">// imuVeloFromStartX表示的是start系下的速度，乘时间表示的是t_&#123;end&#125;^&#123;start&#125;</span></span><br><span class="line"><span class="comment">// 但是这里没有直接赋值，而是都取了一个负数，这样transformCur[]要表达的就不是我们想要的含义了，它是t_&#123;start&#125;^&#123;end&#125;不是t_&#123;end&#125;^&#123;start&#125;</span></span><br><span class="line"><span class="comment">// **************************************************************************************</span></span><br><span class="line"><span class="comment">// 全篇代码并没用用到IMU与Lidar之间的外参，IMU测量得到的角速度、加速度并没用先转换到lidar坐标系下</span></span><br><span class="line"><span class="comment">// 这里的代码说明，只是使用IMU系的近似旋转、速度来给lidar帧的旋转、位移赋一个初始值而已，可以不太精细</span></span><br><span class="line"><span class="comment">// **************************************************************************************</span></span><br><span class="line"><span class="keyword">if</span> (imuVeloFromStartX != <span class="number">0</span> || imuVeloFromStartY != <span class="number">0</span> || imuVeloFromStartZ != <span class="number">0</span>)&#123;</span><br><span class="line">	transformCur[<span class="number">3</span>] -= imuVeloFromStartX * scanPeriod;</span><br><span class="line">	transformCur[<span class="number">4</span>] -= imuVeloFromStartY * scanPeriod;   <span class="comment">// <span class="doctag">TODO:</span>: 这里初值赋予的也不是那回事</span></span><br><span class="line">	transformCur[<span class="number">5</span>] -= imuVeloFromStartZ * scanPeriod;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7、updateTransformation-构建距离约束，求解帧间位姿"><a href="#7、updateTransformation-构建距离约束，求解帧间位姿" class="headerlink" title="7、updateTransformation()构建距离约束，求解帧间位姿"></a>7、updateTransformation()构建距离约束，求解帧间位姿</h3><p>这个函数里使用LOAM中的方法构建约束关系，并求解。此函数分为两部分，一是在次极大边线点集中寻找极大边线点的匹配线，建立点到直线的距离约束；在次极小平面点集中寻找极小平面点的匹配面，建立点到平面的距离约束。二是使用Gauss-Newton优化算法迭代求解（论文中说用的LM算法，代码中并不是）。Lego-LOAM提出来two-step L-M优化算法，第一步，根据平面点的约束求解[t_z, roll, pitch]，对应函数<code>calculateTransformationSurf()</code>，第二步，根据边线点的约束求解[t_x, t_y, yaw]，对应函数calculateTransformationCorner()。</p>
+<p>按照LOAM中的方法，在建立距离约束的过程中，点云会被投影到一帧的开始点时刻，即对应<code>TransformToStart()</code>函数，在不使用IMU的时候，原始代码是没有问题的，这个函数完成的功能如下：<br>$$<br>\begin{aligned}<br>p^{start} &amp;= R_{cur}^{start}p^{cur} + t_{cur}^{start} \\<br>                 &amp;= R_{cur}^{start}p^{cur} - R_{cur}^{start}t_{start}^{cur} \\<br>                 &amp;= R_{cur}^{start}(p^{cur} - t_{start}^{cur})<br>\end{aligned}<br>$$</p>
+<p>其中:</p>
+<div style="width:100%;margin:auto" align=center><img src="/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E5%85%AC%E5%BC%8F1.png" class=""></div>
+
+<p><font color=red>但是使用IMU时，这里出现了问题！</font>在<code>adjustDistortion()</code>函数调用<code>TransformToStartIMU()</code>函数时，点云的旋转畸变已经去掉了，transformCur[]的含义已经发生了改变，原始代码中这样处理不是很合理。推导如下：去畸变的过程就是将100ms内采集到的激光点都统一到某一时刻，LOAM以及LeGo-LOAM都统一到一帧点云起始点时刻的Lidar坐标系下，对应的公式是：<br>$$<br>\begin{aligned}<br>P^{start} &amp;= T_{cur}^{start}P^{cur} \\<br>&amp;=(T_{start}^{n})^{-1}T_{cur}^{n}P^{cur} \\<br>&amp;=<br>\left[<br>\begin{array}{cc}<br>R_{start}^{n} &amp; t_{start}^{n} \\<br>0 &amp; 1<br>\end{array}<br>\right]^{-1}<br>\left[<br>\begin{array}{cc}<br>R_{cur}^{n} &amp; t_{cur}^{n} \\<br>0 &amp; 1<br>\end{array}<br>\right]<br>P^{cur}  \\<br>&amp;=(R_{start}^{n})^{-1}R_{cur}^{n}P^{cur}+(R_{start}^{n})^{-1}(t_{cur}^{n} - t_{start}^{n})<br>\end{aligned}<br>$$<br>推导过程中隐含了一次齐次坐标到非齐次坐标的转换，这个公式的前半部分在<code>adjustDistortion()</code>函数中已经实现，只差后半部分。后半部分表示的就是$t_{cur}^{start}$，即transformCur[3~5]的相反数。所以使用IMU后，这个函数这样写就可以了：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">TransformToStart</span><span class="params">(PointType <span class="keyword">const</span> *<span class="keyword">const</span> pi, PointType *<span class="keyword">const</span> po)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 这里乘10，相当于除以scanPeriod = 0.1</span></span><br><span class="line">  <span class="comment">// <span class="doctag">TODO:</span>:这里不精确，segInfo中已经包括了当前帧点云初始点与结束点之间的角度差值</span></span><br><span class="line">  <span class="keyword">float</span> s = <span class="number">10</span> * (pi-&gt;intensity - <span class="keyword">int</span>(pi-&gt;intensity));</span><br><span class="line">  <span class="keyword">float</span> tx = s * transformCur[<span class="number">3</span>];</span><br><span class="line">  <span class="keyword">float</span> ty = s * transformCur[<span class="number">4</span>];</span><br><span class="line">  <span class="keyword">float</span> tz = s * transformCur[<span class="number">5</span>];</span><br><span class="line">  po-&gt;x = pi-&gt;x - tx;</span><br><span class="line">  po-&gt;y = pi-&gt;y - ty;</span><br><span class="line">  po-&gt;z = pi-&gt;z - tz;</span><br><span class="line">  po-&gt;intensity = pi-&gt;intensity;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在原始代码中，使用IMU去掉旋转畸变后，transformCur[0~2]就是一个小量，我们将rx、ry、rz统统当做0带入原始的<code>TransformToStart()</code>函数中，得到的就是推导出来的结果。所以这里即使不改动代码也能凑合着用。</p>
+<p>Gauss-Newton优化算法迭代求解需要的Jacobian矩阵在另一节给出，原始代码对Jacobian矩阵的求解不准确，是否使用IMU也会导致Jacobian矩阵发生变化。</p>
+<h3 id="8、integrateTransformation-累计相对位姿"><a href="#8、integrateTransformation-累计相对位姿" class="headerlink" title="8、integrateTransformation()累计相对位姿"></a>8、integrateTransformation()累计相对位姿</h3><p>本节点的优化变量是transformSum[]，它是一个帧间相对量，本函数将相对量累积，获得第一帧或者说world系下该帧的位姿。先考虑不使用IMU的情况，根据估计出来的transformCur[]可以获得当前帧结束时刻到当前帧起始时刻的变换$T_{cur-end}^{cur-start}$，$T_{pre-end}^{world}$是上一帧点云结束点时刻到world坐标系的位姿变换，这个函数将其累积：<br>$$<br>T_{cur-end}^{world} = T_{pre-end}^{world}T_{cur-end}^{cur-start}<br>$$<br>若假设当期帧起始点时刻就是上一帧结束点时刻，这个变换就是完全正确的，实际上这个存在误差：</p>
+<div style="width:50%;margin:auto" align=center><img src="/2020/07/31/LeGo-LOAM%E4%B8%AD%E7%9A%84featureAssociation%E8%8A%82%E7%82%B9/%E7%82%B9%E4%BA%91%E6%A8%A1%E5%9E%8B2.jpg" class=""></div>
+
+<p>看过LOAM的论文我们知道，上一帧点云处理完毕后被投影到了上一帧点云结束点时刻，就是上图中的绿色的点云，当前帧点云是以绿色的点云为参考的，所以本来求解的就是当前帧结束点时刻到上一帧结束点时刻（不是当前帧起始点时刻）的位姿变换，这样看我们应该这样计算时间比例因子：<br>$$<br>s = \frac{t-t_{pre-last}}{t_{cur-last}-t_{pre-last}}<br>$$<br>只是有时候我们只有点云的时间戳，没有一帧点云的起始时刻、终止时刻的具体信息，LeGo-LOAM做了个折中吧。</p>
+<p>考虑使用IMU的情况，transformCur[]中的旋转是一个小量，优化出来的旋转实际上是将粉色的点云向绿色的点云对齐，这时候经过<code>AccumulateRotation()</code>函数，我们将这个相对旋转变换到了全局坐标系下。但是，这时的旋转是当前帧的起始点到全局坐标系的变换，而我们要得到的是当前帧的结束点到全局坐标系的变换，这也就是<code>PluginIMURotation()</code>函数完成的功能。</p>
+<p><code>PluginIMURotation()</code>函数使用到了IMU的数据，它需要当前帧点云起始激光点相对于惯性系的orientation、当前帧点云最后一个激光点相对于惯性系的orientation。所以这里的公式是：<br>$$<br>T_{cur-end}^{world} = T_{pink}^{world}(T_{cur-start}^{n})^{-1}T_{cur-end}^{n}<br>$$<br>给我的感觉是，使用IMU后，旋转部分激光只是计算一丢丢，其他都是靠IMU补偿的。</p>
+<h3 id="9、发布里程计信息、点云信息"><a href="#9、发布里程计信息、点云信息" class="headerlink" title="9、发布里程计信息、点云信息"></a>9、发布里程计信息、点云信息</h3><p><code>publishOdometry()</code>函数将累积的相对姿态，也就是world坐标系下的姿态publish出去。</p>
+<p><code>publishCloudsLast()</code>函数将本帧处理完的点云投影到结束点时刻，构建kd-tree供给下一帧查询最近点使用，并将去畸变后的点云发布出去。<font color=red>这个函数中的<code>TransformToEnd()</code>在使用IMU时又会出现问题！</font></p>
+<p><code>TransformToEnd()</code>函数前半部分是实现<code>TransformToStart()</code>的功能，即先将点云变换到一帧点云的起始点时刻、再从起始点时刻变换到结束点时刻。不使用IMU，一切都没问题，若使用IMU，上面已经分析了<code>TransformToStart()</code>函数（即<code>TransformToend()</code>函数的前半段可以凑合着用），但是从起始点时刻再变换到结束点时刻就不对了。出问题的代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">rx = transformCur[<span class="number">0</span>];</span><br><span class="line">ry = transformCur[<span class="number">1</span>];</span><br><span class="line">rz = transformCur[<span class="number">2</span>];</span><br><span class="line">tx = transformCur[<span class="number">3</span>];</span><br><span class="line">ty = transformCur[<span class="number">4</span>];</span><br><span class="line">tz = transformCur[<span class="number">5</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 再从一帧sweep的开始时刻转换到end时刻</span></span><br><span class="line"><span class="comment">// 绕y轴旋转(yaw)</span></span><br><span class="line"><span class="keyword">float</span> x4 = <span class="built_in">cos</span>(ry) * x3 + <span class="built_in">sin</span>(ry) * z3;</span><br><span class="line"><span class="keyword">float</span> y4 = y3;</span><br><span class="line"><span class="keyword">float</span> z4 = -<span class="built_in">sin</span>(ry) * x3 + <span class="built_in">cos</span>(ry) * z3;</span><br><span class="line"><span class="comment">// 绕x轴旋转(pitch)</span></span><br><span class="line"><span class="keyword">float</span> x5 = x4;</span><br><span class="line"><span class="keyword">float</span> y5 = <span class="built_in">cos</span>(rx) * y4 - <span class="built_in">sin</span>(rx) * z4;</span><br><span class="line"><span class="keyword">float</span> z5 = <span class="built_in">sin</span>(rx) * y4 + <span class="built_in">cos</span>(rx) * z4;</span><br><span class="line"><span class="comment">// 绕z轴旋转(roll)</span></span><br><span class="line"><span class="keyword">float</span> x6 = <span class="built_in">cos</span>(rz) * x5 - <span class="built_in">sin</span>(rz) * y5 + tx;</span><br><span class="line"><span class="keyword">float</span> y6 = <span class="built_in">sin</span>(rz) * x5 + <span class="built_in">cos</span>(rz) * y5 + ty;</span><br><span class="line"><span class="keyword">float</span> z6 = z5 + tz;</span><br></pre></td></tr></table></figure>
+
+<p>还是那句话，使用IMU时transformCur[]中的旋转项是一个小量，<font color=green>这里用到的旋转应该是$(T_{cur-end}^{n})^{-1}T_{cur-start}^{n}$（参考<code>PluginIMURotation()</code>函数）中的旋转项。</font></p>
+<h3 id="10、总结"><a href="#10、总结" class="headerlink" title="10、总结"></a>10、总结</h3><p><strong>这里我按照论文中的思路分析代码，我能保证的是不使用IMU时的分析没有问题，使用IMU时按照当期帧点云投影到当前帧结束点时刻，发现有些函数不是那么正确。也可能代码不是按照论文中的思路来理解，例如一帧点云中去掉旋转的部分投影到一帧的起始时刻，平移的部分投影到一帧的结束时刻等，若有小伙伴分析的明明白白，能和代码一一对应，还请指点一二。后续我会一一验证，暂时罗列出来给自己做一个标记。</strong></p>
+<ol>
+<li>点云时间戳不在点云起始点怎么办？</li>
+</ol>
+<p>若不使用IMU，点云的时间戳在一帧点云的起始、中间、结束时刻都不要紧，因为时间比例因子与时间戳无关！但是使用IMU后，若还想保持原有点云的去畸变方式，就需要知道点云的起始时刻以及一帧点云的采样时间（用来寻找时间范围内的IMU数据），若点云的时间戳在一帧点云的中间，如KITTI数据集，就得根据这个时间戳近似一个起始时刻的时间戳来使用。这只要更改<code>adjustDistortion()</code>函数中比较时间戳的那段代码。</p>
+<ol start="2">
+<li>IMU如何使用？<ul>
+<li>IMU频率必须大于Lidar频率，IMU必须可以直接提供orientation；</li>
+<li>IMU和Lidar的坐标系和KITTI数据集中的保持一致;</li>
+<li>Lidar的时间戳是在一帧点云的起始点处;（不使用IMU，Lidar时间戳可以不满足这个要求）；</li>
+<li>更改<code>TransformToStart()</code>、<code>TransformToEnd()</code>函数；</li>
+<li>更改<code>calculateTransformation()</code>中Jacobian的求解；</li>
+</ul>
+</li>
+<li>可优化的点？<ul>
+<li>若准确知道一帧点云的起始时刻和结束时刻，可按照第8节中的公式求解时间比例因子，真正求解当前帧点云结束点到上一帧点云结束点时刻的位姿变换；</li>
+<li><code>updateInitialGuess()</code>中初始值的赋予。</li>
+</ul>
+</li>
+</ol>
+<h3 id="11、不解之谜"><a href="#11、不解之谜" class="headerlink" title="11、不解之谜"></a>11、不解之谜</h3><p>发布Odomntry时候，为什么要取两次负号？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 发布transformSum到里程计消息</span></span><br><span class="line">geometry_msgs::Quaternion geoQuat = tf::createQuaternionMsgFromRollPitchYaw(transformSum[<span class="number">2</span>], -transformSum[<span class="number">0</span>], -transformSum[<span class="number">1</span>]);</span><br><span class="line">laserOdometry.header.stamp = cloudHeader.stamp;</span><br><span class="line"><span class="comment">// <span class="doctag">TODO:</span>:这样做的意义是什么？</span></span><br><span class="line">laserOdometry.pose.pose.orientation.x = -geoQuat.y;</span><br><span class="line">laserOdometry.pose.pose.orientation.y = -geoQuat.z;</span><br><span class="line">laserOdometry.pose.pose.orientation.z = geoQuat.x;</span><br><span class="line">laserOdometry.pose.pose.orientation.w = geoQuat.w;</span><br></pre></td></tr></table></figure>
+
+<p>退化运动的处理？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 求解对称矩阵matAtA的特征值/特征向量，特征值按照降序排序</span></span><br><span class="line">cv::eigen(matAtA, matE, matV);</span><br><span class="line">matV.copyTo(matV2);</span><br><span class="line">isDegenerate = <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">float</span> eignThre[<span class="number">6</span>] = &#123;<span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>&#125;;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">5</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">    <span class="comment">// 如果第一次迭代时，matAtA的特征值小于一个阈值，认为发生了退化运动</span></span><br><span class="line">    <span class="keyword">if</span> (matE.at&lt;<span class="keyword">float</span>&gt;(<span class="number">0</span>, i) &lt; eignThre[i]) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">6</span>; j++) &#123;</span><br><span class="line">            matV2.at&lt;<span class="keyword">float</span>&gt;(i, j) = <span class="number">0</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          isDegenerate = <span class="literal">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      matP = matV.inv() * matV2;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果发生退化，<span class="doctag">TODO:</span>:使用预测矩阵P计算？why?</span></span><br><span class="line">    <span class="keyword">if</span> (isDegenerate) &#123;</span><br><span class="line">      <span class="function">cv::Mat <span class="title">matX2</span><span class="params">(<span class="number">6</span>, <span class="number">1</span>, CV_32F, cv::Scalar::all(<span class="number">0</span>))</span></span>;</span><br><span class="line">      matX.copyTo(matX2);</span><br><span class="line">      matX = matP * matX2;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>听说打赏我的人，最后都找到了真爱。</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E5%BE%AE%E4%BF%A1.jpg" alt="陌上&烟雨 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/%E6%94%AF%E4%BB%98%E5%AE%9D.jpg" alt="陌上&烟雨 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
+              <a href="/tags/LeGo-LOAM/" rel="tag"># LeGo-LOAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/12/SVO%E6%B7%B1%E5%BA%A6%E6%BB%A4%E6%B3%A2%E5%99%A8%E7%9A%84%E6%8E%A8%E5%AF%BC/" rel="prev" title="SVO深度滤波器的推导">
+      <i class="fa fa-chevron-left"></i> SVO深度滤波器的推导
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#LeGo-LOAM中的featureAssociation节点"><span class="nav-text">LeGo-LOAM中的featureAssociation节点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#这个模块接收四种消息："><span class="nav-text">这个模块接收四种消息：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1、回调函数imuHandler-中完成的处理"><span class="nav-text">1、回调函数imuHandler()中完成的处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、AccumulateIMUShiftAndRotation-函数完成惯性积分："><span class="nav-text">2、AccumulateIMUShiftAndRotation()函数完成惯性积分：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、运动补偿函数adjustDistortion-中完成的处理"><span class="nav-text">3、运动补偿函数adjustDistortion()中完成的处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、计算曲率、提取特征点"><span class="nav-text">4、计算曲率、提取特征点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、checkSystemInitialization-初始系统"><span class="nav-text">5、checkSystemInitialization()初始系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6、updateInitialGuess-给优化变量赋予初始值"><span class="nav-text">6、updateInitialGuess()给优化变量赋予初始值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7、updateTransformation-构建距离约束，求解帧间位姿"><span class="nav-text">7、updateTransformation()构建距离约束，求解帧间位姿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8、integrateTransformation-累计相对位姿"><span class="nav-text">8、integrateTransformation()累计相对位姿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9、发布里程计信息、点云信息"><span class="nav-text">9、发布里程计信息、点云信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10、总结"><span class="nav-text">10、总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11、不解之谜"><span class="nav-text">11、不解之谜</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="陌上&烟雨"
+      src="/images/%E5%A4%B4%E5%83%8F.jpeg">
+  <p class="site-author-name" itemprop="name">陌上&烟雨</p>
+  <div class="site-description" itemprop="description">这知识，它不进脑子啊！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Gutsgwh1997" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Gutsgwh1997" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:guanwenhaohit@gmail.com" title="E-Mail → mailto:guanwenhaohit@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/images/%E8%81%94%E7%B3%BB%E6%96%B9%E5%BC%8F.jpg" title="WeChat → &#x2F;images&#x2F;联系方式.jpg"><i class="fa fa-fw fa-wechat"></i>WeChat</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友情链接
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/YiChenCityU/Recent_SLAM_Research" title="https:&#x2F;&#x2F;github.com&#x2F;YiChenCityU&#x2F;Recent_SLAM_Research" rel="noopener" target="_blank">SLAM前沿</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://leetcode.com/" title="https:&#x2F;&#x2F;leetcode.com&#x2F;" rel="noopener" target="_blank">LeetCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/daohu527/Dig-into-Apollo" title="https:&#x2F;&#x2F;github.com&#x2F;daohu527&#x2F;Dig-into-Apollo" rel="noopener" target="_blank">百度Apollo笔记</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">陌上&烟雨</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">173k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:37</span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
