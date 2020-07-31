@@ -162,6 +162,105 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
+      <meta itemprop="name" content="陌上&烟雨">
+      <meta itemprop="description" content="这知识，它不进脑子啊！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GWH Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/" class="post-title-link" itemprop="url">LeGo-LOAM+单目相机</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-01 00:17:17 / 修改时间：00:26:21" itemprop="dateCreated datePublished" datetime="2020-08-01T00:17:17+08:00">2020-08-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/LOAM/" itemprop="url" rel="index"><span itemprop="name">LOAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/LOAM/LeGo-LOAM/" itemprop="url" rel="index"><span itemprop="name">LeGo-LOAM</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="LeGo-LOAM-单目相机"><a href="#LeGo-LOAM-单目相机" class="headerlink" title="LeGo-LOAM+单目相机"></a>LeGo-LOAM+单目相机</h2><p>本节记录使用相机去辅助LeGo-LOAM，代码主要来自VINS-Mono与LeGo-LOAM，相机主要用在两个方面：1、与激光紧耦合去估计位姿；2、进行视觉回环检测。</p>
+<p>多传感器融合定位方案中传感器选择的过程就是<strong>寻找互补性</strong>的过程，融合的过程就是<strong>执行互补</strong>的过程。具体来讲，IMU和GNSS融合定位，IMU有累计误差但是没有位姿跳变，GNSS没有累计误差但是信号受到干扰或者遮挡时会跳变。二者融合，既能消除累计误差又能避免位姿跳变，可以表述为，误差在<strong>累积性</strong>和<strong>噪声性</strong>上都有互补。</p>
+<p>单纯基于激光点云的里程计算法，只能利用<strong>环境的几何结构信息</strong>来提取特征点，这会导致在一些场景下产生约束退化的问题：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/01/LeGo-LOAM%E4%B8%AD%E7%9A%84transformFusion%E8%8A%82%E7%82%B9-%E7%9B%B8%E5%85%B3%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1035,99 +1134,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
-      <meta itemprop="name" content="陌上&烟雨">
-      <meta itemprop="description" content="这知识，它不进脑子啊！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GWH Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/" class="post-title-link" itemprop="url">反对称矩阵的性质</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-05-26 12:20:21 / 修改时间：13:28:08" itemprop="dateCreated datePublished" datetime="2020-05-26T12:20:21+08:00">2020-05-26</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">SLAM数学基础</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%9F%A9%E9%98%B5%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">矩阵论</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="反对称矩阵的性质"><a href="#反对称矩阵的性质" class="headerlink" title="反对称矩阵的性质"></a>反对称矩阵的性质</h2><p>因为这一部分的知识比较少，本来打算将这块的内容插入到其他博客文章中。后来想想反对称矩阵在SLAM中特别常用，还是单独写一篇博客，详细地推导一些反对称矩阵的性质。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/05/26/%E5%8F%8D%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5%E7%9A%84%E6%80%A7%E8%B4%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1200,7 +1206,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1282,13 +1288,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">190k</span>
+    <span title="站点总字数">192k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:53</span>
+    <span title="站点阅读时长">2:55</span>
 </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
 

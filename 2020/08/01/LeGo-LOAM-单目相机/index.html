@@ -20,20 +20,25 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="1、张式相机标定法相机标定是我们实际运行一个SLAM系统必不可少的一步，虽然我们可以通过Matlab的CameraCalibration工具包或者OpenCV等工具轻松获取参数，甚至无须知晓原理、细节。但是学习相机标定的算法可以帮助我们更好的理解SLAM问题，借助《计算机视觉测量与导航》的大作业，将张正友相机标定法的推导记录如下(以下PDF可供下载，chrom浏览器可能不会显示pdf插件的一些功能">
+  <meta name="description" content="LeGo-LOAM+单目相机本节记录使用相机去辅助LeGo-LOAM，代码主要来自VINS-Mono与LeGo-LOAM，相机主要用在两个方面：1、与激光紧耦合去估计位姿；2、进行视觉回环检测。 多传感器融合定位方案中传感器选择的过程就是寻找互补性的过程，融合的过程就是执行互补的过程。具体来讲，IMU和GNSS融合定位，IMU有累计误差但是没有位姿跳变，GNSS没有累计误差但是信号受到干扰或者遮挡">
 <meta property="og:type" content="article">
-<meta property="og:title" content="张正友相机标定法">
-<meta property="og:url" content="http://yoursite.com/2020/05/19/%E5%BC%A0%E6%AD%A3%E5%8F%8B%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E6%B3%95/index.html">
+<meta property="og:title" content="LeGo-LOAM+单目相机">
+<meta property="og:url" content="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="1、张式相机标定法相机标定是我们实际运行一个SLAM系统必不可少的一步，虽然我们可以通过Matlab的CameraCalibration工具包或者OpenCV等工具轻松获取参数，甚至无须知晓原理、细节。但是学习相机标定的算法可以帮助我们更好的理解SLAM问题，借助《计算机视觉测量与导航》的大作业，将张正友相机标定法的推导记录如下(以下PDF可供下载，chrom浏览器可能不会显示pdf插件的一些功能">
+<meta property="og:description" content="LeGo-LOAM+单目相机本节记录使用相机去辅助LeGo-LOAM，代码主要来自VINS-Mono与LeGo-LOAM，相机主要用在两个方面：1、与激光紧耦合去估计位姿；2、进行视觉回环检测。 多传感器融合定位方案中传感器选择的过程就是寻找互补性的过程，融合的过程就是执行互补的过程。具体来讲，IMU和GNSS融合定位，IMU有累计误差但是没有位姿跳变，GNSS没有累计误差但是信号受到干扰或者遮挡">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-05-19T10:57:38.000Z">
-<meta property="article:modified_time" content="2020-05-19T12:55:08.290Z">
+<meta property="og:image" content="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E6%BF%80%E5%85%89%E9%80%80%E5%8C%96.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E8%A7%86%E8%A7%89%E7%89%B9%E5%BE%81%E7%82%B9%E4%B8%8E%E6%BF%80%E5%85%89%E7%89%B9%E5%BE%81%E7%82%B9.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E5%B9%B3%E9%9D%A2%E5%8E%BB%E6%8B%9F%E5%90%88%E7%82%B9.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E5%B9%B3%E9%9D%A2%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5.png">
+<meta property="article:published_time" content="2020-07-31T16:17:17.000Z">
+<meta property="article:modified_time" content="2020-07-31T16:26:21.676Z">
 <meta property="article:author" content="陌上&amp;烟雨">
-<meta property="article:tag" content="SLAM">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E6%BF%80%E5%85%89%E9%80%80%E5%8C%96.png">
 
-<link rel="canonical" href="http://yoursite.com/2020/05/19/%E5%BC%A0%E6%AD%A3%E5%8F%8B%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E6%B3%95/">
+<link rel="canonical" href="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/">
 
 
 <script id="page-configurations">
@@ -46,7 +51,7 @@
   };
 </script>
 
-  <title>张正友相机标定法 | GWH Blog</title>
+  <title>LeGo-LOAM+单目相机 | GWH Blog</title>
   
 
 
@@ -165,7 +170,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/19/%E5%BC%A0%E6%AD%A3%E5%8F%8B%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
@@ -178,7 +183,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          张正友相机标定法
+          LeGo-LOAM+单目相机
         </h1>
 
         <div class="post-meta">
@@ -189,7 +194,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-05-19 18:57:38 / 修改时间：20:55:08" itemprop="dateCreated datePublished" datetime="2020-05-19T18:57:38+08:00">2020-05-19</time>
+              <time title="创建时间：2020-08-01 00:17:17 / 修改时间：00:26:21" itemprop="dateCreated datePublished" datetime="2020-08-01T00:17:17+08:00">2020-08-01</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -201,7 +206,11 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/VSLAM/" itemprop="url" rel="index"><span itemprop="name">VSLAM</span></a>
+                  <a href="/categories/SLAM/LOAM/" itemprop="url" rel="index"><span itemprop="name">LOAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/LOAM/LeGo-LOAM/" itemprop="url" rel="index"><span itemprop="name">LeGo-LOAM</span></a>
                 </span>
             </span>
 
@@ -218,14 +227,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>525</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -237,16 +246,43 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1、张式相机标定法"><a href="#1、张式相机标定法" class="headerlink" title="1、张式相机标定法"></a>1、张式相机标定法</h2><p>相机标定是我们实际运行一个SLAM系统必不可少的一步，虽然我们可以通过Matlab的CameraCalibration工具包或者OpenCV等工具轻松获取参数，甚至无须知晓原理、细节。但是学习相机标定的算法可以帮助我们更好的理解SLAM问题，借助《计算机视觉测量与导航》的大作业，将张正友相机标定法的推导记录如下(以下PDF可供下载，chrom浏览器可能不会显示pdf插件的一些功能，换为火狐正常显示)：</p>
+        <h2 id="LeGo-LOAM-单目相机"><a href="#LeGo-LOAM-单目相机" class="headerlink" title="LeGo-LOAM+单目相机"></a>LeGo-LOAM+单目相机</h2><p>本节记录使用相机去辅助LeGo-LOAM，代码主要来自VINS-Mono与LeGo-LOAM，相机主要用在两个方面：1、与激光紧耦合去估计位姿；2、进行视觉回环检测。</p>
+<p>多传感器融合定位方案中传感器选择的过程就是<strong>寻找互补性</strong>的过程，融合的过程就是<strong>执行互补</strong>的过程。具体来讲，IMU和GNSS融合定位，IMU有累计误差但是没有位姿跳变，GNSS没有累计误差但是信号受到干扰或者遮挡时会跳变。二者融合，既能消除累计误差又能避免位姿跳变，可以表述为，误差在<strong>累积性</strong>和<strong>噪声性</strong>上都有互补。</p>
+<p>单纯基于激光点云的里程计算法，只能利用<strong>环境的几何结构信息</strong>来提取特征点，这会导致在一些场景下产生约束退化的问题：</p>
 <a id="more"></a>
 
-<div class="pdfobject-container" data-target="张氏标定法.pdf" data-height="500px"></div>
+<div style="width:67%;margin:auto" align=center><img src="/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E6%BF%80%E5%85%89%E9%80%80%E5%8C%96.png" class=""></div>
 
-<h2 id="2、平面视觉测量"><a href="#2、平面视觉测量" class="headerlink" title="2、平面视觉测量"></a>2、平面视觉测量</h2><p>相机标定完成后我们可以简单地实现平面视觉测量，原理如下：</p>
-<div class="pdfobject-container" data-target="平面视觉测量.pdf" data-height="500px"></div>
+<p>视觉特征点提取的是<strong>环境中的图像纹理信息</strong>，其和只能表达环境几何结构信息的激光特征点有天然的互补性。</p>
+<p>以下视觉与Lidar融合的方法主要参考LIMO。</p>
+<h3 id="1、视觉特征点的提取"><a href="#1、视觉特征点的提取" class="headerlink" title="1、视觉特征点的提取"></a>1、视觉特征点的提取</h3><p>视觉特征点采用光流跟踪的方式提取，这一点可以直接利用VINS-Mono中的feature_tracker节点，其可以生成均匀分布的视觉特征点。这部分代码是VINS代码中相对简单的，不太需要解释。</p>
+<h3 id="2、深度恢复"><a href="#2、深度恢复" class="headerlink" title="2、深度恢复"></a>2、深度恢复</h3><p>这里通过对时间对齐的一帧点云与视觉特征点进行数据关联来恢复视觉特征点的深度。相对于多帧点云来恢复视觉特征点的深度，仅使用一帧点云来计算虽然有点云比较稀疏的缺点，但是也避免了对帧间运动的依赖。</p>
+<p>视觉特征点与激光雷达的点云都统一到相机的归一化平面处理：</p>
+<div style="width:80%;margin:auto" align=center><img src="/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E8%A7%86%E8%A7%89%E7%89%B9%E5%BE%81%E7%82%B9%E4%B8%8E%E6%BF%80%E5%85%89%E7%89%B9%E5%BE%81%E7%82%B9.png" class=""></div>
 
-<h2 id="3、程序实现"><a href="#3、程序实现" class="headerlink" title="3、程序实现"></a>3、程序实现</h2><p>以上小程序都在我的github，如下：<br><a href="https://github.com/Gutsgwh1997/CameraCalibration" target="_blank" rel="noopener">https://github.com/Gutsgwh1997/CameraCalibration</a></p>
-<h2 id="4、参考文献"><a href="#4、参考文献" class="headerlink" title="4、参考文献"></a>4、参考文献</h2><p>以上两个pdf来自于我的课程报告，主要参考了以下的知乎文章，原知乎文章写的很详细，但是一些推导比较笨重，本篇在此系列的基础上对某些推导进行了优化。<br>1.<a href="https://zhuanlan.zhihu.com/p/35223115" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（一）相机成像模型</a><br>2.<a href="https://zhuanlan.zhihu.com/p/35309172" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（二）单应矩阵</a><br>3.<a href="https://zhuanlan.zhihu.com/p/35391837" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（三）推导求解</a><br>4.<a href="https://zhuanlan.zhihu.com/p/35392121" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（四）优化算法前传</a><br>5.<a href="https://zhuanlan.zhihu.com/p/35476851" target="_blank" rel="noopener">从零开始学习「张氏相机标定法」（五）优化算法正传</a></p>
+<p>这里的激光雷达点云是经过LeGo-LOAM中物体分割处理后的，每一个激光点都带有一个标签。数据关联是使用视觉特征点（红色的点）周围的激光点（白色的点）去恢复视觉特征点的3D深度，这一周围的邻域是使用蓝色的框表示的。为了确保邻域点能拟合出平面参数，这个蓝色的<strong>方格大小需要保证在每一方向上至少包含两条激光线</strong>。之后的处理步骤：</p>
+<h4 id="2-1、将点云分发到每一视觉特征点的包围盒内；"><a href="#2-1、将点云分发到每一视觉特征点的包围盒内；" class="headerlink" title="2.1、将点云分发到每一视觉特征点的包围盒内；"></a>2.1、将点云分发到每一视觉特征点的包围盒内；</h4><h4 id="2-2、对于每一视觉特征点包围盒内的点云按照类别分类；"><a href="#2-2、对于每一视觉特征点包围盒内的点云按照类别分类；" class="headerlink" title="2.2、对于每一视觉特征点包围盒内的点云按照类别分类；"></a>2.2、对于每一视觉特征点包围盒内的点云按照类别分类；</h4><h4 id="2-3、选取分类好的cluster中最前景的cluster点集（上图中的黄色点就是这部分点）；"><a href="#2-3、选取分类好的cluster中最前景的cluster点集（上图中的黄色点就是这部分点）；" class="headerlink" title="2.3、选取分类好的cluster中最前景的cluster点集（上图中的黄色点就是这部分点）；"></a>2.3、选取分类好的cluster中最前景的cluster点集（上图中的黄色点就是这部分点）；</h4><p>通常情况下视觉特征点位于环境中的边线和边角位置，因此其近邻点集通常包含了前景物体和后景物体上的激光点，直接使用近邻点集进行深度估计可能得到错误的深度恢复。</p>
+<h4 id="2-4、从满足条件的cluster点集中选取组成三角形面积最大的三个点进行平面恢复；"><a href="#2-4、从满足条件的cluster点集中选取组成三角形面积最大的三个点进行平面恢复；" class="headerlink" title="2.4、从满足条件的cluster点集中选取组成三角形面积最大的三个点进行平面恢复；"></a>2.4、从满足条件的cluster点集中选取组成三角形面积最大的三个点进行平面恢复；</h4><p>三角形面积还需大于一定的阈值，因为有可能三个点都在一条scan上，上图中就出现了这个情况。假设平面不过原点，用三个点就可以拟合出来一张平面$Ax+By+cz+1 = 0$。直接写成矩阵用线性代数的知识就能求解了，若是超定方程可以使用一次最小二乘$(A^TA)^{-1}A^Tb$。刚好最近看了多视图几何，这本书中的解法如下：</p>
+<div style="width:80%;margin:auto" align=center><img src="/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E5%B9%B3%E9%9D%A2%E5%8E%BB%E6%8B%9F%E5%90%88%E7%82%B9.png" class=""></div>
+
+<p>接下来使用这个平面去估计视觉特征点的深度，注意构造这个平面<strong>用的是投影到相机坐标系下的激光点</strong>。相机光心与视觉特征点连成的射线与拟合平面的交点作为视觉特征点在相机坐标系下的深度。射线与平面的交点如下求解：</p>
+<p>平面的表示方法:</p>
+<div style="width:80%;margin:auto" align=center><img src="/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E5%B9%B3%E9%9D%A2%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95.png" class=""></div>
+$$
+n^T \cdot (p-p_0) = 0 ,\quad 令d = -n^Tp_0
+$$
+
+<p>$$<br>n^Tp+d = 0<br>$$<br>其中$p$是平面上任意一个点，另外射线可以表示为一个起点加一个方向：<br>$$<br>p(t) = p_0 + tu<br>$$<br>交点即在平面上又在射线上，则有：<br>$$<br>\begin{aligned}<br>&amp;n^T(p_0+tu)+d = 0 \\<br>&amp;t = \frac{-(d+n^Tp_0)}{n^Tu}<br>\end{aligned}<br>$$<br>如此交点便可以求取。一个更直接的公式是：<br>$$<br>X_{3d}^{C} = |\frac{d}{n^TX_{2d}^C}|X_{2d}^C<br>$$<br>其中$X_{2d}^C$是归一化相机平面的视觉特征点，$X_{3d}^C$是深度恢复的相机坐标系下的视觉特征点。</p>
+<h4 id="2-5、深度验证"><a href="#2-5、深度验证" class="headerlink" title="2.5、深度验证"></a>2.5、深度验证</h4><p>前述步骤得到的有效深度估计必须满足一下两点：</p>
+<ol>
+<li>当前视觉特征点的射线与拟合平面的法线夹角小于设定阈值15°，否则深度估计结果噪声太大；</li>
+<li>深度恢复出的视觉特征点距离相机光心小于设定阈值30m，距离太大点云比较稀疏，近邻点集包含的点尺度范围太大，进而导致平面拟合不准确。</li>
+</ol>
+<h3 id="3、激光视觉紧耦合"><a href="#3、激光视觉紧耦合" class="headerlink" title="3、激光视觉紧耦合"></a>3、激光视觉紧耦合</h3><div style="width:70%;margin:auto" align=center><img src="/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5.png" class=""></div>
+
+
+<p>LeGo-LOAM中实际估计的是当前帧点云结束点时刻的Lidar坐标系到上一帧点云结束点时刻Lidar坐标系的变换$T_{cur-end}^{last-end}$。本方法要求相机与Lidar的频率一致，相机的采样时刻在一帧点云中。本帧视觉特征点与上一帧的视觉特征点通过特征点的ID建立匹配关系，这样可以建立如下的距离约束：<br>$$<br>\begin{aligned}<br>T_{k+1}^{k} &amp;= \frac{t_{k+1} - t_{k}}{ScanPeriod}T_{cur-end}^{last-end} \\<br>d &amp;= | p^k - T_{k+1}^{k}p^{k+1}|<br>\end{aligned}<br>$$<br>其中$t_{k+1}$表示当前图像帧的时间戳，$t_k$表示上一帧图像的时间戳，$p^{k+1}$表示当前帧的一个视觉特征点，$p^k$表示的是上一帧中与$p^{k+1}$同一ID的匹配点。</p>
+<p>由此可建立视觉特征点之间的距离约束，之后与LeGo-LOAM中边线特征点构成的点到直线的距离约束、平面特征点构成的点到平面的距离约束一同送入优化函数，实现紧耦合联合优化。</p>
 
     </div>
 
@@ -275,9 +311,6 @@
 
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
-          </div>
 
         
 
@@ -285,13 +318,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/05/04/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E5%9B%9B/" rel="prev" title="IMU预积分(四)">
-      <i class="fa fa-chevron-left"></i> IMU预积分(四)
+    <a href="/2020/08/01/LeGo-LOAM%E4%B8%AD%E7%9A%84transformFusion%E8%8A%82%E7%82%B9-%E7%9B%B8%E5%85%B3%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC/" rel="prev" title="LeGo-LOAM中的transformFusion节点+相关数学公式推导">
+      <i class="fa fa-chevron-left"></i> LeGo-LOAM中的transformFusion节点+相关数学公式推导
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/05/21/VINS%E4%B8%AD%E7%9A%84%E8%A7%86%E8%A7%89%E6%AE%8B%E5%B7%AE/" rel="next" title="VINS中的视觉残差">
-      VINS中的视觉残差 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -351,7 +381,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、张式相机标定法"><span class="nav-text">1、张式相机标定法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、平面视觉测量"><span class="nav-text">2、平面视觉测量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、程序实现"><span class="nav-text">3、程序实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、参考文献"><span class="nav-text">4、参考文献</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#LeGo-LOAM-单目相机"><span class="nav-text">LeGo-LOAM+单目相机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、视觉特征点的提取"><span class="nav-text">1、视觉特征点的提取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、深度恢复"><span class="nav-text">2、深度恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1、将点云分发到每一视觉特征点的包围盒内；"><span class="nav-text">2.1、将点云分发到每一视觉特征点的包围盒内；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2、对于每一视觉特征点包围盒内的点云按照类别分类；"><span class="nav-text">2.2、对于每一视觉特征点包围盒内的点云按照类别分类；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3、选取分类好的cluster中最前景的cluster点集（上图中的黄色点就是这部分点）；"><span class="nav-text">2.3、选取分类好的cluster中最前景的cluster点集（上图中的黄色点就是这部分点）；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4、从满足条件的cluster点集中选取组成三角形面积最大的三个点进行平面恢复；"><span class="nav-text">2.4、从满足条件的cluster点集中选取组成三角形面积最大的三个点进行平面恢复；</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5、深度验证"><span class="nav-text">2.5、深度验证</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、激光视觉紧耦合"><span class="nav-text">3、激光视觉紧耦合</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
