@@ -20,22 +20,22 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="九（续）、std::async深入理解本节接第九章《获取线程函数返回值》,主要记录了std::async函数模板与std::thread函数模板的差异。 1 、std::async的第一个参数">
+  <meta name="description" content="MSCKF_VIO浅析MSCKF 是明尼苏达州大学Mourikis 等人提出的一种基于EKF 的VIO 紧耦合的SLAM 框架。该框架主要解决了使用传统EFK方式解决SLAM问题时，状态向量中特征点维度爆炸的问题。MSCKF的创新点在于未将路标点加入到状态向量中，而是将多个相机状态扩维到状态向量中，多个相机对路标点的观测作为一种约束，整合到EKF更新过程中。 S_MSCKF是宾夕法尼亚大学Vija">
 <meta property="og:type" content="article">
-<meta property="og:title" content="std::async与std::thread">
-<meta property="og:url" content="http://yoursite.com/2020/04/03/std-async%E4%B8%8Estd-thread/index.html">
+<meta property="og:title" content="MSCKF浅析">
+<meta property="og:url" content="http://yoursite.com/2020/12/30/MSCKF%E6%B5%85%E6%9E%90/index.html">
 <meta property="og:site_name" content="GWH Blog">
-<meta property="og:description" content="九（续）、std::async深入理解本节接第九章《获取线程函数返回值》,主要记录了std::async函数模板与std::thread函数模板的差异。 1 、std::async的第一个参数">
+<meta property="og:description" content="MSCKF_VIO浅析MSCKF 是明尼苏达州大学Mourikis 等人提出的一种基于EKF 的VIO 紧耦合的SLAM 框架。该框架主要解决了使用传统EFK方式解决SLAM问题时，状态向量中特征点维度爆炸的问题。MSCKF的创新点在于未将路标点加入到状态向量中，而是将多个相机状态扩维到状态向量中，多个相机对路标点的观测作为一种约束，整合到EKF更新过程中。 S_MSCKF是宾夕法尼亚大学Vija">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-04-03T09:17:55.000Z">
-<meta property="article:modified_time" content="2020-04-03T13:17:44.334Z">
+<meta property="og:image" content="e:/研究生课题/博客/MSCKF/twoPointsRansac.png">
+<meta property="article:published_time" content="2020-12-30T13:56:50.000Z">
+<meta property="article:modified_time" content="2020-12-30T14:29:04.103Z">
 <meta property="article:author" content="陌上&amp;烟雨">
-<meta property="article:tag" content="C++">
-<meta property="article:tag" content="C++11">
-<meta property="article:tag" content="多线程">
+<meta property="article:tag" content="SLAM">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="e:/研究生课题/博客/MSCKF/twoPointsRansac.png">
 
-<link rel="canonical" href="http://yoursite.com/2020/04/03/std-async%E4%B8%8Estd-thread/">
+<link rel="canonical" href="http://yoursite.com/2020/12/30/MSCKF%E6%B5%85%E6%9E%90/">
 
 
 <script id="page-configurations">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>std::async与std::thread | GWH Blog</title>
+  <title>MSCKF浅析 | GWH Blog</title>
   
 
 
@@ -167,7 +167,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/std-async%E4%B8%8Estd-thread/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/30/MSCKF%E6%B5%85%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/%E5%A4%B4%E5%83%8F.jpeg">
@@ -180,7 +180,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          std::async与std::thread
+          MSCKF浅析
         </h1>
 
         <div class="post-meta">
@@ -191,7 +191,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-04-03 17:17:55 / 修改时间：21:17:44" itemprop="dateCreated datePublished" datetime="2020-04-03T17:17:55+08:00">2020-04-03</time>
+              <time title="创建时间：2020-12-30 21:56:50 / 修改时间：22:29:04" itemprop="dateCreated datePublished" datetime="2020-12-30T21:56:50+08:00">2020-12-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -199,11 +199,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/C-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">C++多线程</span></a>
+                  <a href="/categories/SLAM/VIO/" itemprop="url" rel="index"><span itemprop="name">VIO</span></a>
                 </span>
             </span>
 
@@ -220,14 +220,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>2.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -239,27 +239,54 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="九（续）、std-async深入理解"><a href="#九（续）、std-async深入理解" class="headerlink" title="九（续）、std::async深入理解"></a>九（续）、std::async深入理解</h2><p>本节接第九章《获取线程函数返回值》,主要记录了<code>std::async</code>函数模板与<code>std::thread</code>函数模板的差异。</p>
-<h3 id="1-、std-async的第一个参数"><a href="#1-、std-async的第一个参数" class="headerlink" title="1 、std::async的第一个参数"></a>1 、std::async的第一个参数</h3><a id="more"></a>
+        <h2 id="MSCKF-VIO浅析"><a href="#MSCKF-VIO浅析" class="headerlink" title="MSCKF_VIO浅析"></a>MSCKF_VIO浅析</h2><p>MSCKF 是明尼苏达州大学Mourikis 等人提出的一种基于EKF 的VIO 紧耦合的SLAM 框架。该框架主要解决了使用传统EFK方式解决SLAM问题时，状态向量中特征点维度爆炸的问题。MSCKF的创新点在于未将路标点加入到状态向量中，而是将多个相机状态扩维到状态向量中，多个相机对路标点的观测作为一种约束，整合到EKF更新过程中。</p>
+<p>S_MSCKF是宾夕法尼亚大学Vijay Kumar 实验室开源的双目版本MSCKF 算法。代码简洁明了，数据结构设计的简单易用，质量比较高！相比于基于优化的VIO算法，MSCKF精度相当（可以看S_MSCKF的对比试验），但是计算量较小。</p>
+<p>我注释过的代码见<a href="https://github.com/Gutsgwh1997/Msckf_vio" target="_blank" rel="noopener">here</a>。</p>
+<a id="more"></a>
 
-<p>在第九章中介绍过了参数：<code>std::launch::deferred</code>【延迟调用】；<code>std::launch::async</code>【强制创建一个线程】</p>
+<h3 id="1、Image-Processor"><a href="#1、Image-Processor" class="headerlink" title="1、Image Processor"></a>1、Image Processor</h3><p>此node是MSCKF视觉前端，进行双目光流跟踪。</p>
+<h4 id="1-1、简要流程"><a href="#1-1、简要流程" class="headerlink" title="1.1、简要流程"></a>1.1、简要流程</h4><p>本node接收原始双目图像以及IMU原始测量：</p>
 <ol>
-<li><code>std::launch::deferred</code>：表示线程入口函数调用被延迟到<code>std::future</code>的<code>wait()</code>或者<code>get()</code>函数调用才执行。如果<code>wait()</code>和<code>get()</code>没有调用，则不会创建线程并执行线程入口函数；如果在主线程中调用<code>wait()</code>和<code>get()</code>，实际上也不会创建新线程，而是在主线程中执行的入口函数。</li>
-<li><code>std::launch::async</code>：表示强制这个异步任务在新线程上执行，在调用<code>std::async</code>函数的时候就开始创建线程。<code>std::async</code>默认的是这个标记。</li>
-<li><code>std::launch::deferred | std::launch::async</code>：这里的“|”意味着<code>async</code>的行为可能是“创建新的线程并立即执行”或者“没有创建线程并且延迟到调用result.get()才开始执行任务入口函数”。</li>
-<li><code>std::async</code>不带这个标记时，默认是第三种情况，系统自行决定是异步（创建新线程）还是同步（不创建新线程）方式运行。</li>
+<li>借助<code>message_filters::TimeSynchronizer&lt;&gt;</code>同步接收双目图像，第一帧图像后，不断添加imu消息到imu_msg_buffer；</li>
+<li>建立图像金字塔；</li>
+<li>若是第一帧图像，先提取第一帧图像中左眼的fast角点；之后做双目匹配（以双眼外参为右眼中的角点提供初值，进行LK光流跟踪；将落在图像之外的点标记为outliers，根据点到极线<font color=red>（极线通过双目间外参得到）</font>的距离再标记一波outliers。）；去除双目特征点中的outliers<font color=red>（左右眼上特征点的数量相同！）</font>；4x5方格的均匀化处理。</li>
+<li>前后帧特征跟踪：前后帧跟踪会用IMU积分的相对旋转预测特征点在当前帧的位置作为初值，左图特征点前后帧跟踪，得到当前帧左图特征点，当前帧左右图跟踪（双目匹配），得到当前帧右图特征点，左右图分别做前后帧two Point RANSAC剔除外点；4x5方格的均匀化处理。</li>
+<li>添加新特征点：新提取左眼fast角点；左眼4x5方格均匀化处理；双目匹配，去除外点。</li>
 </ol>
-<h3 id="2、std-thread与std-async的区别"><a href="#2、std-thread与std-async的区别" class="headerlink" title="2、std::thread与std::async的区别"></a>2、std::thread与std::async的区别</h3><p>如果系统资源紧张，<code>std::thread()</code>创建线程可能会失败，那么执行<code>std::thread()</code>时，整个程序可能崩溃。对于<code>std::async()</code>我们一般不叫创建线程（尽管<code>async</code>可以创建线程），我们一般叫它创建一个异步<strong>任务</strong>。<code>std::async</code>与<code>std::thread</code>最明显的不同，就是<code>async</code>有时候并不创建新的线程。</p>
-<p><code>std::thread</code>创建线程的方式，如果线程有返回值，不容易拿到这个值。</p>
-<p><code>std::async()</code>创建异步任务，可能创建也可能不创建线程。并且<code>async</code>的调用方法很容易拿到线程入口函数的返回值。</p>
-<p>由于系统资源的限制：</p>
-<ul>
-<li>如果使用<code>std::thread</code>创建的线程太多，则可能创建失败，系统报告异常，程序崩溃。</li>
-<li>如果使用<code>std::async</code>，一般就不会报异常不崩溃。这是因为系统资源紧张时，<code>async</code>这种不加额外参数的调用不会创建新线程，而是后续谁调用了<code>result.get()</code>请求结果，那么这个异步任务就在执行<code>get()</code>语句的线程中运行。</li>
-<li>通常来说，一个程序里的线程数量不宜超过100-200。</li>
-</ul>
-<h3 id="3、std-async不确定性问题的解决"><a href="#3、std-async不确定性问题的解决" class="headerlink" title="3、std::async不确定性问题的解决"></a>3、std::async不确定性问题的解决</h3><p>不加额外参数的<code>std::async</code>，系统自行决定是否创建新线程。问题的焦点在于<code>std::future&lt;int&gt; result = std::async(mythread);</code>的写法，这个异步任务到底有没有被推迟执行。我们可以通过<code>result.wait_for()</code>函数来判断，这在上一讲中也提到过：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">future</span>&lt;<span class="keyword">int</span>&gt; result = <span class="built_in">std</span>::async(mythread);          </span><br><span class="line"><span class="built_in">std</span>::future_status status = result.wait_for(<span class="built_in">std</span>::chrono::seconds(<span class="number">0</span>s)); <span class="comment">//0s的语法没问题，operator ""s  </span></span><br><span class="line"><span class="keyword">if</span> (status == <span class="built_in">std</span>::future_status::deferred)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 如果async的第一个参数被设置为std::launch::deferred，则本条成立</span></span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"线程被延迟执行"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; result.<span class="built_in">get</span>() &lt;&lt; <span class="built_in">endl</span>;        <span class="comment">// 这时候线程入口函数才会执行</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"任务没有被推迟"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="1-2、重点函数"><a href="#1-2、重点函数" class="headerlink" title="1.2、重点函数"></a>1.2、重点函数</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief      Applies two point ransac algorithm to mark the inliers in the input set.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param[in]  pts1                 previous set of points.</span></span><br><span class="line"><span class="comment"> * @param[in]  pts2                 current set of points.              </span></span><br><span class="line"><span class="comment"> * @param[in]  R_p_c                a rotation matrix takes a vector in the previous camera frame to the current camera frame.</span></span><br><span class="line"><span class="comment"> * @param[in]  intrinsics           intrinsics of the camera.</span></span><br><span class="line"><span class="comment"> * @param[in]  distortion_model     distortion model of the camera.</span></span><br><span class="line"><span class="comment"> * @param[in]  distortion_coeffs    distortion coeffs.</span></span><br><span class="line"><span class="comment"> * @param[in]  inlier_error         acceptable error to be considered as an inlier.</span></span><br><span class="line"><span class="comment"> * @param[in]  success_probability  the required probability of success. Ransac算法的置信度</span></span><br><span class="line"><span class="comment"> * @param[out] inlier_markers       1 for inliers and 0 for outliers.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ImageProcessor::twoPointRansac</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="built_in">vector</span>&lt;Point2f&gt; &amp;pts1, <span class="keyword">const</span> <span class="built_in">vector</span>&lt;Point2f&gt; &amp;pts2,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> cv::Matx33f &amp;R_p_c, <span class="keyword">const</span> cv::Vec4d &amp;intrinsics,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;distortion_model,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> cv::Vec4d &amp;distortion_coeffs,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">double</span> &amp;inlier_error,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">double</span> &amp;success_probability,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;inlier_markers)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>twoPointRansac()</code>外点去除方法没有手撸过（一般是通过<code>cv::findEssentialMat(...)</code>或者<code>cv::solvePnPRansac(...)</code>集成的Ransac算法实现）。</p>
+<p><strong>Ransac算法原理：</strong></p>
+<p>随机抽样一致性（RANSAC）算法，可以在一组包含“外点”的数据集中，采用不断迭代的方法，寻找最优参数模型，不符合最优模型的点，被定义为“外点”。以OpenCV求解单应矩阵为例子，算法流程为：</p>
+<ol>
+<li>随机从数据集中随机抽出4个样本数据 (此4个样本之间不能共线)，计算出变换矩阵H，记为模型M；</li>
+<li>计算数据集中所有数据与模型M的投影误差，若误差小于阈值（需要设定），加入内点集 I ；</li>
+<li>如果当前内点集 I 元素个数大于最优内点集 I_best , 则更新 I_best = I，同时更新迭代次数k ;</li>
+<li>如果迭代次数大于k，则退出 ; 否则迭代次数加1，并重复上述步骤；</li>
+<li>然后，用所有假设的局内点去重新估计模型（譬如使用最小二乘法），因为它仅仅被初始的假设局内点估计过；</li>
+<li>最后，通过估计局内点与模型的错误率来评估模型。</li>
+</ol>
+<p>迭代次数的更新公式为：<br>$$<br>k = \frac{log(1-p)}{log(1-w^m)}<br>$$<br>其中，$p$是置信度，一般取为0.995；$w$是由模型M计算出来的内点的比例；$m$是计算模型所需要的最少样本数。这个公式说明，内点的比例越高，需要的迭代次数就越少。</p>
+<p>上述过程被重复执行的过程中，每次产生的模型要么因为局内点太少而被舍弃，要么因为比现有的模型更好而被选用。</p>
+<p>其实核心就是随机性和假设性。随机性用于减少计算了，循环次数k就是利用正确数据出现的概率。所谓的假设性，就是说随机抽出来的数据都认为是正确的，并以此去计算其他点，获得其他满足变换关系的点，然后利用投票机制，选出获票最多的那一个变换。</p>
+<img src="E:\研究生课题\博客\MSCKF\twoPointsRansac.png" style="zoom:120%;" />
+
+<p>代码中并非恒定将$t_z$设定为1，而是根据方程（7）的系数矩阵，将系数矩阵按列向量求解一范数，范数最小的列对应的$t$设定为1，所以代码中分为了三种情况。</p>
+<h3 id="2、MsckfVio-Filter"><a href="#2、MsckfVio-Filter" class="headerlink" title="2、MsckfVio Filter"></a>2、MsckfVio Filter</h3><h4 id="2-1、核心要义"><a href="#2-1、核心要义" class="headerlink" title="2.1、核心要义"></a>2.1、核心要义</h4><p>这部分是Msckf的核心，网上相关的参考资料比较丰富，例如<a href="https://github.com/cggos" target="_blank" rel="noopener">Gavin Gao</a>的推导，以及知乎<a href="https://www.zhihu.com/column/c_1121353757664964608" target="_blank" rel="noopener">MSCKF那些事</a>。我丰富了Gavin Gao的推导以及纠正了一些错误。在此之前，给出KF和EKF的常规五步公式：</p>
+<div class="pdfobject-container" data-target="KF_note.pdf" data-height="500px"></div>
+
+<p>MSCKF核心思路下面这个PDF写的比较详尽，具体的Jacobian推导<a href="https://www.zhihu.com/column/c_1121353757664964608" target="_blank" rel="noopener">MSCKF那些事</a>和代码一致。</p>
+<div class="pdfobject-container" data-target="Msckf_note_gwh.pdf" data-height="500px"></div>
+
+<h4 id="2-1、TODO"><a href="#2-1、TODO" class="headerlink" title="2.1、TODO"></a>2.1、TODO</h4><ol>
+<li>能观性分析</li>
+<li>松耦合的回环检测，利用<a href="https://github.com/rpng/ov_secondary" target="_blank" rel="noopener">ov_secondary</a>松耦合实现（回环结果不会反馈给滤波器）。</li>
+</ol>
+<h3 id="3、参考资料"><a href="#3、参考资料" class="headerlink" title="3、参考资料"></a>3、参考资料</h3><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/93924890" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/93924890</a></li>
+<li><a href="https://www.zhihu.com/column/c_1121353757664964608" target="_blank" rel="noopener">https://www.zhihu.com/column/c_1121353757664964608</a></li>
+<li><a href="https://link.zhihu.com/?target=http%3A//mars.cs.umn.edu/tr/reports/Trawny05b.pdf">Indirect Kalman Filter for 3D Attitude Estimation</a></li>
+</ol>
 
     </div>
 
@@ -289,9 +316,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/C/" rel="tag"># C++</a>
-              <a href="/tags/C-11/" rel="tag"># C++11</a>
-              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
+              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
           </div>
 
         
@@ -300,13 +325,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/03/%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C/" rel="prev" title="原子操作">
-      <i class="fa fa-chevron-left"></i> 原子操作
+    <a href="/2020/08/01/LeGo-LOAM-%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA/" rel="prev" title="LeGo-LOAM+单目相机">
+      <i class="fa fa-chevron-left"></i> LeGo-LOAM+单目相机
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/05/01/IMU%E9%A2%84%E7%A7%AF%E5%88%86-%E4%B8%80/" rel="next" title="IMU预积分(一)">
-      IMU预积分(一) <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -366,7 +388,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#九（续）、std-async深入理解"><span class="nav-text">九（续）、std::async深入理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-、std-async的第一个参数"><span class="nav-text">1 、std::async的第一个参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、std-thread与std-async的区别"><span class="nav-text">2、std::thread与std::async的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、std-async不确定性问题的解决"><span class="nav-text">3、std::async不确定性问题的解决</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MSCKF-VIO浅析"><span class="nav-text">MSCKF_VIO浅析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、Image-Processor"><span class="nav-text">1、Image Processor</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1、简要流程"><span class="nav-text">1.1、简要流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2、重点函数"><span class="nav-text">1.2、重点函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、MsckfVio-Filter"><span class="nav-text">2、MsckfVio Filter</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1、核心要义"><span class="nav-text">2.1、核心要义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1、TODO"><span class="nav-text">2.1、TODO</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、参考资料"><span class="nav-text">3、参考资料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
